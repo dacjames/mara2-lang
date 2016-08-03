@@ -17,6 +17,4 @@ trait MaraParser[E, T <: LiteralAlg[E] with ArithmeticAlg[E]]
 
   def TerminalExpr: Rule1[E] = rule { LiteralExpr }
 
-
-
 }
