@@ -10,7 +10,7 @@ trait ArithmeticParser[E, T <: ArithmeticAlg[E]] extends Parser {
   def input: ParserInput
 
   def Expr: Rule1[E]
-  def TerminalExpr: Rule1[E]
+  def Terminal: Rule1[E]
 
   def ArithmeticExpr: Rule1[E] = rule {
     Term ~ zeroOrMore(
@@ -32,8 +32,8 @@ trait ArithmeticParser[E, T <: ArithmeticAlg[E]] extends Parser {
     )
   }
 
-  def SubFactor = rule { TerminalExpr | Parens }
+  def SubFactor = rule { Terminal }
 
-  def Parens = rule { '(' ~ Expr ~ ')' }
+
 
 }

@@ -11,10 +11,12 @@ trait MaraParser[E, T <: LiteralAlg[E] with ArithmeticAlg[E]]
   with LiteralParser[E, T]
   with ArithmeticParser[E, T] {
 
-  def InputLine = rule { Expr | TerminalExpr ~ EOI }
+  def InputLine = rule { Expr | Terminal ~ EOI }
 
-  def Expr: Rule1[E] = rule { Parens | ArithmeticExpr }
+  def Expr: Rule1[E] = rule {  ArithmeticExpr }
 
-  def TerminalExpr: Rule1[E] = rule { LiteralExpr }
+  def Terminal: Rule1[E] = rule { LiteralExpr | Parens }
+
+  def Parens = rule { '(' ~ Expr ~ ')' }
 
 }
