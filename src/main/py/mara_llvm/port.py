@@ -31,11 +31,13 @@ async def _read_header(client_reader):
 
 async def _read_json(client_reader):
     data = await client_reader.readline()
+    print("Raw:", data)
     return json.loads(data.decode('utf-8'))
 
 
 async def _read_msgpack(client_reader):
     data = await client_reader.readline()
+    print("Raw:", data)
     return msgpack.unpackb(data.strip(), encoding='utf-8')
 
 
@@ -85,10 +87,11 @@ class PortServer:
         """
         task = asyncio.Task(self._handle_client(client_reader, client_writer))
         self._clients[task] = (client_reader, client_writer)
+        print("Added client task: ", task, file=sys.stderr)
 
         @task.add_done_callback
         def client_done(task):
-            print("client task done: ", task, file=sys.stderr)
+            print("Client task done: ", task, file=sys.stderr)
             del self._clients[task]
             task.cancel()
 
@@ -100,11 +103,13 @@ class PortServer:
         :return:
         """
         def respond(text):
+            print('Responding', text)
             _write_json(client_writer, text)
 
         while True:
             try:
                 message = await _read_message(client_reader)
+                print("Message", message)
                 respond({"message": message})
 
             except InvalidMagicByte:

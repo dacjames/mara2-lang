@@ -6,5 +6,5 @@ setup(
     description='Mara LLVM Service',
     license='MIT',
     packages=['src/main/py/mara_llvm'],
-    install_requires=['llvmlite'],
+    install_requires=['llvmlite', 'msgpack-python'],
 )
