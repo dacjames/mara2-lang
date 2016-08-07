@@ -1,4 +1,4 @@
-package io.dac.mara
+package io.dac.mara.core
 
 /**
   * Created by dcollins on 8/2/16.
