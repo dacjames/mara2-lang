@@ -1,7 +1,6 @@
-package io.dac.mara.impls
+package io.dac.mara.literals
 
 import io.dac.mara.exprops.{Eval, EvalOp}
-import io.dac.mara.literals.LiteralAlg
 
 /**
   * Created by dcollins on 8/2/16.

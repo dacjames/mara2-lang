@@ -1,28 +1,26 @@
 package io.dac.mara.literals
 
+import io.dac.mara.core.LangParser
 import org.parboiled2._
 
 
 /**
   * Created by dcollins on 8/2/16.
   */
-trait LiteralParser[E, T <: LiteralAlg[E]] extends Parser {
-  def alg: T
-  def input: ParserInput
+trait LiteralParser[E, T <: LiteralAlg[E]] extends LangParser[E, T] {
+  def Literal = rule { StringLiteral | IntLiteral }
 
-  def LiteralExpr = rule { StringLiteral | IntLiteral }
+  private[this] def Digits = rule { oneOrMore(CharPredicate.Digit) }
 
-  def Digits = rule { oneOrMore(CharPredicate.Digit) }
-
-  def quotedStringLiteral(quote: Char) = rule {
+  private[this] def quoted(quote: Char) = rule {
     quote  ~
       capture(zeroOrMore(noneOf(quote.toString))) ~> { x => alg.litString(x) } ~
     quote
   }
 
-  def StringLiteral = rule { quotedStringLiteral('\'') | quotedStringLiteral('\"')}
+  private[this] def StringLiteral = rule { quoted('\'') | quoted('\"')}
 
-  def IntLiteral = rule {
+  private[this] def IntLiteral = rule {
     capture(Digits) ~> { x => alg.litInt(x.toInt) }
   }
 }

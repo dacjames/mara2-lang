@@ -1,7 +1,6 @@
-package io.dac.mara.impls
+package io.dac.mara.operators
 
 import io.dac.mara.exprops.{Show, ShowOp}
-import io.dac.mara.operators.OperatorAlg
 
 /**
   * Created by dcollins on 8/2/16.
