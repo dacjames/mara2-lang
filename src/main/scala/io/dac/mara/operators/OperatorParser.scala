@@ -12,14 +12,19 @@ trait OperatorParser[E, T <: OperatorAlg[E]] extends Parser {
   def Expr: Rule1[E]
   def Terminal: Rule1[E]
 
-  def BinOp = rule {
+  def Operator = rule {
+    BoolOp
+  }
+
+  private[this] def BoolOp = rule {
     ArgLow ~ zeroOrMore(
       '<' ~ ArgLow ~> { (x: E, y) => alg.lt(x, y)} |
       '>' ~ ArgLow ~> { (x: E, y) => alg.gt(x, y)} |
       "<=" ~ ArgLow ~> { (x: E, y) => alg.lte(x, y)} |
       ">=" ~ ArgLow ~> { (x: E, y) => alg.gte(x, y)} |
       "&&" ~ ArgLow ~> { (x: E, y) => alg.and(x, y)} |
-      "||" ~ ArgLow ~> { (x: E, y) => alg.or(x, y)})
+      "||" ~ ArgLow ~> { (x: E, y) => alg.or(x, y)}
+    )
   }
 
   private[this] def ArgLow = rule {
@@ -29,14 +34,15 @@ trait OperatorParser[E, T <: OperatorAlg[E]] extends Parser {
     )
   }
 
-  private[this] def ArgMedium: Rule1[E] = rule {
+  private[this] def ArgMedium = rule {
     ArgHigh ~ zeroOrMore(
       '*' ~ ArgHigh ~> { (x: E, y) => alg.times(x, y)} |
       '/' ~ ArgHigh ~> { (x: E, y) => alg.divide(x, y)}
     )
   }
 
-  private[this] def ArgHigh: Rule1[E] = rule {
+  private[this] def ArgHigh = rule {
+    "~" ~ Terminal ~> { (x: E) => alg.not(x) } |
     Terminal ~ zeroOrMore(
       '^' ~ Terminal ~> {(x: E, y) => alg.power(x, y)}
     )

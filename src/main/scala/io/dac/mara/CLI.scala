@@ -38,5 +38,6 @@ object CLI extends App {
   }
 
   println(parse("3^(7*4)<=3^7*4||1&&1<=1"))
+  println(parse("3+~1+1"))
 
 }

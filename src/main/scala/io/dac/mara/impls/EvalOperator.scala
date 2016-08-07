@@ -14,8 +14,11 @@ trait EvalOperator extends EvalOp with OperatorAlg[Eval] {
   override def gt(x: Eval, y: Eval) = op { x.eval > y.eval }
   override def lte(x: Eval, y: Eval) = op { x.eval <= y.eval }
   override def gte(x: Eval, y: Eval) = op { x.eval >= y.eval }
+  override def ne(x: Eval, y: Eval) = op { x.eval != y.eval }
+
   override def and(x: Eval, y: Eval) = op { x.eval && y.eval }
   override def or(x: Eval, y: Eval) = op { x.eval || y.eval }
+  override def not(x: Eval) = op { ! x.eval }
 
   override def plus(x: Eval, y: Eval) = op { x.eval + y.eval }
   override def minus(x: Eval, y: Eval) = op { x.eval - y.eval }

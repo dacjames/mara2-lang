@@ -19,6 +19,9 @@ trait ShowOperator extends ShowOp with OperatorAlg[Show] {
   override def gt(x: Show, y: Show) = binop(x, y, ">")
   override def lte(x: Show, y: Show) = binop(x, y, "<=")
   override def gte(x: Show, y: Show) = binop(x, y, ">=")
+  override def ne(x: Show, y: Show) = binop(x, y, "!=")
+
   override def and(x: Show, y: Show) = binop(x, y, "&&")
   override def or(x: Show, y: Show) = binop(x, y, "||")
+  override def not(x: Show)= op { s"~${x.show}" }
 }

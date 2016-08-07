@@ -15,7 +15,7 @@ trait MaraParser[E, T <: LiteralAlg[E] with OperatorAlg[E]]
 
   def InputLine = rule { Expr | Terminal ~ EOI }
 
-  def Expr: Rule1[E] = rule { BinOp }
+  def Expr: Rule1[E] = rule { Operator }
 
   def Terminal: Rule1[E] = rule { LiteralExpr | Parens }
 

@@ -16,7 +16,11 @@ trait OperatorAlg[E] extends ExprAlg[E] {
   def gt(x: E, y: E): E
   def lte(x: E, y: E): E
   def gte(x: E, y: E): E
+  def ne(x: E, y: E): E
 
   def and(x: E, y: E): E
   def or(x: E, y: E): E
+  def not(x: E): E
+  def nand(x: E, y: E) = not(and(x, y))
 }
+
