@@ -2,10 +2,11 @@ package io.dac.mara
 
 import java.io.{PrintWriter, StringWriter}
 
-import io.dac.mara.controlflow.EvalControlFlow
-import io.dac.mara.exprops.Eval
-import io.dac.mara.literals.EvalLiteral
-import io.dac.mara.operators.EvalOperator
+import io.dac.mara.controlflow.{EvalControlFlow, ShowControlFlow}
+import io.dac.mara.exprops.{Eval, Show}
+import io.dac.mara.literals.{EvalLiteral, ShowLiteral}
+import io.dac.mara.operators.{EvalOperator, ShowOperator}
+import io.dac.mara.variables.{EvalVariable, ShowVariable}
 import org.parboiled2._
 
 import scala.util.{Failure, Success}
@@ -19,8 +20,13 @@ class C
 object CLI extends App {
   println("Hello, World!")
 
-  def parser(_input: String) = new MaraParser[Eval, EvalLiteral with EvalOperator with EvalControlFlow] {
-    val alg = new C with EvalLiteral with EvalOperator with EvalControlFlow
+  def parser2(_input: String) = new MaraParser[Show, ShowLiteral with ShowOperator with ShowControlFlow with ShowVariable] {
+    val alg = new C with ShowLiteral with ShowOperator with ShowControlFlow with ShowVariable
+    val input = ParserInput(_input)
+  }
+
+  def parser(_input: String) = new MaraParser[Eval, EvalLiteral with EvalOperator with EvalControlFlow with EvalVariable] {
+    val alg = new C with EvalLiteral with EvalOperator with EvalControlFlow with EvalVariable
     val input = ParserInput(_input)
   }
 
@@ -43,5 +49,12 @@ object CLI extends App {
   println(parse("3+~1+1"))
   println(parse("if1{3}"))
   println(parse("if0{3}else{4}"))
-
+  println(parse("0&&1"))
+  println(parse("0~&1"))
+  println(parse("0@1$2%3^4^5%6$7@8"))
+  println(parse("valx:Int"))
+  println(parse("valx:Int=10"))
+  println(parse("x"))
+  println(parse("do{valx:Int=20;x}"))
+  println(parse("do{valx=30;x}"))
 }

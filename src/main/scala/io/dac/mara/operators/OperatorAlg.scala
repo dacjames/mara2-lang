@@ -1,11 +1,11 @@
 package io.dac.mara.operators
 
-import io.dac.mara.core.ExprAlg
+import io.dac.mara.core.{Expr, ExprAlg}
 
 /**
   * Created by dcollins on 8/2/16.
   */
-trait OperatorAlg[E] extends ExprAlg[E] {
+trait OperatorAlg[E <: Expr] extends ExprAlg[E] {
   def plus(x: E, y: E): E
   def minus(x: E, y: E): E
   def times(x: E, y: E): E
@@ -22,5 +22,11 @@ trait OperatorAlg[E] extends ExprAlg[E] {
   def or(x: E, y: E): E
   def not(x: E): E
   def nand(x: E, y: E) = not(and(x, y))
+
+  def base(x: E, y: E): E = ???
+  def low(x: E, y: E): E = ???
+  def medium(x: E, y: E): E = ???
+  def high(x: E, y: E): E = ???
+
 }
 

@@ -1,13 +1,13 @@
 package io.dac.mara.controlflow
 
-import io.dac.mara.core.LangParser
+import io.dac.mara.core.{Expr, LangParser}
 import io.dac.mara.literals.LiteralAlg
 import org.parboiled2.{Parser, ParserInput}
 
 /**
   * Created by dcollins on 8/6/16.
   */
-trait ControlFlowParser[E, T <: ControlFlowAlg[E]] extends LangParser[E, T] {
+trait ControlFlowParser[E <: Expr, T <: ControlFlowAlg[E]] extends LangParser[E, T] {
   def ControlFlow = rule {
     If
   }
