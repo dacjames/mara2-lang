@@ -8,6 +8,7 @@ import io.dac.mara.core.{Expr, ExprAlg}
 trait VariableAlg[E <: Expr] extends ExprAlg[E] {
   def valdeclare(name: String, typex: Option[String]): E = ???
   def valassign(name: String, typex: Option[String], value: E): E = ???
-  def substitution(name: String): E = ???
+  def valsubstitution(name: String): E = ???
+  def typesubstitution(name: String): E = ???
   def block(e1: E, e2: E): E = ???
 }

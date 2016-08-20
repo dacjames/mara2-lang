@@ -1,13 +1,13 @@
 package io.dac.mara.variables
 
 import io.dac.mara.core.{Expr, LangParser}
-import io.dac.mara.operators.OperatorAlg
+import io.dac.mara.identifiers.IdentifierParser
 import org.parboiled2._
 
 /**
   * Created by dcollins on 8/12/16.
   */
-trait VariableParser [E <: Expr, T <: VariableAlg[E]] extends LangParser[E, T] {
+trait VariableParser [E <: Expr, T <: VariableAlg[E]] extends IdentifierParser[E, T] with LangParser[E, T] {
 
   def Block = rule {
     "do" ~ '{' ~ Expr ~ ';' ~ Expr ~ '}' ~> { (x, y) => alg.block(x, y) }
@@ -18,7 +18,8 @@ trait VariableParser [E <: Expr, T <: VariableAlg[E]] extends LangParser[E, T] {
   }
 
   def Substitution = rule {
-    ValueId ~> { (x: String) => alg.substitution(x) }
+    ValueId ~> { (x: String) => alg.valsubstitution(x) } |
+    TypeId ~> { (x: String) => alg.typesubstitution(x) }
   }
 
   private def Declare = rule {
@@ -31,12 +32,4 @@ trait VariableParser [E <: Expr, T <: VariableAlg[E]] extends LangParser[E, T] {
     "val" ~ ValueId ~ "=" ~ Expr ~> { (x: String, z: E) => alg.valassign(x, None, z)}
   }
 
-
-  private def ValueId = rule {
-    capture(oneOrMore(CharPredicate.LowerAlpha) ~ zeroOrMore(CharPredicate.Alpha))
-  }
-
-  private def TypeId = rule {
-    capture(oneOrMore(CharPredicate.UpperAlpha) ~ zeroOrMore(CharPredicate.Alpha))
-  }
 }

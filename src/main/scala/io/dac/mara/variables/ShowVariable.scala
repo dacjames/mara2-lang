@@ -16,6 +16,12 @@ trait ShowVariable extends ShowOp with VariableAlg[Show] {
     case None => op { s"val ${name} = ${value.show}" }
   }
 
-  override def substitution(name: String) =
+  override def valsubstitution(name: String) =
     op { name }
+
+  override def typesubstitution(name: String) =
+    op { name }
+
+  override def block(e1: Show, e2: Show) =
+    op { s"e1; e2" }
 }

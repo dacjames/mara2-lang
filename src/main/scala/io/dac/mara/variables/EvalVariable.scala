@@ -20,7 +20,7 @@ trait EvalVariable extends EvalOp with VariableAlg[Eval] {
       result
     }
 
-  override def substitution(name: String) =
+  override def valsubstitution(name: String) =
     op {
       val whenUnassigned = 0
       val whenUndeclared = 0

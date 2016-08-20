@@ -10,6 +10,8 @@ trait LangParser[E <: Expr, T <: ExprAlg[E]] extends Parser {
   def alg: T
   def input: ParserInput
 
+  def Root: Rule1[E]
   def Expr: Rule1[E]
   def Terminal: Rule1[E]
+  def Whitespace = rule { anyOf(" \t") }
 }

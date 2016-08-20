@@ -20,6 +20,8 @@ trait MaraParser[E <: Expr, T <: LiteralAlg[E]
                  with ControlFlowParser[E, T]
                  with VariableParser[E, T] {
 
+  def Root = InputLine
+
   def InputLine = rule { (Expr | Terminal) ~ EOI }
 
   def Expr: Rule1[E] = rule { Operator | ControlFlow | Variable | Substitution }
