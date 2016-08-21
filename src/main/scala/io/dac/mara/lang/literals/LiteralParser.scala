@@ -10,7 +10,7 @@ import org.parboiled2._
 trait LiteralParser[E <: Expr, T <: LiteralAlg[E]] extends LangParser[E, T] {
   def Literal = rule { ActualLiteral ~ Whitespace }
 
-  private[this] def ActualLiteral = rule { StringLiteral | IntLiteral }
+  private[this] def ActualLiteral = rule { StringLiteral | IntLiteral | BoolLiteral }
 
   private[this] def Digits = rule { oneOrMore(CharPredicate.Digit) }
 
@@ -24,5 +24,12 @@ trait LiteralParser[E <: Expr, T <: LiteralAlg[E]] extends LangParser[E, T] {
 
   private[this] def IntLiteral = rule {
     capture(Digits) ~> { x => alg.litInt(x.toInt) }
+  }
+
+  private[this] def BoolLiteral = rule {
+    capture("true" | "false") ~> {  x: String =>
+      if (x.trim == "true") { alg.litbool(true) }
+      else { alg.litbool(false) }
+    }
   }
 }

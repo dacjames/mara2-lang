@@ -8,12 +8,21 @@ class ControlFowSpec extends MaraSpec with MaraLanguage {
     show("if 1 {1}") should be("if 1 { 1 }")
   }
 
-  it should "evaluate the if statement with true predicate" in {
-    eval("if 1 { 3 }") should be("3")
+  it should "evaluate the if statement with trueish predicate" in {
+    eval("if 1 { 3 }") should be("IntValue(3)")
   }
 
-  it should "evaluate the if statement with the false predicate" in {
-    eval("if 0 { 2 }") should be("0")
+  it should "evaluate the if statement with the falseish predicate" in {
+    eval("if 0 { 2 }") should be("UnitValue()")
+  }
+
+  it should "evaluate the if statement with the true predicate" in {
+    println(show("if true { 2 }"))
+    eval("if true { 2 }") should be("IntValue(2)")
+  }
+
+  it should "evaluate the if statement with a false predicate" in {
+    eval("if false { 2 }") should be("UnitValue()")
   }
 
 }

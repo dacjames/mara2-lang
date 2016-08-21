@@ -13,4 +13,5 @@ trait IdentifierParser extends Parser {
   def TypeId = rule {
     capture(zeroOrMore("_") ~ oneOrMore(CharPredicate.UpperAlpha) ~ zeroOrMore(CharPredicate.AlphaNum))
   }
+
 }

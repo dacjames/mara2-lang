@@ -9,6 +9,11 @@ class LiteralSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "eval int literals" in {
-    eval("10") should be("10")
+    eval("10") should be("IntValue(10)")
+  }
+
+  it should "eval bool literals" in {
+    eval("true") should be("BoolValue(true)")
+    eval("false") should be("BoolValue(false)")
   }
 }
