@@ -1,4 +1,4 @@
-package io.dac.mara.operators
+package io.dac.mara.lang.operators
 
 import io.dac.mara.core.{Expr, ExprAlg}
 

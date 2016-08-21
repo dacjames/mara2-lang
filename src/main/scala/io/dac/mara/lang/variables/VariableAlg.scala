@@ -1,4 +1,4 @@
-package io.dac.mara.variables
+package io.dac.mara.lang.variables
 
 import io.dac.mara.core.{Expr, ExprAlg}
 

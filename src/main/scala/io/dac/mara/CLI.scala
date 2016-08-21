@@ -7,10 +7,10 @@ package io.dac.mara
 object CLI extends MaraLanguage with App {
   def debug(text: String) = s"${show(text)} => ${eval(text)}"
 
-  println(debug("3^(7*4)<=3^7*4||1&&1<=1"))
+  println(debug("3^( 7*4 ) <= 3 ^ 7*4||1&&1<=1"))
   println(debug("3+~1+1"))
   println(debug("if1{3}"))
-  println(debug("if0{3}else{4}"))
+  println(debug("if 0 { 3 } else{4}"))
   println(debug("0&&1"))
   println(debug("0~&1"))
   println(debug("0@1$2%3^4^5%6$7@8"))

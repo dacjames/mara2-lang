@@ -1,13 +1,13 @@
-package io.dac.mara.variables
+package io.dac.mara.lang.variables
 
 import io.dac.mara.core.{Expr, LangParser}
-import io.dac.mara.identifiers.IdentifierParser
+import io.dac.mara.lang.identifiers.IdentifierParser
 import org.parboiled2._
 
 /**
   * Created by dcollins on 8/12/16.
   */
-trait VariableParser [E <: Expr, T <: VariableAlg[E]] extends IdentifierParser[E, T] with LangParser[E, T] {
+trait VariableParser [E <: Expr, T <: VariableAlg[E]] extends IdentifierParser with LangParser[E, T] {
 
   def Block = rule {
     "do" ~ '{' ~ Expr ~ ';' ~ Expr ~ '}' ~> { (x, y) => alg.block(x, y) }

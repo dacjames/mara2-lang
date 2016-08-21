@@ -2,12 +2,12 @@ package io.dac.mara
 
 import java.io.{PrintWriter, StringWriter}
 
-import io.dac.mara.controlflow.{EvalControlFlow, ShowControlFlow}
+import io.dac.mara.lang.controlflow.{EvalControlFlow, ShowControlFlow}
 import io.dac.mara.core.{Expr, ExprAlg, LangParser}
-import io.dac.mara.exprops.{Eval, Show}
-import io.dac.mara.literals.{EvalLiteral, ShowLiteral}
-import io.dac.mara.operators.{EvalOperator, ShowOperator}
-import io.dac.mara.variables.{EvalVariable, ShowVariable}
+import io.dac.mara.exprops.{Eval, Show, Tree}
+import io.dac.mara.lang.literals.{EvalLiteral, ShowLiteral, TreeLiteral}
+import io.dac.mara.lang.operators.{EvalOperator, ShowOperator}
+import io.dac.mara.lang.variables.{EvalVariable, ShowVariable}
 import org.parboiled2.{ParseError, ParserInput}
 
 import scala.util.{Failure, Success, Try}
@@ -48,4 +48,5 @@ trait MaraLanguage {
       val input = ParserInput(text)
     }
   }
+
 }

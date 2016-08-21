@@ -1,7 +1,7 @@
-package io.dac.mara.controlflow
+package io.dac.mara.lang.controlflow
 
 import io.dac.mara.core.{Expr, LangParser}
-import io.dac.mara.literals.LiteralAlg
+import io.dac.mara.lang.literals.LiteralAlg
 import org.parboiled2.{Parser, ParserInput}
 
 /**

@@ -1,13 +1,11 @@
-package io.dac.mara.identifiers
+package io.dac.mara.lang.identifiers
 
-import io.dac.mara.core.{Expr, LangParser}
-import io.dac.mara.variables.VariableAlg
-import org.parboiled2.CharPredicate
+import org.parboiled2.{CharPredicate, Parser}
 
 /**
   * Created by dcollins on 8/13/16.
   */
-trait IdentifierParser[E <: Expr, T <: VariableAlg[E]] extends LangParser[E, T]  {
+trait IdentifierParser extends Parser {
   def ValueId = rule {
     capture(zeroOrMore("_") ~ oneOrMore(CharPredicate.LowerAlpha) ~ zeroOrMore(CharPredicate.AlphaNum))
   }
