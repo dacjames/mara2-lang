@@ -32,8 +32,6 @@ object CLI extends MaraLanguage with App {
 
   observable.subscribe(observer)
 
-  import Record.implicits._
-
   val r = Record(1 -> "hello", 2 -> "world")
   val q = Record(1 -> "hello", "qua" -> "wex")
   println(s"R: ${r} ${r.get(1)}, Q: ${q}, ${q.get("qua")}, ${q(1)}")

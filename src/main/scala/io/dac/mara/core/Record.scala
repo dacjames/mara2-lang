@@ -31,12 +31,12 @@ object Record {
     SeqRep(tags.map(_._1), tags.map(_._2))
   }
 
-  object implicits {
-    implicit def int2tag[T](tag: (Int, T)): (Key, T) = (IntKey(tag._1), tag._2)
-    implicit def string2tag[T](tag: (String, T)): (Key, T) = (StringKey(tag._1), tag._2)
-    implicit def int2key: Int => Key = IntKey(_)
-    implicit def string2key: String => Key = StringKey(_)
-  }
+
+  implicit def int2tag[T](tag: (Int, T)): (Key, T) = (IntKey(tag._1), tag._2)
+  implicit def string2tag[T](tag: (String, T)): (Key, T) = (StringKey(tag._1), tag._2)
+  implicit def int2key: Int => Key = IntKey(_)
+  implicit def string2key: String => Key = StringKey(_)
+
 
 }
 

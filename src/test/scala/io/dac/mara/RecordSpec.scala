@@ -6,7 +6,6 @@ import io.dac.mara.core.Record
   * Created by dcollins on 8/21/16.
   */
 class RecordSpec extends MaraSpec {
-  import Record.implicits._
 
   "Records" should "have a constructor that accepts int keys" in {
     val r = Record(1 -> "Hello")
