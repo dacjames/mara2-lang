@@ -11,4 +11,8 @@ class VariableSpec extends MaraSpec with MaraLanguage {
   it should "be a type error if the declared type does not match the value type" in {
     typed("val x:Bool='hello, world'") should include("TypeError")
   }
+
+  "Variable substition" should "have the type of the value" in {
+    typed("do {val x:Int; x}") should be("IntType()")
+  }
 }

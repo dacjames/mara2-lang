@@ -5,7 +5,7 @@ sealed trait MaraType {
 }
 object MaraType {
   case class BoolType() extends MaraType {
-    val name = Some("Boolean")
+    val name = Some("Bool")
   }
   case class IntType() extends MaraType {
     val name = Some("Int")
@@ -13,6 +13,7 @@ object MaraType {
   case class StringType() extends MaraType {
     val name = Some("String")
   }
+
   case class InferableType() extends MaraType {
     val name = None
   }

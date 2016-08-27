@@ -1,20 +1,38 @@
 package io.dac.mara.lang.operators
 
+import io.dac.mara.core.MaraType
 import io.dac.mara.exprops.{Typed, TypedOp}
 
 /**
   * Created by dcollins on 8/27/16.
   */
 trait TypedOperator  extends TypedOp with OperatorAlg[Typed] {
-  override def plus(x: Typed, y: Typed): Typed = ???
+  import MaraType._
 
-  override def minus(x: Typed, y: Typed): Typed = ???
+  private[this] def binop(name: String)(x: Typed, y: Typed)(f: MaraType => Boolean): Typed = op {
+    val typex = x.typex
+    val typey = y.typex
 
-  override def times(x: Typed, y: Typed): Typed = ???
+    if (typex == typey && f(typex)) {
+      typex
+    } else {
+      TypeError(s"Binary operator ${name} on invalid types")
+    }
+  }
 
-  override def divide(x: Typed, y: Typed): Typed = ???
+  private[this] def numop(name: String)(x: Typed, y: Typed) = binop(name)(x, y)(t => t.isInstanceOf[IntType])
+  private[this] def boolop(name: String)(x: Typed, y: Typed) = binop(name)(x, y)(t => t.isInstanceOf[BoolType])
 
-  override def power(x: Typed, y: Typed): Typed = ???
+
+  override def plus(x: Typed, y: Typed): Typed = numop("plus")(x, y)
+
+  override def minus(x: Typed, y: Typed): Typed = numop("minus")(x, y)
+
+  override def times(x: Typed, y: Typed): Typed = numop("times")(x, y)
+
+  override def divide(x: Typed, y: Typed): Typed = numop("divide")(x, y)
+
+  override def power(x: Typed, y: Typed): Typed = numop("power")(x, y)
 
   override def lt(x: Typed, y: Typed): Typed = ???
 
@@ -26,9 +44,9 @@ trait TypedOperator  extends TypedOp with OperatorAlg[Typed] {
 
   override def ne(x: Typed, y: Typed): Typed = ???
 
-  override def and(x: Typed, y: Typed): Typed = ???
+  override def and(x: Typed, y: Typed): Typed = boolop("and")(x, y)
 
-  override def or(x: Typed, y: Typed): Typed = ???
+  override def or(x: Typed, y: Typed): Typed = boolop("or")(x, y)
 
-  override def not(x: Typed): Typed = ???
+  override def not(x: Typed): Typed = boolop("not")(x, x)
 }

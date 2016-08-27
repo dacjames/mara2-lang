@@ -2,6 +2,7 @@ package io.dac.mara.lang.variables
 
 import io.dac.mara.core.MaraType
 import io.dac.mara.exprops.{Typed, TypedOp}
+import scala.collection.mutable
 
 /**
   * Created by dcollins on 8/27/16.
@@ -9,16 +10,38 @@ import io.dac.mara.exprops.{Typed, TypedOp}
 trait TypedVariable extends TypedOp with VariableAlg[Typed] {
   import MaraType._
 
+  private[this] val namespace: mutable.Map[String, MaraType] = mutable.Map.empty[String, MaraType]
+  private[this] val builtins: Map[String, MaraType] = Map(
+    "String" -> StringType(),
+    "Int" -> IntType(),
+    "Bool" -> BoolType()
+  )
+
+  require(builtins.forall {
+    case (name, typex) => typex.name.contains(name)
+  })
+
   override def valdeclare(name: String, typex: Option[String]): Typed = op {
     typex match {
       case None => InferableType()
-      case Some(typename) => ???
+      case Some(typename) => {
+        val typeresult = builtins.get(typename) match {
+          case Some(t) => t
+          case None => TypeError(typename)
+        }
+
+        namespace += (name -> typeresult)
+
+        typeresult
+      }
     }
   }
 
   override def valassign(name: String, typex: Option[String], value: Typed): Typed = op {
-    typex match {
-      case None => value.typex
+    val typeresult = typex match {
+      case None => {
+        value.typex
+      }
       case Some(typename) => {
         val valuetype = value.typex
         if (valuetype.name.contains(typename)) {
@@ -28,9 +51,19 @@ trait TypedVariable extends TypedOp with VariableAlg[Typed] {
         }
       }
     }
+    namespace += (name -> typeresult)
+
+    typeresult
   }
 
-  override def valsubstitution(name: String): Typed = op { ??? }
+  override def valsubstitution(name: String): Typed = op {
+    namespace(name)
+  }
+
+  override def block(e1: Typed, e2: Typed): Typed = op {
+    val _ = e1.typex
+    e2.typex
+  }
 
 }
 
