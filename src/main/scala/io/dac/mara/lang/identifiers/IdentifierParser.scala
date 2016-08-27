@@ -1,5 +1,6 @@
 package io.dac.mara.lang.identifiers
 
+import io.dac.mara.core.LangParser
 import org.parboiled2.{CharPredicate, Parser}
 
 /**

@@ -16,14 +16,14 @@ trait LiteralParser[E <: Expr, T <: LiteralAlg[E]] extends LangParser[E, T] {
 
   private[this] def quoted(quote: Char) = rule {
     quote  ~
-      capture(zeroOrMore(noneOf(quote.toString))) ~> { x => alg.litString(x) } ~
+      capture(zeroOrMore(noneOf(quote.toString))) ~> { x => alg.litstring(x) } ~
     quote
   }
 
   private[this] def StringLiteral = rule { quoted('\'') | quoted('\"')}
 
   private[this] def IntLiteral = rule {
-    capture(Digits) ~> { x => alg.litInt(x.toInt) }
+    capture(Digits) ~> { x => alg.litint(x.toInt) }
   }
 
   private[this] def BoolLiteral = rule {
