@@ -60,9 +60,8 @@ trait TypedVariable extends TypedOp with VariableAlg[Typed] {
     namespace(name)
   }
 
-  override def block(e1: Typed, e2: Typed): Typed = op {
-    val _ = e1.typex
-    e2.typex
+  override def block(exprs: Seq[Typed]): Typed = op {
+    exprs.reduce{ (a, b) => { a.typex; b} }.typex
   }
 
 }

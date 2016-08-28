@@ -1,6 +1,7 @@
 package io.dac.mara.lang.literals
 
-import io.dac.mara.core.{Expr, LangParser}
+import io.dac.mara.core.Expr
+import io.dac.mara.lang.parsers.LangParser
 import org.parboiled2._
 
 

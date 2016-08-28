@@ -3,10 +3,11 @@ package io.dac.mara
 import java.io.{PrintWriter, StringWriter}
 
 import io.dac.mara.lang.controlflow.{EvalControlFlow, ShowControlFlow, TypedControlFlow}
-import io.dac.mara.core.{Expr, ExprAlg, LangParser}
+import io.dac.mara.core.{Expr, ExprAlg}
 import io.dac.mara.exprops.{Eval, Show, Tree, Typed}
 import io.dac.mara.lang.literals.{EvalLiteral, ShowLiteral, TreeLiteral, TypedLiteral}
 import io.dac.mara.lang.operators.{EvalOperator, ShowOperator, TypedOperator}
+import io.dac.mara.lang.parsers.LangParser
 import io.dac.mara.lang.variables.{EvalVariable, ShowVariable, TypedVariable}
 import org.parboiled2.{ParseError, ParserInput}
 

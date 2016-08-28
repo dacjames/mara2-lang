@@ -1,7 +1,7 @@
 package io.dac.mara.lang.variables
 
-import io.dac.mara.core.{Expr, LangParser}
-import io.dac.mara.lang.identifiers.IdentifierParser
+import io.dac.mara.core.Expr
+import io.dac.mara.lang.parsers.{IdentifierParser, LangParser}
 import org.parboiled2._
 
 /**
@@ -10,7 +10,7 @@ import org.parboiled2._
 trait VariableParser [E <: Expr, T <: VariableAlg[E]] extends IdentifierParser with LangParser[E, T] {
 
   def Block = rule {
-    "do" ~ '{' ~ Expr ~ ';' ~ Expr ~ '}' ~> { (x, y) => alg.block(x, y) }
+    "do" ~ '{' ~ Expr ~ zeroOrMore(';' ~ Expr) ~ '}' ~> { (x: E, y: Seq[E]) => alg.block(x +: y) }
   }
 
   def Variable: Rule1[E] = rule {

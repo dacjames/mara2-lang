@@ -10,5 +10,5 @@ trait VariableAlg[E <: Expr] extends ExprAlg[E] {
   def valassign(name: String, typex: Option[String], value: E): E = ???
   def valsubstitution(name: String): E = ???
   def typesubstitution(name: String): E = ???
-  def block(e1: E, e2: E): E = ???
+  def block(exprs: Seq[E]): E = ???
 }

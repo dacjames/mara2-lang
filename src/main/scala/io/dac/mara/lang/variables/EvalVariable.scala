@@ -30,8 +30,8 @@ trait EvalVariable extends EvalOp with VariableAlg[Eval] {
       namespace.get(name).map(_.getOrElse(whenUndeclared)) getOrElse whenUnassigned
     }
 
-  override def block(e1: Eval, e2: Eval) =
+  override def block(exprs: Seq[Eval]) =
     op {
-      e1.eval; e2.eval
+      exprs.reduce{ (a, b) => {a.eval; b} }.eval
     }
 }

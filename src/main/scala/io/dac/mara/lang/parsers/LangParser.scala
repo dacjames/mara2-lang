@@ -1,12 +1,12 @@
-package io.dac.mara.core
+package io.dac.mara.lang.parsers
 
-import io.dac.mara.lang.literals.LiteralAlg
+import io.dac.mara.core.{Expr, ExprAlg}
 import org.parboiled2._
 
 /**
   * Created by dcollins on 8/6/16.
   */
-trait LangParser[E <: Expr, Alg <: ExprAlg[E]] extends Parser {
+trait LangParser[E <: Expr, Alg <: ExprAlg[E]] extends Parser with WhitespaceParser {
   def alg: Alg
   def input: ParserInput
 
@@ -14,9 +14,6 @@ trait LangParser[E <: Expr, Alg <: ExprAlg[E]] extends Parser {
   def Expr: Rule1[E]
   def Terminal: Rule1[E]
 
-  def Whitespace = rule {
-    zeroOrMore(anyOf(" \t"))
-  }
 
   implicit def whitespaceAfterString(s: String): Rule0 = rule {
     str(s) ~ Whitespace
