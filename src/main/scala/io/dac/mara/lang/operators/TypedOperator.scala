@@ -16,7 +16,7 @@ trait TypedOperator  extends TypedOp with OperatorAlg[Typed] {
     if (typex == typey && f(typex)) {
       typex
     } else {
-      TypeError(s"Binary operator ${name} on invalid types")
+      ErrorType(s"Binary operator ${name} on invalid types")
     }
   }
 

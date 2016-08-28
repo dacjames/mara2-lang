@@ -17,7 +17,7 @@ object MaraType {
   case class InferableType() extends MaraType {
     val name = None
   }
-  case class TypeError(msg: String) extends MaraType {
+  case class ErrorType(msg: String) extends MaraType {
     val name = None
   }
 }

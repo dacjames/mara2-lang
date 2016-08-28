@@ -27,7 +27,7 @@ trait TypedVariable extends TypedOp with VariableAlg[Typed] {
       case Some(typename) => {
         val typeresult = builtins.get(typename) match {
           case Some(t) => t
-          case None => TypeError(typename)
+          case None => ErrorType(typename)
         }
 
         namespace += (name -> typeresult)
@@ -47,7 +47,7 @@ trait TypedVariable extends TypedOp with VariableAlg[Typed] {
         if (valuetype.name.contains(typename)) {
           valuetype
         } else {
-          TypeError(s"${valuetype} does not match ${typename}")
+          ErrorType(s"${valuetype} does not match ${typename}")
         }
       }
     }
