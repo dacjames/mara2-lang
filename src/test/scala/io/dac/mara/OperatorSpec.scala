@@ -9,7 +9,7 @@ class OperatorSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "give a type error for non-int arguments" in {
-    typed("1 + true") should include("TypeError")
+    typed("1 + true") should include("ErrorType")
   }
 
   "And operator" should "have type Bool" in {
@@ -17,7 +17,7 @@ class OperatorSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "give a type error for non-bool arguments" in {
-    typed("true && 1") should include("TypeError")
+    typed("true && 1") should include("ErrorType")
   }
 
   "Less than operator" should "work for ints" in {
