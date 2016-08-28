@@ -1,9 +1,9 @@
 package io.dac.mara
 
 import io.dac.mara.core.Record
-import monix.reactive.{Observable, Observer}
-import monix.execution.Ack
-import monix.execution.Scheduler.Implicits.global
+//import monix.reactive.{Observable, Observer}
+//import monix.execution.Ack
+//import monix.execution.Scheduler.Implicits.global
 
 import scala.concurrent.Future
 
@@ -14,23 +14,23 @@ import scala.concurrent.Future
 object CLI extends MaraLanguage with App {
   def debug(text: String) = s"${show(text)} => ${eval(text)}"
 
-  val observable = Observable(1, 2, 3)
-  val observer = new Observer[Int] {
-    override def onNext(elem: Int): Future[Ack] = {
-      println(elem)
-      Ack.Continue
-    }
-
-    override def onError(ex: Throwable): Unit = {
-      println(s"Error: ${ex}")
-    }
-
-    override def onComplete(): Unit = {
-      println("Done!")
-    }
-  }
-
-  observable.subscribe(observer)
+//  val observable = Observable(1, 2, 3)
+//  val observer = new Observer[Int] {
+//    override def onNext(elem: Int): Future[Ack] = {
+//      println(elem)
+//      Ack.Continue
+//    }
+//
+//    override def onError(ex: Throwable): Unit = {
+//      println(s"Error: ${ex}")
+//    }
+//
+//    override def onComplete(): Unit = {
+//      println("Done!")
+//    }
+//  }
+//
+//  observable.subscribe(observer)
 
   val r = Record(1 -> "hello", 2 -> "world")
   val q = Record(1 -> "hello", "qua" -> "wex")
