@@ -11,6 +11,7 @@ object MaraValue {
   case class StringValue(value: String) extends MaraValue
   case class BoolValue(value: Boolean) extends MaraValue
   case class RecordValue(value: Record[_]) extends MaraValue
+  case class FunctionValue(name: String) extends MaraValue
   case class ErrorValue(msg: String) extends MaraValue
   case class UnitValue() extends MaraValue
 
