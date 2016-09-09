@@ -39,7 +39,7 @@ trait MaraLanguage {
       case Failure(error: Throwable) => trace2string(error)
     }
 
-  def show(text: String)(implicit f: Expr.Family[Show, String]) = run {
+  def show(text: String) = run {
     new MaraParser[Show, ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable] {
       val alg = new C with ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable
       val input = ParserInput(text)
