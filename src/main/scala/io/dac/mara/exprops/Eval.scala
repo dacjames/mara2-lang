@@ -8,7 +8,7 @@ import io.dac.mara.core.Expr.Family
   */
 
 
-case class Eval(val eval: MaraValue) extends Expr
+case class Eval(eval: MaraValue) extends Expr
 
 object Eval {
   implicit object EvalFamily extends Family[Eval, MaraValue] {
