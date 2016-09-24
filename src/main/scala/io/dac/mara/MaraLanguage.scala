@@ -32,32 +32,35 @@ trait MaraLanguage {
     sw.toString
   }
 
-  private[this] def run[E <: Expr, Alg <: LangAlg[E], R](parser: LangParser[E, Alg])(implicit f: Expr.Family[E, R]) =
+  private[this] def run[E <: Expr, Alg <: LangAlg[E], R](parser: LangParser[E, Alg])(alg: Alg)(implicit f: Expr.Family[E, R]) =
     parser.Root.run() match {
-      case Success(result) => f.value(result).toString
+      case Success(result) => f.value(result(alg)).toString
       case Failure(error: ParseError) => parser.formatError(error, new ErrorFormatter(showTraces=true))
       case Failure(error: Throwable) => trace2string(error)
     }
 
+  private[this] val showAlg = new C with ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable
+  private[this] val evalAlg = new C with EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable
+  private[this] val typedAlg = new C with TypedLiteral with TypedVariable with TypedOperator with TypedFunction with TypedControlFlow
+
   def show(text: String) = run {
     new MaraParser[Show, ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable] {
-      val alg = new C with ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable
       val input = ParserInput(text)
     }
-  }
+  }(showAlg)
 
   def eval(text: String) = run {
     new MaraParser[Eval, EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable] {
-      val alg = new C with EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable
       val input = ParserInput(text)
     }
-  }
+  }(evalAlg)
 
   def typed(text: String) = run {
     new MaraParser[Typed, TypedLiteral with TypedVariable with TypedOperator with TypedFunction with TypedControlFlow] {
-      val alg = new C with TypedLiteral with TypedVariable with TypedOperator with TypedFunction with TypedControlFlow
       val input = ParserInput(text)
     }
-  }
+  }(typedAlg)
+
+
 
 }
