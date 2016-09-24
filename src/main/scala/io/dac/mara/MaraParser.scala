@@ -12,27 +12,27 @@ import org.parboiled2._
 /**
   * Created by dcollins on 8/2/16.
   */
-trait MaraParser[E <: Expr, T <: LiteralAlg[E]
+trait MaraParser[E <: Expr, Alg <: LiteralAlg[E]
                             with OperatorAlg[E]
                             with ControlFlowAlg[E]
                             with FunctionAlg[E]
                             with VariableAlg[E]]
-  extends Parser with LiteralParser[E, T]
-    with OperatorParser[E, T]
-    with ControlFlowParser[E, T]
-    with FunctionParser[E, T]
-    with VariableParser[E, T] {
+  extends Parser with LiteralParser[E, Alg]
+    with OperatorParser[E, Alg]
+    with ControlFlowParser[E, Alg]
+    with FunctionParser[E, Alg]
+    with VariableParser[E, Alg] {
 
 
-  def Root = InputLine
+  def Root: Rule1[Alg => E] = InputLine
 
-  def InputLine = rule { (Expr | Terminal) ~ EOI }
+  def InputLine: Rule1[Alg => E] = rule { (Expr | Terminal) ~ EOI }
 
-  def Expr: Rule1[E] = rule { Operator | ControlFlow | Function | Variable | Substitution }
+  def Expr: Rule1[Alg => E] = rule { Operator | ControlFlow | Function | Variable | Substitution }
 
-  def Terminal: Rule1[E] = rule { Literal | Parens | Do }
+  def Terminal: Rule1[Alg => E] = rule { Literal | Parens | Do }
 
-  def Parens = rule { '(' ~ Expr ~ ')' }
+  def Parens: Rule1[Alg => E] = rule { '(' ~ Expr ~ ')' }
 
 }
 
