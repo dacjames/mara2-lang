@@ -6,6 +6,7 @@ package io.dac.mara
 class VariableSpec extends MaraSpec with MaraLanguage {
   "Variables assignment" should "parse without types" in {
     eval("val x = 10") should be("IntValue(10)")
+    pipeline("val x = 10") should be("val x = 10 :: IntType() ==> IntValue(10)")
   }
 
   it should "parse correctly with types" in {

@@ -8,7 +8,9 @@ import io.dac.mara.core.Expr.Family
   */
 
 
-case class Eval(eval: MaraValue) extends Expr
+trait Eval extends Expr {
+  def eval: MaraValue
+}
 
 object Eval {
   implicit object EvalFamily extends Family[Eval, MaraValue] {
@@ -18,5 +20,7 @@ object Eval {
 
 
 trait EvalOp {
-  def op(f: => MaraValue) = Eval(f)
+  def op(f: => MaraValue) = new Eval {
+    override def eval = f
+  }
 }

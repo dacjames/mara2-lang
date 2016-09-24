@@ -6,7 +6,9 @@ import io.dac.mara.core.Expr.Family
 /**
   * Created by dcollins on 8/2/16.
   */
-case class Show(show: String) extends Expr
+trait Show extends Expr {
+  def show: String
+}
 
 object Show {
   implicit object ShowFamily extends Family[Show, String] {
@@ -15,5 +17,7 @@ object Show {
 }
 
 trait ShowOp {
-  def op(f: => String) = Show(f)
+  def op(f: => String) = new Show {
+    override def show = f
+  }
 }
