@@ -49,6 +49,7 @@ trait MaraLanguage {
     }
   }(showAlg)
 
+
   def eval(text: String) = run {
     new MaraParser[Eval, EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable] {
       val input = ParserInput(text)
@@ -61,6 +62,22 @@ trait MaraLanguage {
     }
   }(typedAlg)
 
+  def pipeline[E <: Expr, R](text: String) = {
+    val parser = new MaraParser[Show, ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable] {
+      val input = ParserInput(text)
+    }
+
+    def asEval[E <: Expr, Alg <: ExprAlg[E]](result: Alg => Expr): Eval = result.asInstanceOf[EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable => Eval](evalAlg)
+    def asShow[E <: Expr, Alg <: ExprAlg[E]](result: Alg => Expr): Show = result.asInstanceOf[ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable => Show](showAlg)
+    def asTyped[E <: Expr, Alg <: ExprAlg[E]](result: Alg => Expr): Typed = result.asInstanceOf[TypedLiteral with TypedOperator with TypedControlFlow with TypedFunction with TypedVariable => Typed](typedAlg)
+
+    parser.Root.run() match {
+      case Success(result) => s"${asShow(result).show} :: ${asTyped(result).typex} ==> ${asEval(result).eval}"
+      case Failure(error: ParseError) => parser.formatError(error, new ErrorFormatter(showTraces=true))
+      case Failure(error: Throwable) => trace2string(error)
+    }
+
+  }
 
 
 }
