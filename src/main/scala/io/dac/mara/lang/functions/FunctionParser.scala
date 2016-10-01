@@ -1,7 +1,7 @@
 package io.dac.mara.lang.functions
 
 import io.dac.mara.core.Expr
-import io.dac.mara.lang.parsers.{BlockParser, IdentifierParser}
+import io.dac.mara.lang.parsers.{BlockParser, IdentifierParser, TupleParser}
 import io.dac.mara.lang.root.LangParser
 import org.parboiled2._
 
@@ -11,7 +11,7 @@ import scala.collection.{GenTraversable, GenTraversableOnce}
   * Created by dcollins on 8/28/16.
   */
 trait FunctionParser[E <: Expr, Alg <: FunctionAlg[E]] extends LangParser[E, Alg]
-  with IdentifierParser with BlockParser[E, Alg] {
+  with IdentifierParser with BlockParser[E, Alg] with TupleParser[E, Alg] {
 
   private[this] sealed trait Pair {
     def expr(alg: Alg): E
@@ -26,6 +26,15 @@ trait FunctionParser[E <: Expr, Alg <: FunctionAlg[E]] extends LangParser[E, Alg
   def Function: Rule1[Alg => E] = rule {
     ConcreteDef | AbstractDef
   }
+
+  def Call: Rule1[Alg => E] = rule {
+    "." ~ ValueId ~ Tuple ~> {
+      (a: String, b: Alg => Seq[E]) => (alg: Alg) => {
+        alg.call(a, b(alg))
+      }
+    }
+  }
+
 
   private[this] def AbstractDef: Rule1[Alg => E] = rule {
     "def" ~ ValueId ~ Params ~ optional("->" ~ TypeId) ~> {

@@ -25,4 +25,8 @@ class ControlFowSpec extends MaraSpec with MaraLanguage {
     eval("if false { 2 }") should be("UnitValue()")
   }
 
+//  it should "evaluate blocks" in {
+//    eval("do { val x = 0;x + 2}") should be("IntValue(2)")
+//  }
+
 }

@@ -11,4 +11,5 @@ trait FunctionAlg[E <: Expr] extends LangAlg[E] {
   def valparam(name: String, typex: Option[String]): E = ???
   def defconcrete(name: String, typeparams: Seq[E], valparams: Seq[E], typex: Option[String], body: Seq[E]): E = ???
   def defabstract(name: String, typeparams: Seq[E], valparams: Seq[E], typex: Option[String]): E = ???
+  def call(name: String, args: Seq[E]): E = ???
 }

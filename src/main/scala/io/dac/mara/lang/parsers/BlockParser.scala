@@ -9,7 +9,7 @@ import org.parboiled2._
   */
 trait BlockParser[E <: Expr, Alg <: LangAlg[E]] extends Parser with ExprParser[E, Alg] with WhitespaceParser {
   def Block: Rule1[Alg => Seq[E]] = rule {
-    '{' ~ Expr ~ zeroOrMore(';' ~ Expr) ~ '}' ~> {
+    "{" ~ Expr ~ zeroOrMore(";" ~ Expr) ~ "}" ~> {
       (a: Alg => E, b: Seq[Alg => E]) => (alg: Alg) =>
         (a +: b).map{ thunk => thunk(alg) }
     }
