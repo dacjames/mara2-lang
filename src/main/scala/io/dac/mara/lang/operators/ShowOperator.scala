@@ -39,6 +39,7 @@ trait ShowOperator extends ShowOp with ShowOperatorWords with OperatorAlg[Show] 
   override def lte(x: Show, y: Show) = binop(x, y, "<=")
   override def gte(x: Show, y: Show) = binop(x, y, ">=")
   override def ne(x: Show, y: Show) = binop(x, y, "!=")
+  override def eq(x: Show, y: Show) = binop(x, y, "==")
 
   override def base(x: Show, y: Show) = binop(x, y, "@")
   override def low(x: Show, y: Show) = binop(x, y, "$")

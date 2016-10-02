@@ -1,5 +1,6 @@
 package io.dac.mara.core
 
+import com.typesafe.scalalogging.LazyLogging
 import io.dac.mara.core.MaraType.ErrorType
 import io.dac.mara.core.MaraValue.ErrorValue
 import sun.rmi.rmic.iiop.ValueType
@@ -59,33 +60,48 @@ object NamespaceTypes {
 /**
   * Created by dcollins on 10/1/16.
   */
-trait Namespace {
+trait Namespace extends LazyLogging {
   import NamespaceTypes._
 
   private val valuespace: mutable.Map[Name[MaraValue], Option[Binding[MaraValue]]] = mutable.Map.empty
   private val typespace: mutable.Map[Name[MaraType], Option[Binding[MaraType]]] = mutable.Map.empty
+
+  private[this] def space[A <: MaraRoot](ns: mutable.Map[Name[A], Option[Binding[A]]]) = {
+    if (ns eq valuespace) { "Value" }
+    else if (ns eq typespace) { "Type" }
+    else { "Impossible" }
+  }
 
 
   private[this] def lookupFromNamespace[A <: MaraRoot](ns: mutable.Map[Name[A], Option[Binding[A]]], name: Name[A]): A = {
     val result = ns.get(name).map { (bindingOpt) =>
       bindingOpt.map(_.elem).getOrElse(name.undeclared)
     }.getOrElse(name.unassigned)
+    logger.trace(s"Lookup ${space(ns)} ${name.value} -> ${result}")
     result
   }
 
 
   private[this] def declareFromNamespace[A <: MaraRoot](ns: mutable.Map[Name[A], Option[Binding[A]]], name: Name[A]) = {
     ns += (name -> None)
+    logger.trace(s"Declared ${space(ns)} ${name.value}")
+    ns
+
   }
 
   private[this] def bindFromNamespace[A <: MaraRoot](ns: mutable.Map[Name[A], Option[Binding[A]]], name: Name[A], binding: Binding[A]): A = {
     ns += (name -> Some(binding))
+    logger.trace(s"Bound ${space(ns)} ${name.value} -> ${binding.elem}")
     binding.elem
   }
 
   private[this] def unbindFromNamespace[A <: MaraRoot](ns: mutable.Map[Name[A], Option[Binding[A]]], name: Name[A]) = {
     ns -= name
+    logger.trace(s"Unbound ${space(ns)} ${name.value}")
+    ns
   }
+
+
 
 
   def lookupValue(name: String) = lookupFromNamespace(valuespace, ValueName(name))

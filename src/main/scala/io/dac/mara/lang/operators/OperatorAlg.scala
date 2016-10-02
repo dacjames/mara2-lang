@@ -18,6 +18,7 @@ trait OperatorAlg[E <: Expr] extends LangAlg[E] {
   def lte(x: E, y: E): E
   def gte(x: E, y: E): E
   def ne(x: E, y: E): E
+  def eq(x: E, y: E): E
 
   def and(x: E, y: E): E
   def or(x: E, y: E): E

@@ -16,7 +16,11 @@ trait EvalControlFlow extends EvalOp with ControlFlowAlg[Eval] {
 
   override def elsex(expr: Eval, otherwise: Eval) = op {
     val evaled = expr.eval
-    if (evaled) { otherwise.eval } else evaled
+    evaled match {
+      case UnitValue() => otherwise.eval
+      case _ => if (evaled) { evaled } else otherwise.eval
+    }
+
   }
 
 }

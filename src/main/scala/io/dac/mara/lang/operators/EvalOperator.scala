@@ -11,17 +11,20 @@ trait EvalOperator extends EvalOp with OperatorAlg[Eval] {
   import MaraValue.implicits._
   import MaraValue.implicits.truthy._
 
-  private[this] def intop(xv: MaraValue, yv: MaraValue)(f: (Int, Int) => MaraValue) =
+  private[this] def intop(xv: => MaraValue, yv: => MaraValue)(f: (Int, Int) => MaraValue) = op {
     (xv, yv) match {
-      case (IntValue(x), IntValue(y)) => op { f(x, y) }
-      case _ => op { ErrorValue(s"Type Error: ${xv} or ${yv} is not of type Int") }
+      case (IntValue(x), IntValue(y)) => f(x, y)
+      case _ => ErrorValue(s"Type Error: ${xv} or ${yv} is not of type Int")
     }
+  }
+
 
   override def lt(x: Eval, y: Eval) = intop(x.eval, y.eval){ _ < _ }
   override def gt(x: Eval, y: Eval) = intop(x.eval, y.eval){ _ > _ }
   override def lte(x: Eval, y: Eval) = intop(x.eval, y.eval){ _ <= _ }
   override def gte(x: Eval, y: Eval) = intop(x.eval, y.eval){ _ >= _ }
   override def ne(x: Eval, y: Eval) = op { x.eval != y.eval }
+  override def eq(x: Eval, y: Eval) = op { x.eval == y.eval }
 
   override def and(x: Eval, y: Eval) = op { x.eval && y.eval }
   override def or(x: Eval, y: Eval) = op { x.eval || y.eval }

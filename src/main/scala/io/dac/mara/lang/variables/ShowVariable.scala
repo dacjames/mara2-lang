@@ -23,5 +23,5 @@ trait ShowVariable extends ShowOp with VariableAlg[Show] {
     op { name }
 
   override def block(exprs: Seq[Show]) =
-    op { s"{${exprs.mkString("; ")}}" }
+    op { s"{${exprs.map(_.show).mkString("; ")}}" }
 }

@@ -44,6 +44,8 @@ trait TypedOperator  extends TypedOp with OperatorAlg[Typed] {
 
   override def ne(x: Typed, y: Typed): Typed = ???
 
+  override def eq(x: Typed, y: Typed): Typed = ???
+
   override def and(x: Typed, y: Typed): Typed = boolop("and")(x, y)
 
   override def or(x: Typed, y: Typed): Typed = boolop("or")(x, y)

@@ -20,7 +20,9 @@ object Eval {
 
 
 trait EvalOp {
-  def op(f: => MaraValue) = new Eval {
-    override def eval = f
+  def op(f: => MaraValue) = {
+    new Eval {
+      override def eval = f
+    }
   }
 }

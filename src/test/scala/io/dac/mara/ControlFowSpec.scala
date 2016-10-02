@@ -17,7 +17,6 @@ class ControlFowSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "evaluate the if statement with the true predicate" in {
-    println(show("if true { 2 }"))
     eval("if true { 2 }") should be("IntValue(2)")
   }
 
@@ -25,8 +24,9 @@ class ControlFowSpec extends MaraSpec with MaraLanguage {
     eval("if false { 2 }") should be("UnitValue()")
   }
 
-//  it should "evaluate blocks" in {
-//    eval("do { val x = 0;x + 2}") should be("IntValue(2)")
-//  }
+  it should "evaluate blocks" in {
+    eval("do { val x = 1; x }") should be("IntValue(1)")
+    eval("do { val x = 0; x + 2 }") should be("IntValue(2)")
+  }
 
 }

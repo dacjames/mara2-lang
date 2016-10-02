@@ -21,7 +21,9 @@ trait OperatorParser[E <: Expr, Alg <: OperatorAlg[E]] extends LangParser[E, Alg
       ">=" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.gte(x(alg), y(alg))} |
       "&&" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.and(x(alg), y(alg))} |
       "||" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.or(x(alg), y(alg))} |
-      "~&" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.nand(x(alg), y(alg))}
+      "~&" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.nand(x(alg), y(alg))} |
+      "==" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.eq(x(alg), y(alg))} |
+      "!=" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.ne(x(alg), y(alg))}
     )
   }
 

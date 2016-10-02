@@ -1,5 +1,7 @@
 package io.dac.mara.core
 
+import com.typesafe.scalalogging.LazyLogging
+
 /**
   * Created by dcollins on 8/21/16.
   */
@@ -17,6 +19,7 @@ object MaraValue {
   case class FunctionValue[E <: Expr](name: String, typeparams: Seq[TypeParamValue], valparams: Seq[ValueParamValue], body: Seq[E]) extends MaraValue
   case class ErrorValue(msg: String) extends MaraValue
   case class UnitValue() extends MaraValue
+  case class UnitValueNamed(name: String) extends MaraValue
 
   object implicits {
     implicit def int2value(x: Int): IntValue = IntValue(x)
@@ -25,7 +28,9 @@ object MaraValue {
 
     object truthy {
       implicit def value2bool(value: MaraValue): Boolean = value match {
-        case IntValue(x) => IntBoolConverters.int2bool(x)
+        case IntValue(x) => {
+          IntBoolConverters.int2bool(x)
+        }
         case StringValue(_) => false
         case BoolValue(b) => b
       }

@@ -30,16 +30,13 @@ trait MaraParser[E <: Expr, Alg <: LiteralAlg[E]
   def InputLine: Rule1[Alg => E] = rule { (Expr | Terminal) ~ EOI }
 
   def Expr: Rule1[Alg => E] = rule {
-    Operator |
-    ControlFlow |
-    Function |
-    Variable |
-    Substitution |
-    Call
+    Operator | Terminal
   }
 
 
-  def Terminal: Rule1[Alg => E] = rule { Literal | Parens | Do }
+  def Terminal: Rule1[Alg => E] = rule {
+    Parens | Literal | Do | ControlFlow |  Function | Variable | Substitution | Call
+  }
 
 }
 
