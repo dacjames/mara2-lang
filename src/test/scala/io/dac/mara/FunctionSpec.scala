@@ -20,6 +20,7 @@ class FunctionSpec extends MaraSpec with MaraLanguage {
   "Working Examples" should "include fibinocci function" in {
     eval("do { def qua(x) { if x <= 1 { 1 } else { 2 } }; .qua(1) }") should include("IntValue(1)")
     eval("do { def qua(x) { if x <= 1 { 1 } else { 2 } }; .qua(2) }") should include("IntValue(2)")
+    eval("do { def fib(x) { if x <= 1 { 1 } else { .self(x-1) + .self(x-2) } }; .fib(5) }") should include("IntValue(8)")
   }
 
 }

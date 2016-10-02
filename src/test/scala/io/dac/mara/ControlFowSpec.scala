@@ -29,4 +29,14 @@ class ControlFowSpec extends MaraSpec with MaraLanguage {
     eval("do { val x = 0; x + 2 }") should be("IntValue(2)")
   }
 
+  it should "honor block scope in if blocks" in {
+    eval("do { val x = 1; val y = if true { val x = 10 }; x}") should be("IntValue(1)")
+    eval("do { val x = 1; val y = if true { val x = 10 }; y}") should be("IntValue(10)")
+  }
+
+  it should "honor block scope in else blocks" in {
+    eval("do { val x = 1; val y = if false { 0 } else { val x = 10 }; x }") should be("IntValue(1)")
+    eval("do { val x = 1; val y = if false { 0 } else { val x = 10 }; y }") should be("IntValue(10)")
+  }
+
 }

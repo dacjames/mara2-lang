@@ -48,29 +48,32 @@ trait EvalFunction extends EvalOp with FunctionAlg[Eval] with Namespace {
         val zipped = valparams.zip(args)
         val debug = mutable.ArrayBuffer.empty[String]
 
-        zipped.foreach {
-          case (ValueParamValue(name, typex), arg: Eval) => {
-            val value = arg.eval
-            bindValue(name, value)
-            debug.append(s"${name}=${value}")
+        inNewScope {
+          zipped.foreach {
+            case (ValueParamValue(name, typex), arg: Eval) => {
+              val value = arg.eval
+              bindValue(name, value)
+              debug.append(s"${name}=${value}")
+            }
           }
+
+          bindValue("self", func)
+
+          logger.trace(s".${name}(${debug.mkString(", ")})")
+
+          val result = body.reduce{ (a, b) => {a.eval; b} }.eval
+
+          unbindValue("self")
+
+          zipped.foreach {
+            case (ValueParamValue(name, typex), arg: Eval) => {
+              unbindValue(name)
+            }
+          }
+
+          result
         }
 
-        bindValue("self", func)
-
-        logger.trace(s".${name}(${debug.mkString(", ")})")
-
-        val result = body.reduce{ (a, b) => {a.eval; b} }.eval
-
-        unbindValue("self")
-
-        zipped.foreach {
-          case (ValueParamValue(name, typex), arg: Eval) => {
-            unbindValue(name)
-          }
-        }
-
-        result
       }
       case e: ErrorValue => e
       case _ => ErrorValue(s"${name} is not callable")
