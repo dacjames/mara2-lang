@@ -3,7 +3,7 @@ package io.dac.mara.core
 /**
   * Created by dcollins on 8/21/16.
   */
-sealed trait MaraValue
+sealed trait MaraValue extends MaraRoot
 
 
 object MaraValue {

@@ -12,19 +12,12 @@ trait EvalFunction extends EvalOp with FunctionAlg[Eval] with Namespace {
   import MaraType._
 
 
-  private[this] val builtins: Map[String, MaraType] = Map(
-    "Any" -> AnyType(),
-    "String" -> StringType(),
-    "Int" -> IntType(),
-    "Bool" -> BoolType()
-  )
-
   override def valparam(name: String, typex: Option[String]): Eval = op {
-    ValueParamValue(name, builtins(typex.getOrElse("Any")))
+    ValueParamValue(name, typex.map(lookupType _).getOrElse(AnyType()))
   }
 
   override def typeparam(name: String, typex: Option[String]): Eval = op {
-    TypeParamValue(name, builtins(typex.getOrElse("Any")))
+    TypeParamValue(name, typex.map(lookupType _).getOrElse(AnyType()))
   }
 
   private[this] def buildFunction(name: String, typeparams: Seq[Eval], valparams: Seq[Eval], body: Seq[Eval]) = {

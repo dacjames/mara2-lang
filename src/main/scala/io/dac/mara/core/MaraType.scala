@@ -1,6 +1,6 @@
 package io.dac.mara.core
 
-sealed trait MaraType {
+sealed trait MaraType extends MaraRoot {
   def name: Option[String]
 }
 object MaraType {
