@@ -15,7 +15,7 @@ trait TypedVariable extends TypedOp with VariableAlg[Typed] with Namespace {
 
   override def valdeclare(name: String, typex: Option[String]): Typed = op {
     val typeresult = typex match {
-      case None => InferableType()
+      case None => InferrableType()
       case Some(typename) => lookupType(typename)
     }
     namespace += (name -> typeresult)

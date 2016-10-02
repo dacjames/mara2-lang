@@ -43,7 +43,7 @@ trait OperatorParser[E <: Expr, Alg <: OperatorAlg[E]] extends LangParser[E, Alg
 
   private[this] def ArgHigh = rule {
     "~" ~ Terminal ~> { (x: Alg => E) => (alg: Alg) => alg.not(x(alg)) } |
-    Terminal ~ zeroOrMore(
+      Terminal ~ zeroOrMore(
       '^'  ~ Terminal ~> {(x: Alg => E, y: Alg => E) => (alg: Alg) => alg.high(x(alg), y(alg))} |
       "**" ~ Terminal ~> {(x: Alg => E, y: Alg => E) => (alg: Alg) => alg.power(x(alg), y(alg))}
     )

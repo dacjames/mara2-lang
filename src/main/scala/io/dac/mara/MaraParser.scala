@@ -38,6 +38,7 @@ trait MaraParser[E <: Expr, Alg <: LiteralAlg[E]
     Call
   }
 
+
   def Terminal: Rule1[Alg => E] = rule { Literal | Parens | Do }
 
 }

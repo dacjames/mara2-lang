@@ -16,4 +16,5 @@ class FunctionSpec extends MaraSpec with MaraLanguage {
   "Function Calls" should "evaluate the result of a Function" in {
     eval("do{ def foo(x, y) { x ; y } ; .foo(1, 2) }") should include("IntValue(2)")
   }
+
 }

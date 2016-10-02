@@ -13,11 +13,11 @@ trait EvalFunction extends EvalOp with FunctionAlg[Eval] with Namespace {
 
 
   override def valparam(name: String, typex: Option[String]): Eval = op {
-    ValueParamValue(name, typex.map(lookupType _).getOrElse(AnyType()))
+    ValueParamValue(name, typex.map(lookupType).getOrElse(AnyType()))
   }
 
   override def typeparam(name: String, typex: Option[String]): Eval = op {
-    TypeParamValue(name, typex.map(lookupType _).getOrElse(AnyType()))
+    TypeParamValue(name, typex.map(lookupType).getOrElse(AnyType()))
   }
 
   private[this] def buildFunction(name: String, typeparams: Seq[Eval], valparams: Seq[Eval], body: Seq[Eval]) = {
