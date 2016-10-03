@@ -10,6 +10,7 @@ import io.dac.mara.lang.literals.{EvalLiteral, ShowLiteral, TreeLiteral, TypedLi
 import io.dac.mara.lang.operators.{EvalOperator, ShowOperator, TypedOperator}
 import io.dac.mara.lang.root.{LangAlg, LangParser}
 import io.dac.mara.lang.variables.{EvalVariable, ShowVariable, TypedVariable}
+import io.dac.mara.utils.TimeIt
 import org.parboiled2.{ErrorFormatter, ParseError, ParserInput}
 
 import scala.util.{Failure, Success, Try}
@@ -17,7 +18,7 @@ import scala.util.{Failure, Success, Try}
 /**
   * Created by dcollins on 8/20/16.
   */
-trait MaraLanguage {
+trait MaraLanguage extends TimeIt {
 
   import Show._
   import Eval._
@@ -33,9 +34,17 @@ trait MaraLanguage {
   }
 
   private[this] def run[E <: Expr, Alg <: LangAlg[E], R](parser: LangParser[E, Alg])(alg: Alg)(implicit f: Expr.Family[E, R]) =
-    parser.Root.run() match {
-      case Success(result) => f.value(result(alg)).toString
-      case Failure(error: ParseError) => parser.formatError(error, new ErrorFormatter(showTraces=true))
+    timeInner("Parser") {
+      timeInner("Hack") {
+        parser.Root.run()
+      }
+    } match {
+      case Success(result) => timeInner("Substitution") {
+        f.value {
+          timeInner("Algebra")(result(alg))
+        }.toString
+      }
+      case Failure(error: ParseError) => parser.formatError(error, new ErrorFormatter(showTraces = true))
       case Failure(error: Throwable) => trace2string(error)
     }
 
@@ -55,6 +64,7 @@ trait MaraLanguage {
       val input = ParserInput(text)
     }
   }(evalAlg)
+
 
   def typed(text: String) = run {
     new MaraParser[Typed, TypedLiteral with TypedVariable with TypedOperator with TypedFunction with TypedControlFlow] {
