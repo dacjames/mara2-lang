@@ -35,7 +35,7 @@ trait TypedFunction extends TypedOp with FunctionAlg[Typed] with VariableAlg[Typ
 
     val funcType = typex match {
       case Some(t) =>
-        if (output == lookupType(t)) newFuncType
+        if (isSubtype(output, lookupType(t))) newFuncType
         else ErrorType(s"Defined type ${t} does not inferred type ${output}")
       case None =>
         newFuncType
@@ -49,7 +49,7 @@ trait TypedFunction extends TypedOp with FunctionAlg[Typed] with VariableAlg[Typ
 
     funcType match {
       case FunctionType(input, output) =>
-        if (argsType == input) output
+        if (isSubtype(argsType, input)) output
         else ErrorType(s"Args ${argsType} does not match parameters ${input} calling function ${name}")
       case _ => ErrorType(s"${name} is not callable")
     }
