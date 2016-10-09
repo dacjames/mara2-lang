@@ -8,7 +8,13 @@ import io.dac.mara.core.{Expr, MaraType}
   */
 
 
-case class Typed(val typex: MaraType) extends Expr
+//trait Eval extends Expr {
+//  def eval: MaraValue
+//}
+
+trait Typed extends Expr {
+  def typex: MaraType
+}
 
 object Typed {
   implicit object TypedFamily extends Family[Typed, MaraType] {
@@ -17,6 +23,8 @@ object Typed {
 }
 
 trait TypedOp {
-  def op(f: => MaraType) = Typed(f)
+  def op(f: => MaraType) = new Typed {
+    override def typex = f
+  }
 }
 

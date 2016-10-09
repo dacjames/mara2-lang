@@ -11,14 +11,12 @@ import scala.collection.mutable
 trait TypedVariable extends TypedOp with VariableAlg[Typed] with Namespace {
   import MaraType._
 
-  private[this] val namespace: mutable.Map[String, MaraType] = mutable.Map.empty[String, MaraType]
-
   override def valdeclare(name: String, typex: Option[String]): Typed = op {
     val typeresult = typex match {
       case None => InferrableType()
       case Some(typename) => lookupType(typename)
     }
-    namespace += (name -> typeresult)
+    bindType(name, typeresult)
     typeresult
   }
 
@@ -36,13 +34,13 @@ trait TypedVariable extends TypedOp with VariableAlg[Typed] with Namespace {
         }
       }
     }
-    namespace += (name -> typeresult)
+    bindType(name, typeresult)
 
     typeresult
   }
 
   override def valsubstitution(name: String): Typed = op {
-    namespace(name)
+    lookupType(name)
   }
 
   override def block(exprs: Seq[Typed]): Typed = op {

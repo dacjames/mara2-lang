@@ -22,4 +22,14 @@ object MaraType {
   case class ErrorType(msg: String) extends MaraType {
     val name = None
   }
+  case class UnitType() extends MaraType {
+    val name = Some("Unit")
+  }
+  case class RecordType(fields: Seq[MaraType]) extends MaraType {
+    val name = None
+  }
+
+  case class FunctionType(input: MaraType, output: MaraType) extends MaraType {
+    val name = None
+  }
 }

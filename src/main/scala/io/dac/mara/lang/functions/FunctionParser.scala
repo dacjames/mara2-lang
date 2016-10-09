@@ -13,14 +13,15 @@ import scala.collection.{GenTraversable, GenTraversableOnce}
 trait FunctionParser[E <: Expr, Alg <: FunctionAlg[E]] extends LangParser[E, Alg]
   with IdentifierParser with BlockParser[E, Alg] with TupleParser[E, Alg] {
 
+
   private[this] sealed trait Pair {
-    def expr(alg: Alg): E
+    def pair: Alg#Param
   }
   private[this] case class TypePair(x: String, y: Option[String]) extends Pair {
-    def expr(alg: Alg) = alg.typeparam(x, y)
+    def pair = (x, y)
   }
   private[this] case class ValuePair(x: String, y: Option[String]) extends Pair {
-    def expr(alg: Alg) = alg.valparam(x, y)
+    def pair = (x, y)
   }
 
   def Function: Rule1[Alg => E] = rule {
@@ -39,8 +40,8 @@ trait FunctionParser[E <: Expr, Alg <: FunctionAlg[E]] extends LangParser[E, Alg
   private[this] def AbstractDef: Rule1[Alg => E] = rule {
     "def" ~ ValueId ~ Params ~ optional("->" ~ TypeId) ~> {
       (a: String, b: (Seq[Pair], Seq[Pair]), c: Option[String]) => (alg: Alg) => {
-        val typeparams = b._1.map(_.expr(alg))
-        val valparams = b._2.map(_.expr(alg))
+        val typeparams = b._1.map(_.pair)
+        val valparams = b._2.map(_.pair)
         alg.defabstract(name = a, typeparams = typeparams, valparams = valparams, typex = c)
       }
     }
@@ -49,8 +50,8 @@ trait FunctionParser[E <: Expr, Alg <: FunctionAlg[E]] extends LangParser[E, Alg
   private[this] def ConcreteDef: Rule1[Alg => E] = rule {
     "def" ~ ValueId ~ Params ~ optional("->" ~ TypeId) ~ Block ~> {
       (a: String, b: (Seq[Pair], Seq[Pair]), c: Option[String], d: Alg => Seq[E] ) => (alg: Alg) => {
-        val typeparams = b._1.map(_.expr(alg))
-        val valparams = b._2.map(_.expr(alg))
+        val typeparams = b._1.map(_.pair)
+        val valparams = b._2.map(_.pair)
         alg.defconcrete(name = a, typeparams = typeparams, valparams = valparams, typex = c, body = d(alg))
       }
     }

@@ -12,33 +12,22 @@ trait EvalFunction extends EvalOp with FunctionAlg[Eval] with Namespace {
   import MaraType._
 
 
-  override def valparam(name: String, typex: Option[String]): Eval = op {
-    ValueParamValue(name, typex.map(lookupType).getOrElse(AnyType()))
-  }
+  private[this] def buildFunction(name: String, typeparams: Seq[Param], valparams: Seq[Param], body: Seq[Eval]) = {
 
-  override def typeparam(name: String, typex: Option[String]): Eval = op {
-    TypeParamValue(name, typex.map(lookupType).getOrElse(AnyType()))
-  }
-
-  private[this] def buildFunction(name: String, typeparams: Seq[Eval], valparams: Seq[Eval], body: Seq[Eval]) = {
-    val typeparamValues = typeparams.map(_.eval).collect {
-      case it: TypeParamValue => it
+    val typeparamValues = typeparams.map {
+      case (name, bounds) => TypeParamValue(name, bounds.map(lookupType).getOrElse(AnyType()))
     }
 
-    val valparamValues = valparams.map(_.eval).collect {
-      case it: ValueParamValue => it
+    val valparamValues = valparams.map {
+      case (name, typex) => ValueParamValue(name, typex.map(lookupType).getOrElse(AnyType()))
     }
 
 
     FunctionValue(name=name, typeparams=typeparamValues, valparams=valparamValues, body=body)
   }
 
-  override def defconcrete(name: String, typeparams: Seq[Eval], valparams: Seq[Eval], typex: Option[String], body: Seq[Eval]): Eval = op {
+  override def defconcrete(name: String, typeparams: Seq[Param], valparams: Seq[Param], typex: Option[String], body: Seq[Eval]): Eval = op {
     bindValue(name, buildFunction(name, typeparams, valparams, body))
-  }
-
-  override def defabstract(name: String, typeparams: Seq[Eval], valparams: Seq[Eval], typex: Option[String]): Eval = op {
-    bindValue(name, buildFunction(name, typeparams, valparams, Seq.empty[Eval]))
   }
 
   override def call(name: String, args: Seq[Eval]): Eval = op {

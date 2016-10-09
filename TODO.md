@@ -1,10 +1,13 @@
 # TODO
 
 - [x] Fix Variable Parser
-- [_] Functions
+- [x] Functions
 - [ ] Record Types
 - [ ] Observables
 - [ ] Refactor `Do` rule out of LangParser
 - [ ] Clarify meaning on `Block`
-- [ ] Object model
 - [ ] Support Trailing Commas
+- [ ] Investigate Parser initialization overhead
+- [ ] Multiple Lines
+- [ ] Type Check Functions
+- [ ] Make Logging levels easy to control

@@ -9,12 +9,24 @@ class FunctionSpec extends MaraSpec with MaraLanguage {
     show("def foo(A, B)(x, y) { if true { x } else { y } }") shouldEqual "def foo(A, B)(x, y) { if true { x } else { y } }"
   }
 
+  it should "have the type of the function body" in {
+    typed("def foo(x, y) { 10 }") shouldEqual "FunctionType(RecordType(Vector(InferrableType(), InferrableType())),IntType())"
+  }
+
+  it should "type function parameters" in {
+    typed("def foo(x: Int, y: Bool) { x }") shouldEqual "FunctionType(RecordType(Vector(IntType(), BoolType())),IntType())"
+  }
+
   "Abstract Functions" should "evaluate to a FunctionValue" in {
     eval("def foo(A, B)(x, y)") should include("FunctionValue")
   }
 
   "Function Calls" should "evaluate the result of a Function" in {
     eval("do { def foo(x, y) { x ; y } ; .foo(1, 2) }") should include("IntValue(2)")
+  }
+
+  it should "have the type of the function they are calling" in {
+    typed("do { def foo(x: Int, y: Bool) { x }; .foo(1, true) }") shouldEqual "IntType()"
   }
 
   "Working Examples" should "include fibinocci function" in {
