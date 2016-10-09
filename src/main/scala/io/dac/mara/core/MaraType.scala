@@ -25,6 +25,9 @@ object MaraType {
   case class UnitType() extends MaraType {
     val name = Some("Unit")
   }
+  case class EmptyType() extends MaraType {
+    val name = None
+  }
   case class RecordType(fields: Seq[MaraType]) extends MaraType {
     val name = None
 

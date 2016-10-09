@@ -22,8 +22,17 @@ trait EvalVariable extends EvalOp with VariableAlg[Eval] with Namespace {
   override def valsubstitution(name: String) =
     op { lookupValue(name) }
 
+  override def empty = op { EmptyValue() }
+
+  private[this] val blockPartial =
+    new PartialFunction[Eval, MaraValue] {
+      private[this] var it: MaraValue = _
+      override def isDefinedAt(x: Eval) = { it = x.eval; ! it.isInstanceOf[EmptyValue]}
+      override def apply(v1: Eval) = it
+    }
+
   override def block(exprs: Seq[Eval]) =
     op {
-      exprs.reduce{ (a, b) => {a.eval; b} }.eval
+      exprs.collect(blockPartial).last
     }
 }
