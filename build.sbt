@@ -7,7 +7,8 @@ scalaVersion := "2.11.8"
 libraryDependencies ++= List(
   // Scala Dependencies
   "org.parboiled" %% "parboiled" % "2.1.3",
-  "org.scalactic" %% "scalactic" % "3.0.0"
+  "org.scalactic" %% "scalactic" % "3.0.0",
+  "org.typelevel" %% "cats" % "0.8.1"
 ) ++ List (
   // Java Dependencies
   "io.netty" % "netty-all" % "4.1.4.Final",
