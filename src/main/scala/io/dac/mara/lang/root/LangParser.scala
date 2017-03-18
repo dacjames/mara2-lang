@@ -9,17 +9,23 @@ import org.parboiled2._
   */
 trait LangParser[E <: Expr, Alg <: LangAlg[E]] extends Parser
   with WhitespaceParser with ExprParser[E, Alg] with BlockParser[E, Alg] {
+
   def input: ParserInput
-
-  def Root: Rule1[Alg => E]
-  def Terminal: Rule1[Alg => E]
+  def alg: Alg
 
 
-  def Do: Rule1[Alg => E] = rule {
-    "do" ~ Block ~> { (x: Alg => Seq[E]) => (alg: Alg) => {
-      alg.block(x(alg))
-    }}
+  def Root: Rule1[E]
+  def Terminal: Rule1[E]
 
+
+  def Do: Rule1[E] = rule {
+    "do" ~ Block ~> { (x: Seq[E]) =>
+      alg.block(x)
+    }
+  }
+
+  def Empty: Rule1[E] = rule {
+    MATCH ~> { () => alg.empty }
   }
 
 }

@@ -8,46 +8,46 @@ import org.parboiled2._
   * Created by dcollins on 8/2/16.
   */
 trait OperatorParser[E <: Expr, Alg <: OperatorAlg[E]] extends LangParser[E, Alg] {
-  def Operator: Rule1[Alg => E] = rule {
+  def Operator: Rule1[E] = rule {
     BoolOp
   }
 
   private[this] def BoolOp = rule {
     ArgLow ~ zeroOrMore(
-      '@' ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.base(x(alg), y(alg))} |
-      '<' ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.lt(x(alg), y(alg))} |
-      '>' ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.gt(x(alg), y(alg))} |
-      "<=" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.lte(x(alg), y(alg))} |
-      ">=" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.gte(x(alg), y(alg))} |
-      "&&" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.and(x(alg), y(alg))} |
-      "||" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.or(x(alg), y(alg))} |
-      "~&" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.nand(x(alg), y(alg))} |
-      "==" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.eq(x(alg), y(alg))} |
-      "!=" ~ ArgLow ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.ne(x(alg), y(alg))}
+      '@' ~ ArgLow ~> { (x: E, y: E) => alg.base(x, y)} |
+      '<' ~ ArgLow ~> { (x: E, y: E) => alg.lt(x, y)} |
+      '>' ~ ArgLow ~> { (x: E, y: E) => alg.gt(x, y)} |
+      "<=" ~ ArgLow ~> { (x: E, y: E) => alg.lte(x, y)} |
+      ">=" ~ ArgLow ~> { (x: E, y: E) => alg.gte(x, y)} |
+      "&&" ~ ArgLow ~> { (x: E, y: E) => alg.and(x, y)} |
+      "||" ~ ArgLow ~> { (x: E, y: E) => alg.or(x, y)} |
+      "~&" ~ ArgLow ~> { (x: E, y: E) => alg.nand(x, y)} |
+      "==" ~ ArgLow ~> { (x: E, y: E) => alg.eq(x, y)} |
+      "!=" ~ ArgLow ~> { (x: E, y: E) => alg.ne(x, y)}
     )
   }
 
   private[this] def ArgLow = rule {
     ArgMedium ~ zeroOrMore(
-      '$' ~ ArgMedium ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.low(x(alg), y(alg)) } |
-      '+' ~ ArgMedium ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.plus(x(alg), y(alg)) } |
-      '-' ~ ArgMedium ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.minus(x(alg), y(alg)) }
+      '$' ~ ArgMedium ~> { (x: E, y: E) => alg.low(x, y) } |
+      '+' ~ ArgMedium ~> { (x: E, y: E) => alg.plus(x, y) } |
+      '-' ~ ArgMedium ~> { (x: E, y: E) => alg.minus(x, y) }
     )
   }
 
   private[this] def ArgMedium = rule {
     ArgHigh ~ zeroOrMore(
-      '%' ~ ArgHigh ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.medium(x(alg), y(alg))} |
-      '*' ~ ArgHigh ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.times(x(alg), y(alg))} |
-      '/' ~ ArgHigh ~> { (x: Alg => E, y: Alg => E) => (alg: Alg) => alg.divide(x(alg), y(alg))}
+      '%' ~ ArgHigh ~> { (x: E, y: E) => alg.medium(x, y)} |
+      '*' ~ ArgHigh ~> { (x: E, y: E) => alg.times(x, y)} |
+      '/' ~ ArgHigh ~> { (x: E, y: E) => alg.divide(x, y)}
     )
   }
 
   private[this] def ArgHigh = rule {
-    "~" ~ Terminal ~> { (x: Alg => E) => (alg: Alg) => alg.not(x(alg)) } |
+    "~" ~ Terminal ~> { (x: E) => alg.not(x) } |
       Terminal ~ zeroOrMore(
-      '^'  ~ Terminal ~> {(x: Alg => E, y: Alg => E) => (alg: Alg) => alg.high(x(alg), y(alg))} |
-      "**" ~ Terminal ~> {(x: Alg => E, y: Alg => E) => (alg: Alg) => alg.power(x(alg), y(alg))}
+      '^'  ~ Terminal ~> {(x: E, y: E) => alg.high(x, y)} |
+      "**" ~ Terminal ~> {(x: E, y: E) => alg.power(x, y)}
     )
   }
 

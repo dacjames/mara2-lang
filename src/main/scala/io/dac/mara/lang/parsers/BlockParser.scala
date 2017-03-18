@@ -8,15 +8,10 @@ import org.parboiled2._
   * Created by dcollins on 8/28/16.
   */
 trait BlockParser[E <: Expr, Alg <: LangAlg[E]] extends Parser with ExprParser[E, Alg] with WhitespaceParser with SepParser {
-  def Block: Rule1[Alg => Seq[E]] = rule {
+  def Block: Rule1[Seq[E]] = rule {
     "{" ~ Expr ~ zeroOrMore(ExprSep ~ Expr) ~ "}" ~> {
-      (a: Alg => E, b: Seq[Alg => E]) => (alg: Alg) =>
-        (a +: b).map{ thunk => thunk(alg) }
+      (a: E, b: Seq[E]) => a +: b
     }
-  }
-
-  def Empty: Rule1[Alg => E] = rule {
-    MATCH ~> { () => (alg: Alg) => { alg.empty } }
   }
 
 }

@@ -8,10 +8,9 @@ import org.parboiled2._
   * Created by dcollins on 8/28/16.
   */
 trait TupleParser[E <: Expr, Alg <: LangAlg[E]] extends Parser with ExprParser[E, Alg] with WhitespaceParser {
-  def Tuple: Rule1[Alg => Seq[E]] = rule {
-    '(' ~ Expr ~ zeroOrMore(',' ~ Expr) ~ ')' ~> {
-      (a: Alg => E, b: Seq[Alg => E]) => (alg: Alg) =>
-        (a +: b).map { thunk => thunk(alg) }
+  def Tuple: Rule1[Seq[E]] = rule {
+    '(' ~ Expr ~ zeroOrMore(',' ~ Expr) ~ ')' ~> { (a: E, b: Seq[E]) =>
+      a +: b
     }
   }
 }

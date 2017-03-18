@@ -8,5 +8,5 @@ import org.parboiled2._
   * Created by dcollins on 8/28/16.
   */
 trait ExprParser[E <: Expr, Alg <: LangAlg[E]] extends Parser {
-  def Expr: Rule1[Alg => E]
+  def Expr: Rule1[E]
 }
