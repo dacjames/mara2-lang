@@ -7,7 +7,7 @@ import org.parboiled2.{Parser, ParserInput, Rule1}
 /**
   * Created by dcollins on 8/6/16.
   */
-trait ControlFlowParser[E <: Expr, Alg <: ControlFlowAlg[E]] extends LangParser[E, Alg] {
+trait ControlFlowParser[E, Alg <: ControlFlowAlg[E]] extends LangParser[E, Alg] {
   def ControlFlow: Rule1[E] = rule {
     If
   }

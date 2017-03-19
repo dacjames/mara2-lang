@@ -7,7 +7,7 @@ import org.parboiled2._
 /**
   * Created by dcollins on 8/6/16.
   */
-trait LangParser[E <: Expr, Alg <: LangAlg[E]] extends Parser
+trait LangParser[E, Alg <: LangAlg[E]] extends Parser
   with WhitespaceParser with ExprParser[E, Alg] with BlockParser[E, Alg] {
 
   def input: ParserInput

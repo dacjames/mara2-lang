@@ -8,7 +8,7 @@ import org.parboiled2._
 /**
   * Created by dcollins on 8/2/16.
   */
-trait LiteralParser[E <: Expr, Alg <: LiteralAlg[E]] extends LangParser[E, Alg] {
+trait LiteralParser[E, Alg <: LiteralAlg[E]] extends LangParser[E, Alg] {
   def Literal: Rule1[E] = rule { ActualLiteral ~ Whitespace }
 
   private[this] def ActualLiteral = rule { StringLiteral | IntLiteral | BoolLiteral }

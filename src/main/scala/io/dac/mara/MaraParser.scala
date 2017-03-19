@@ -13,7 +13,7 @@ import org.parboiled2._
 /**
   * Created by dcollins on 8/2/16.
   */
-trait MaraParser[E <: Expr, Alg <: lang.CombinedAlg[E]  ]
+trait MaraParser[E, Alg <: lang.CombinedAlg[E]  ]
   extends Parser with LiteralParser[E, Alg]
     with OperatorParser[E, Alg]
     with ControlFlowParser[E, Alg]

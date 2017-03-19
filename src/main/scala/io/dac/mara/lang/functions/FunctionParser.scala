@@ -10,7 +10,7 @@ import scala.collection.{GenTraversable, GenTraversableOnce}
 /**
   * Created by dcollins on 8/28/16.
   */
-trait FunctionParser[E <: Expr, Alg <: FunctionAlg[E]] extends LangParser[E, Alg]
+trait FunctionParser[E, Alg <: FunctionAlg[E]] extends LangParser[E, Alg]
   with IdentifierParser with BlockParser[E, Alg] with TupleParser[E, Alg] {
 
 

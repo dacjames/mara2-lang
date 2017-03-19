@@ -20,7 +20,9 @@ object CLI extends MaraLanguage with TimeIt with App {
     eval(".fib(10)")
   }
   timeIt {
-    eval(".fib(10)")
+    eval("do { .fib(10); .fib(10) }")
   }
+
+  println(litpipeline("5"))
 
 }

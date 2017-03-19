@@ -11,7 +11,7 @@ import io.dac.mara.lang.variables.{EvalVariable, ShowVariable, TypedVariable, Va
   * Created by dcollins on 3/18/17.
   */
 package object lang {
-  type CombinedAlg[E <: Expr] = LiteralAlg[E]
+  type CombinedAlg[E] = LiteralAlg[E]
     with OperatorAlg[E]
     with ControlFlowAlg[E]
     with FunctionAlg[E]

@@ -1,6 +1,6 @@
 package io.dac.mara.exprops
 
-import io.dac.mara.core.Expr.Family
+import io.dac.mara.core.Expr.Replable
 import io.dac.mara.core.{Expr, MaraType}
 
 /**
@@ -17,7 +17,7 @@ trait Typed extends Expr {
 }
 
 object Typed {
-  implicit object TypedFamily extends Family[Typed, MaraType] {
+  implicit object TypedReplable$ extends Replable[Typed, MaraType] {
     override def value(e: Typed) = e.typex
   }
 }

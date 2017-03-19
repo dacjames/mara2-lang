@@ -7,7 +7,7 @@ import org.parboiled2._
 /**
   * Created by dcollins on 8/2/16.
   */
-trait OperatorParser[E <: Expr, Alg <: OperatorAlg[E]] extends LangParser[E, Alg] {
+trait OperatorParser[E, Alg <: OperatorAlg[E]] extends LangParser[E, Alg] {
   def Operator: Rule1[E] = rule {
     BoolOp
   }

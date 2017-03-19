@@ -1,7 +1,7 @@
 package io.dac.mara.exprops
 
 import io.dac.mara.core.{Expr, MaraValue}
-import io.dac.mara.core.Expr.Family
+import io.dac.mara.core.Expr.Replable
 
 /**
   * Created by dcollins on 8/2/16.
@@ -13,7 +13,7 @@ trait Eval extends Expr {
 }
 
 object Eval {
-  implicit object EvalFamily extends Family[Eval, MaraValue] {
+  implicit object EvalReplable$ extends Replable[Eval, MaraValue] {
     override def value(e: Eval) = e.eval
   }
 }

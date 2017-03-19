@@ -8,7 +8,7 @@ import org.parboiled2._
 /**
   * Created by dcollins on 8/12/16.
   */
-trait VariableParser [E <: Expr, Alg <: VariableAlg[E]] extends LangParser[E, Alg] with IdentifierParser {
+trait VariableParser [E, Alg <: VariableAlg[E]] extends LangParser[E, Alg] with IdentifierParser {
 
   def Variable: Rule1[E] = rule {
     Assign | Declare

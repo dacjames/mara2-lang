@@ -6,7 +6,7 @@ import io.dac.mara.lang.root.LangAlg
 /**
   * Created by dcollins on 8/2/16.
   */
-trait OperatorAlg[E <: Expr] extends LangAlg[E] {
+trait OperatorAlg[E] extends LangAlg[E] {
   def plus(x: E, y: E): E
   def minus(x: E, y: E): E
   def times(x: E, y: E): E
