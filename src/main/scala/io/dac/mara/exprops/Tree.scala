@@ -11,7 +11,7 @@ case class Node(kind: String, values: Any*)
 case class Tree(root: Node) extends Expr
 
 object Tree {
-  implicit object TreeFamily extends Expr.Family[Tree, Node] {
+  implicit object TreeReplable$ extends Expr.Replable[Tree, Node] {
     override def value(e: Tree) = e.root
   }
 }

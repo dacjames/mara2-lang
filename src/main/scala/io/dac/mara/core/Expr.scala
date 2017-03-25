@@ -6,7 +6,7 @@ package io.dac.mara.core
 trait Expr
 
 object Expr {
-  trait Family[A, B] {
+  trait Replable[A, B] {
     def value(a: A): B
   }
 }

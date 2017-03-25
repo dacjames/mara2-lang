@@ -16,7 +16,8 @@ trait TimeIt {
       println(s"Elapsed Time ${name}: ${elapsed} ns ${elapsed * 1e-3} µs ${elapsed * 1e-6} ms")
       result
     } else {
-      block
+      val result = block
+      result
     }
   }
 

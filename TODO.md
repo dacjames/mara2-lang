@@ -4,7 +4,7 @@
 - [x] Functions
 - [ ] Record Types
 - [ ] Observables
-- [ ] Refactor `Do` rule out of LangParser
+- [x] Refactor `Do` rule out of LangParser
 - [ ] Clarify meaning on `Block`
 - [ ] Support Trailing Commas
 - [ ] Investigate Parser initialization overhead

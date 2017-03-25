@@ -10,7 +10,7 @@ import scala.collection.{GenTraversable, GenTraversableOnce}
 /**
   * Created by dcollins on 8/28/16.
   */
-trait FunctionParser[E <: Expr, Alg <: FunctionAlg[E]] extends LangParser[E, Alg]
+trait FunctionParser[E, Alg <: FunctionAlg[E]] extends LangParser[E, Alg]
   with IdentifierParser with BlockParser[E, Alg] with TupleParser[E, Alg] {
 
 
@@ -24,22 +24,21 @@ trait FunctionParser[E <: Expr, Alg <: FunctionAlg[E]] extends LangParser[E, Alg
     def pair = (x, y)
   }
 
-  def Function: Rule1[Alg => E] = rule {
+  def Function: Rule1[E] = rule {
     ConcreteDef | AbstractDef
   }
 
-  def Call: Rule1[Alg => E] = rule {
-    "." ~ ValueId ~ Tuple ~> {
-      (a: String, b: Alg => Seq[E]) => (alg: Alg) => {
-        alg.call(a, b(alg))
+  def Call: Rule1[E] = rule {
+    "." ~ ValueId ~ Tuple ~> { (a: String, b: Seq[E]) => {
+        alg.call(a, b)
       }
     }
   }
 
 
-  private[this] def AbstractDef: Rule1[Alg => E] = rule {
+  private[this] def AbstractDef: Rule1[E] = rule {
     "def" ~ ValueId ~ Params ~ optional("->" ~ TypeId) ~> {
-      (a: String, b: (Seq[Pair], Seq[Pair]), c: Option[String]) => (alg: Alg) => {
+      (a: String, b: (Seq[Pair], Seq[Pair]), c: Option[String]) => {
         val typeparams = b._1.map(_.pair)
         val valparams = b._2.map(_.pair)
         alg.defabstract(name = a, typeparams = typeparams, valparams = valparams, typex = c)
@@ -47,25 +46,21 @@ trait FunctionParser[E <: Expr, Alg <: FunctionAlg[E]] extends LangParser[E, Alg
     }
   }
 
-  private[this] def ConcreteDef: Rule1[Alg => E] = rule {
+  private[this] def ConcreteDef: Rule1[E] = rule {
     "def" ~ ValueId ~ Params ~ optional("->" ~ TypeId) ~ Block ~> {
-      (a: String, b: (Seq[Pair], Seq[Pair]), c: Option[String], d: Alg => Seq[E] ) => (alg: Alg) => {
+      (a: String, b: (Seq[Pair], Seq[Pair]), c: Option[String], d: Seq[E] ) => {
         val typeparams = b._1.map(_.pair)
         val valparams = b._2.map(_.pair)
-        alg.defconcrete(name = a, typeparams = typeparams, valparams = valparams, typex = c, body = d(alg))
+        alg.defconcrete(name = a, typeparams = typeparams, valparams = valparams, typex = c, body = d)
       }
     }
   }
 
   private[this] def Params: Rule1[(Seq[Pair], Seq[Pair])] = rule {
-    oneOrMore(ValueParamTuple | TypeParamTuple) ~> {
-      (tuples: Seq[Seq[Pair]]) => {
-        tuples.flatten.partition {
-          _ match {
-            case _: TypePair => true
-            case _ => false
-          }
-        }
+    oneOrMore(ValueParamTuple | TypeParamTuple) ~> { (tuples: Seq[Seq[Pair]]) =>
+      tuples.flatten.partition {
+        case _: TypePair => true
+        case _ => false
       }
     }
   }

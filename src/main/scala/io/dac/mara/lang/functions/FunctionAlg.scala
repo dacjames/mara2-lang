@@ -7,7 +7,7 @@ import io.dac.mara.lang.root.LangAlg
 /**
   * Created by dcollins on 8/28/16.
   */
-trait FunctionAlg[E <: Expr] extends LangAlg[E] with LazyLogging {
+trait FunctionAlg[E] extends LangAlg[E] with LazyLogging {
 
   type Param = (String, Option[String])
 

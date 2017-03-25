@@ -22,8 +22,4 @@ trait ShowVariable extends ShowOp with VariableAlg[Show] {
   override def typesubstitution(name: String) =
     op { name }
 
-  override def empty = op { "" }
-
-  override def block(exprs: Seq[Show]) =
-    op { s"{${exprs.map(_.show).mkString("; ")}}" }
 }
