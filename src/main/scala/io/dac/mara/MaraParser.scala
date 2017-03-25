@@ -2,6 +2,7 @@ package io.dac.mara
 
 import io.dac.mara.lang.controlflow.{ControlFlowAlg, ControlFlowParser}
 import io.dac.mara.core.Expr
+import io.dac.mara.lang.compound.CompoundParser
 import io.dac.mara.lang.functions.{FunctionAlg, FunctionParser}
 import io.dac.mara.lang.literals.{LiteralAlg, LiteralParser}
 import io.dac.mara.lang.operators.{OperatorAlg, OperatorParser}
@@ -19,7 +20,8 @@ trait MaraParser[E, Alg <: lang.CombinedAlg[E]  ]
     with ControlFlowParser[E, Alg]
     with VariableParser[E, Alg]
     with ParensParser[E, Alg]
-    with FunctionParser[E, Alg] {
+    with FunctionParser[E, Alg]
+    with CompoundParser[E, Alg] {
 
   def Root: Rule1[E] = InputLine
 

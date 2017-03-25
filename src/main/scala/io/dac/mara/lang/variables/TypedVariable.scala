@@ -43,18 +43,5 @@ trait TypedVariable extends TypedOp with VariableAlg[Typed] with Namespace {
     lookupType(name)
   }
 
-  override def empty = op { EmptyType() }
-
-  private[this] val blockPartial =
-    new PartialFunction[Typed, MaraType] {
-      private[this] var it: MaraType = _
-      override def isDefinedAt(x: Typed) = { it = x.typex; ! it.isInstanceOf[EmptyType]}
-      override def apply(v1: Typed) = it
-    }
-
-  override def block(exprs: Seq[Typed]): Typed = op {
-    exprs.collect(blockPartial).last
-  }
-
 }
 

@@ -1,6 +1,6 @@
 package io.dac.mara
 
-import io.dac.mara.core.Expr
+import io.dac.mara.lang.compound.{CompoundAlg, EvalCompound, ShowCompound, TypedCompound}
 import io.dac.mara.lang.controlflow.{ControlFlowAlg, EvalControlFlow, ShowControlFlow, TypedControlFlow}
 import io.dac.mara.lang.functions.{EvalFunction, FunctionAlg, ShowFunction, TypedFunction}
 import io.dac.mara.lang.literals.{EvalLiteral, LiteralAlg, ShowLiteral, TypedLiteral}
@@ -16,14 +16,15 @@ package object lang {
     with ControlFlowAlg[E]
     with FunctionAlg[E]
     with VariableAlg[E]
+    with CompoundAlg[E]
 
-  type CombinedShow =  ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable
-  type CombinedEval =  EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable
-  type CombinedTyped = TypedLiteral with TypedOperator with TypedControlFlow with TypedFunction with TypedVariable
+  type CombinedShow =  ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable with ShowCompound
+  type CombinedEval =  EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable with EvalCompound
+  type CombinedTyped = TypedLiteral with TypedOperator with TypedControlFlow with TypedFunction with TypedVariable with TypedCompound
 
   object alg {
-    lazy val show = new Object with ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable
-    lazy val eval = new Object with EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable
-    lazy val typed = new Object with TypedLiteral with TypedOperator with TypedControlFlow with TypedFunction with TypedVariable
+    lazy val show = new Object with ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable with ShowCompound
+    lazy val eval = new Object with EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable with EvalCompound
+    lazy val typed = new Object with TypedLiteral with TypedOperator with TypedControlFlow with TypedFunction with TypedVariable with TypedCompound
   }
 }
