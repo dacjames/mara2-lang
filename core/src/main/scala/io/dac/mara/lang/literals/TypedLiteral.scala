@@ -9,7 +9,7 @@ import io.dac.mara.core.MaraType
 trait TypedLiteral extends TypedOp with LiteralAlg[Typed] {
   import MaraType._
 
-  override def litbool(it: Boolean): Typed = op { BoolType() }
-  override def litint(it: Int): Typed = op { IntType() }
-  override def litstring(it: String): Typed = op { StringType() }
+  override def litbool(it: Boolean): Typed = op { BoolLiteralType(it) }
+  override def litint(it: Int): Typed = op { IntLiteralType(it) }
+  override def litstring(it: String): Typed = op { StringLiteralType(it) }
 }

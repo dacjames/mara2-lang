@@ -11,6 +11,6 @@ trait SepParser extends Parser with WhitespaceParser {
   }
 
   def ListSep = rule {
-    ";" | "\n"
+    "," | "\n"
   }
 }

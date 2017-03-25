@@ -13,8 +13,12 @@ class FunctionSpec extends MaraSpec with MaraLanguage {
     typed("def foo(x, y) { 10 }") shouldEqual "FunctionType(RecordType(Vector(InferrableType(), InferrableType())),IntType())"
   }
 
+  it should "support trailing commas" in {
+    eval("def foo(x, y, ) { 10 }") should include("FunctionValue")
+  }
+
   it should "type function parameters" in {
-    typed("def foo(x: Int, y: Bool) { x }") shouldEqual "FunctionType(RecordType(Vector(IntType(), BoolType())),IntType())"
+    typed("def foo(x: Int, y: Bool) { x }") shouldEqual "FunctionType(RecordType(Vector(TagType('x',IntType()), TagType('y',BoolType()))),IntType())"
   }
 
   "Abstract Functions" should "evaluate to a FunctionValue" in {
@@ -23,6 +27,10 @@ class FunctionSpec extends MaraSpec with MaraLanguage {
 
   "Function Calls" should "evaluate the result of a Function" in {
     eval("do { def foo(x, y) { x ; y } ; .foo(1, 2) }") should include("IntValue(2)")
+  }
+
+  it should "support trailing commas" in {
+    eval("do { def foo(x, y) { y } ; .foo(1, 2, ) }") should include("IntValue(2)")
   }
 
   it should "have the type of the function they are calling" in {

@@ -35,7 +35,7 @@ trait EvalFunction extends EvalOp with FunctionAlg[Eval] with Namespace {
   override def call(name: String, args: Seq[Eval]): Eval = op {
     val func = lookupValue(name)
     func match {
-      case FunctionValue(name, typeparams, valparams, body: Seq[Eval]) => {
+      case FunctionValue(name, typeparams, valparams, body: Seq[Eval] @unchecked) => {
         val zipped = valparams.zip(args)
         val debug = mutable.ArrayBuffer.empty[String]
 

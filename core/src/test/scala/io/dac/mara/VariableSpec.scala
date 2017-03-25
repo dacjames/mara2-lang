@@ -6,7 +6,7 @@ package io.dac.mara
 class VariableSpec extends MaraSpec with MaraLanguage {
   "Variables assignment" should "parse without types" in {
     eval("val x = 10") should be("IntValue(10)")
-    pipeline("val x = 10") should be("val x = 10 :: IntType() ==> IntValue(10)")
+    pipeline("val x = 10") should be("val x = 10 :: 10 ==> IntValue(10)")
   }
 
   it should "parse correctly with types" in {
@@ -18,7 +18,7 @@ class VariableSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "have the type of the value" in {
-    typed("val x = 10") should be("IntType()")
+    typed("val x = 10") should be("10")
   }
 
   it should "be a type error if the declared type does not match the value type" in {

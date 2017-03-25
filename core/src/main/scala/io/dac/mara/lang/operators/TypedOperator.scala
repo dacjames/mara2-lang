@@ -10,18 +10,18 @@ trait TypedOperator  extends TypedOp with OperatorAlg[Typed] {
   import MaraType._
 
   private[this] def binop(name: String)(x: Typed, y: Typed)(f: MaraType => Boolean): Typed = op {
-    val typex = x.typex
-    val typey = y.typex
+    val typex = MaraType.promote(x.typex)
+    val typey = MaraType.promote(y.typex)
 
-    if (typex == typey && f(typex)) {
+    if (MaraType.isSubtype(typex, typey) && f(typex)) {
       typex
     } else {
-      ErrorType(s"Binary operator ${name} on invalid types")
+      ErrorType(s"Binary operator ${name} on invalid types ${typex} and ${typey}")
     }
   }
 
-  private[this] def numop(name: String)(x: Typed, y: Typed) = binop(name)(x, y)(t => t.isInstanceOf[IntType])
-  private[this] def boolop(name: String)(x: Typed, y: Typed) = binop(name)(x, y)(t => t.isInstanceOf[BoolType])
+  private[this] def numop(name: String)(x: Typed, y: Typed) = binop(name)(x, y)(t => MaraType.isSubtype(t, IntType()))
+  private[this] def boolop(name: String)(x: Typed, y: Typed) = binop(name)(x, y)(t => MaraType.isSubtype(t, BoolType()))
 
 
   override def plus(x: Typed, y: Typed): Typed = numop("plus")(x, y)

@@ -29,11 +29,20 @@ lazy val core =
   dependsOn(macros).
   settings(commonSettings: _*).
   settings(
-    name := "mara-lang",
+    name := "mara-core",
     libraryDependencies ++= Seq(
       "io.netty" % "netty-all" % "4.1.4.Final"
     )
   )
+
+lazy val root =
+  (project in file(".")).
+  settings(commonSettings: _*).
+  settings(
+    name := "mara-lang"
+  ).
+  dependsOn(macros, core).
+  aggregate(macros, core)
 
 
 
