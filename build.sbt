@@ -1,19 +1,40 @@
-name := "mara2-lang"
+lazy val commonSettings = Seq(
+  organization := "io.dac",
+  version := "0.1.0",
+  scalaVersion := "2.11.8",
+  libraryDependencies ++= Seq(
+    // Scala Dependencies
+    "org.parboiled" %% "parboiled" % "2.1.3",
+    "org.scalactic" %% "scalactic" % "3.0.0",
+    "org.typelevel" %% "cats" % "0.8.1",
 
-version := "0.1.0"
-
-scalaVersion := "2.11.8"
-
-libraryDependencies ++= List(
-  // Scala Dependencies
-  "org.parboiled" %% "parboiled" % "2.1.3",
-  "org.scalactic" %% "scalactic" % "3.0.0",
-  "org.typelevel" %% "cats" % "0.8.1"
-) ++ List (
-  // Java Dependencies
-  "io.netty" % "netty-all" % "4.1.4.Final",
-  "ch.qos.logback" %  "logback-classic" % "1.1.7",
-  "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0"
-) ++ List(
-  "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+    "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0"
+  ) ++ Seq(
+    // Java Dependencies
+    "ch.qos.logback" %  "logback-classic" % "1.1.7"
+  ) ++ Seq(
+    "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+  )
 )
+
+lazy val macros =
+  (project in file("./macros")).
+    settings(commonSettings: _*).
+    settings(
+      name := "mara-macros"
+    )
+
+lazy val core =
+  (project in file("./core")).
+  dependsOn(macros).
+  settings(commonSettings: _*).
+  settings(
+    name := "mara-lang",
+    libraryDependencies ++= Seq(
+      "io.netty" % "netty-all" % "4.1.4.Final"
+    )
+  )
+
+
+
+
