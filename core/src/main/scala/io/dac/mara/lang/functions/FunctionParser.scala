@@ -28,7 +28,7 @@ trait FunctionParser[E, Alg <: FunctionAlg[E]] extends LangParser[E, Alg]
   }
 
   def Call: Rule1[E] = rule {
-    "." ~ ValueId ~ Tuple ~> { (a: String, b: Seq[E]) => {
+    "." ~ ValueId ~ TupleSyntax ~> { (a: String, b: Seq[E]) => {
         alg.call(a, b)
       }
     }
@@ -66,13 +66,13 @@ trait FunctionParser[E, Alg <: FunctionAlg[E]] extends LangParser[E, Alg]
 
 
   private[this] def ValueParamTuple: Rule1[Seq[Pair]] = rule {
-    "(" ~ ValueParam ~ zeroOrMore("," ~ ValueParam) ~ ")" ~> {
+    "(" ~ ValueParam ~ zeroOrMore("," ~ ValueParam) ~ optional(',') ~ ")" ~> {
       (x: Pair, y: Seq[Pair]) => (x +: y)
     }
   }
 
   private[this] def TypeParamTuple: Rule1[Seq[Pair]] = rule {
-    "(" ~ TypeParam ~ zeroOrMore("," ~ TypeParam) ~ ")" ~> {
+    "(" ~ TypeParam ~ zeroOrMore("," ~ TypeParam) ~ optional(',') ~ ")" ~> {
       (x: Pair, y: Seq[Pair]) => (x +: y)
     }
   }

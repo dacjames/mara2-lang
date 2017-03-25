@@ -1,6 +1,7 @@
 package io.dac.mara.core
 
 import com.typesafe.scalalogging.LazyLogging
+import io.dac.mara.core.MaraType.IntLiteralType
 
 /**
   * Created by dcollins on 8/21/16.
@@ -13,7 +14,9 @@ object MaraValue {
   case class IntValue(value: Int) extends MaraValue
   case class StringValue(value: String) extends MaraValue
   case class BoolValue(value: Boolean) extends MaraValue
-  case class RecordValue(value: Record[_]) extends MaraValue
+  case class RecordValue(value: Record[_]) extends MaraValue {
+    override def toString: String = value.toString
+  }
   case class ValueParamValue(value: String, typex: MaraType) extends MaraValue
   case class TypeParamValue(value: String, typex: MaraType) extends MaraValue
   case class FunctionValue[E <: Expr](name: String, typeparams: Seq[TypeParamValue], valparams: Seq[ValueParamValue], body: Seq[E]) extends MaraValue
@@ -34,6 +37,7 @@ object MaraValue {
         }
         case StringValue(_) => false
         case BoolValue(b) => b
+        case _ => ???
       }
     }
   }

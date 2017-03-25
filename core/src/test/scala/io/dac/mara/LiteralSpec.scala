@@ -17,16 +17,16 @@ class LiteralSpec extends MaraSpec with MaraLanguage {
     eval("false") should be("BoolValue(false)")
   }
 
-  "Boolean Literals" should "have type Bool" in {
-    typed("true") should be("BoolType()")
+  "Boolean Literals" should "have literal types" in {
+    typed("true") should be("true")
   }
 
-  "String Literals" should "have type String" in {
-    typed("'hello, world'") should be("StringType()")
+  "String Literals" should "have literal types" in {
+    typed("'hello, world'") should be("'hello, world'")
   }
 
-  "Int Literals" should "have type Int" in {
-    typed("10") should be ("IntType()")
+  "Int Literals" should "have type literal int types" in {
+    typed("10") should be ("10")
 
   }
 }

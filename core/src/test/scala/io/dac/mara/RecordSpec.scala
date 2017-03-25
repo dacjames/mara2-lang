@@ -42,4 +42,9 @@ class RecordSpec extends MaraSpec {
     a[NoSuchElementException] shouldBe thrownBy{ r("x") }
   }
 
+  it should "have a nice toString" in {
+    s"${Record(0 -> "x", 1 -> "y")}" shouldEqual "Record(0: x, 1: y)"
+  }
+
+
 }

@@ -25,9 +25,20 @@ object Record {
       val i = keys.indexWhere(_ == key)
       nonNegative(i).map(values)
     }
+
+    override def toString: String = {
+      val inner = (keys zip values) map {
+        case (k, v) => {
+          val ks = k match { case IntKey(i) => i.toString case StringKey(s) => s }
+          s"$ks: $v"
+        }
+      } mkString ", "
+
+      s"Record($inner)"
+    }
   }
 
-  def apply[T](tags: (Key, T)*) = {
+  def apply[T](tags: (Key, T)*): Record[T] = {
     SeqRep(tags.map(_._1), tags.map(_._2))
   }
 
@@ -36,6 +47,8 @@ object Record {
   implicit def string2tag[T](tag: (String, T)): (Key, T) = (StringKey(tag._1), tag._2)
   implicit def int2key: Int => Key = IntKey(_)
   implicit def string2key: String => Key = StringKey(_)
+  implicit def ints2tags[T](tags: Seq[(Int, T)]): Seq[(Key, T)] = tags.map(int2tag(_))
+  implicit def strings2tags[T](tags: Seq[(String, T)]): Seq[(Key, T)] = tags.map(string2tag(_))
 
 
 }

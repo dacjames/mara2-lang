@@ -41,7 +41,7 @@ class ControlFowSpec extends MaraSpec with MaraLanguage {
       """do {
         |  val x = 1
         |  x
-        |}""".stripMargin) should be("IntType()")
+        |}""".stripMargin) should be("1")
   }
 
   it should "honor block scope in if blocks" in {

@@ -16,7 +16,7 @@ trait TypedFunction extends TypedOp with FunctionAlg[Typed] with VariableAlg[Typ
     val input = RecordType(valparams.map {
       case (name, typex) =>
         typex match {
-          case Some(t) => lookupType(t)
+          case Some(t) => TagType(StringLiteralType(name), lookupType(t))
           case None => InferrableType()
         }
     })
@@ -27,7 +27,7 @@ trait TypedFunction extends TypedOp with FunctionAlg[Typed] with VariableAlg[Typ
 
     val output =
       if (withPreample.isEmpty) UnitType()
-      else withPreample.map(_.typex).last
+      else MaraType.promote(withPreample.map(_.typex).last)
 
     def newFuncType =
       bindType(name, FunctionType(input, output))
@@ -44,7 +44,9 @@ trait TypedFunction extends TypedOp with FunctionAlg[Typed] with VariableAlg[Typ
 
   override def call(name: String, args: Seq[Typed]) = op {
     val funcType = lookupType(name)
-    val argsType = RecordType(args.map(_.typex))
+    val argsType = RecordType(args.zipWithIndex.map{
+      case (arg, index) => TagType(IntLiteralType(index), arg.typex)
+    })
 
     funcType match {
       case FunctionType(input, output) =>

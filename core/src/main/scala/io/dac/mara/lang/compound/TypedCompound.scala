@@ -10,7 +10,7 @@ trait TypedCompound extends TypedOp with CompoundAlg[Typed] {
   import MaraType._
   override def empty = op { EmptyType() }
 
-  private[this] val blockPartial =
+  private[this] val stripEmpty =
     new PartialFunction[Typed, MaraType] {
       private[this] var it: MaraType = _
       override def isDefinedAt(x: Typed) = { it = x.typex; ! it.isInstanceOf[EmptyType]}
@@ -18,7 +18,42 @@ trait TypedCompound extends TypedOp with CompoundAlg[Typed] {
     }
 
   override def dox(exprs: Seq[Typed]): Typed = op {
-    exprs.collect(blockPartial).last
+    exprs.collect(stripEmpty).last
   }
+
+  override def list(exprs: Seq[Typed]): Typed = op {
+    val tags = exprs.collect(stripEmpty).zipWithIndex map {
+      case (t, i) => TagType(IntLiteralType(i), MaraType.promote(t))
+    }
+
+    RecordType(tags)
+  }
+
+  override def record(tags: Seq[(Typed, Typed)]) = op {
+    val firstKey = tags.head._1.typex
+    try {
+      firstKey match {
+        case StringLiteralType(i) =>
+          val elems = tags.map {
+            case (k, v) =>
+              k.typex match {
+                case s: StringLiteralType => TagType(s, MaraType.promote(v.typex))
+              }
+          }
+          RecordType(elems)
+        case IntLiteralType(s) =>
+          val elems = tags.map {
+            case (k, v) =>
+              k.typex match {
+                case i: IntLiteralType => TagType(i, MaraType.promote(v.typex))
+              }
+          }
+          RecordType(elems)
+      }
+    } catch {
+      case e: MatchError => ErrorType("Cannot mix string and integer keys when constructing a record literal")
+    }
+  }
+
 
 }
