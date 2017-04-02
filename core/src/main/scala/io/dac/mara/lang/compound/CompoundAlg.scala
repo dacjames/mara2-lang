@@ -7,4 +7,6 @@ trait CompoundAlg[E] extends LangAlg[E] {
 	def dox(block: Seq[E]): E = ???
 	def list(exprs: Seq[E]): E = ???
   def record(tags: Seq[(E, E)]): E = ???
+
+  def get(name: String, args: Seq[E]): E = ???
 }

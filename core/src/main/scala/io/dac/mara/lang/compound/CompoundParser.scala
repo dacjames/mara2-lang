@@ -42,11 +42,21 @@ trait CompoundParser[E, Alg <: CompoundAlg[E] with LiteralAlg[E]] extends BlockP
   }
 
   private[this] def RecordKey: Rule1[E] = rule {
-    ((IntLiteral | StringLiteral) ~ Whitespace ~ ":") | ValueId ~> {(x: String) => alg.litstring(x) } ~ ":"
+    ((IntLiteral | StringLiteral) ~ Whitespace ~ ":") | Keyword
+  }
+
+  private[this] def Keyword: Rule1[E] = rule {
+    ValueId ~> {(x: String) => alg.litstring(x) } ~ ":"
   }
 
   def Empty: Rule1[E] = rule {
     MATCH ~> { () => alg.empty }
+  }
+
+  def Get: Rule1[E] = rule {
+    ValueId ~ '[' ~ (IntLiteral | Keyword) ~ zeroOrMore(ListSep ~ (IntLiteral | Keyword)) ~ optional(ListSep) ~ ']' ~> {
+      (a: String, b: E, c: Seq[E]) => alg.get(a, b +: c)
+    }
   }
 
 }

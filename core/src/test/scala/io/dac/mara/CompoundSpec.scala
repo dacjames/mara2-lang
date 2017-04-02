@@ -23,7 +23,11 @@ class CompoundSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "evaluate to a Record with int keys" in {
-    eval("[0: 10, 2: 'hello']") shouldEqual "Record(0: IntValue(10), 2: StringValue(hello))"
+    eval("[0: 10, 1: 'hello']") shouldEqual "Record(0: IntValue(10), 1: StringValue(hello))"
+  }
+
+  it should "reject to a Record with invalid int keys" in {
+    eval("[0: 10, 2: 'hello']") should include("ErrorValue")
   }
 
   it should "not allow keys to be mixed" in {
@@ -33,4 +37,26 @@ class CompoundSpec extends MaraSpec with MaraLanguage {
   it should "have the correct type" in {
     typed("[x: 10, y: 'hello']") shouldEqual "RecordType(Vector(TagType('x',IntType()), TagType('y',StringType())))"
   }
+
+  it should "support lookup by key" in {
+    eval("do { val rec = [x: 1, y: 0]; rec[x:] }") shouldEqual "IntValue(1)"
+  }
+
+  it should "support lookup by position" in {
+    eval("do { val rec = [x: 1, y: 0]; rec[1] }") shouldEqual "IntValue(0)"
+  }
+
+  it should "support lookup by multiple keys" in {
+    eval("do { val rec = [x: 1, y: 0]; rec[y:, x:] }") shouldEqual "Record(y: IntValue(0), x: IntValue(1))"
+  }
+
+  it should "support lookup by multiple positions" in {
+    eval("do { val rec = [x: 1, y: 0]; rec[1, 0] }") shouldEqual "Record(0: IntValue(0), 1: IntValue(1))"
+  }
+
+  it should "support lookup by mixed keys" in {
+    eval("do { val rec = [x: 1, y: 0]; rec[1, x:] }") shouldEqual "Record(0: IntValue(0), x: IntValue(1))"
+  }
+
+
 }

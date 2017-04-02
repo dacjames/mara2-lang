@@ -23,8 +23,12 @@ class RecordSpec extends MaraSpec {
   }
 
   it should "have a get method returning Some(value) if the key exists" in {
-    val r = Record(1 -> "x", "1" -> "y")
-    r.get(1) should ===(Some("x"))
+    val r = Record(0 -> "x", "1" -> "y")
+    r.get(0) should ===(Some("x"))
+  }
+
+  it should "reject invalid int keys" in {
+    Record.construct(1 -> "x", "1" -> "y") shouldBe a[Left[_, _]]
   }
 
   it should "have a get method returning None if the key does not exists" in {
@@ -44,6 +48,10 @@ class RecordSpec extends MaraSpec {
 
   it should "have a nice toString" in {
     s"${Record(0 -> "x", 1 -> "y")}" shouldEqual "Record(0: x, 1: y)"
+  }
+
+  it should "support extension" in {
+    (Record(0 -> "x") extend Record(0 -> "asdf", 1 -> "y")) shouldEqual Record(0 -> "asdf", 1 -> "y")
   }
 
 
