@@ -31,7 +31,7 @@ trait MaraParser[E, Alg <: lang.CombinedAlg[E]  ]
   }
 
   def Terminal: Rule1[E] = rule {
-    Parens | Literal | Do | ControlFlow |  Function | Variable | Substitution | Call | List | Record
+    Parens | Literal | Do | ControlFlow | Function | Get | Variable | Substitution | Call  | List | Record
   }
 
 }
