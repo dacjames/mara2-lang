@@ -37,43 +37,29 @@ trait EvalCompound extends EvalOp with Namespace with CompoundAlg[Eval] {
   }
 
   override def record(tags: Seq[(Eval, Eval)]): Eval = op {
-    val firstKey = tags.head._1.eval
-    try {
-      firstKey match {
-        case StringValue(i) =>
-          val elems = tags.map {
-            case (k, v) =>
-              k.eval match {
-                case StringValue(s) => s -> v.eval
-              }
-          }
-          Record.construct[MaraValue](elems: _*) match {
-            case Left(s) => ErrorValue(s"Cannot construct Record: ${s}")
-            case Right(r) => RecordValue(r)
-          }
-        case IntValue(s) =>
-          val elems = tags.map {
-            case (k, v) =>
-              k.eval match {
-                case IntValue(i) => i -> v.eval
-              }
-          }
-          Record.construct[MaraValue](elems: _*) match {
-            case Left(s) => ErrorValue(s"Cannot construct Record: ${s}")
-            case Right(r) => RecordValue(r)
-          }
-      }
-    } catch {
-      case e: MatchError => ErrorValue("Cannot mix string and integer keys when constructing a record literal")
+    import Record._
+
+    val kvps = tags.map {
+      case (k, v) =>
+        k.eval match {
+          case StringValue(s) => (StringKey(s), v.eval)
+          case IntValue(i) => (IntKey(i), v.eval)
+        }
+    }
+
+    Record.construct[MaraValue](kvps: _*) match {
+      case Right(r) => RecordValue(r)
+      case Left(s) => ErrorValue(s)
     }
   }
 
   override def get(name: String, args: Seq[Eval]): Eval = op {
     val record = lookupValue(name)
 
-    val newIt = record match {
+    record match {
       case MaraValue.RecordValue(r: Record[MaraValue]) =>
         val keys = args.map(_.eval)
+
 
         keys.length match {
           case 0 => ErrorValue("Should be impossible")
@@ -82,50 +68,20 @@ trait EvalCompound extends EvalOp with Namespace with CompoundAlg[Eval] {
             case IntValue(i) => r.get(i).getOrElse(ErrorValue(s"Pos ${i} not found in Record ${i}"))
           }
           case _ =>
-            val tags: Seq[(Int, MaraValue)] = keys.zipWithIndex.map {
-              case (IntValue(i), p) => (p, r.get(i).getOrElse(ErrorValue(s"Pos ${i} not found in Record ${i}")))
-              case (StringValue(s), p) => (p, r.get(s).getOrElse(ErrorValue(s"Key ${s} not found in Record ${s}")))
+            import Record._
+
+            val tags: Seq[(Key, MaraValue)] = keys.zipWithIndex.map {
+              case (IntValue(i), p) => (IntKey(p), r.get(i).getOrElse(ErrorValue(s"Pos ${i} not found in Record ${i}")))
+              case (StringValue(s), p) => (StringKey(s), r.get(s).getOrElse(ErrorValue(s"Key ${s} not found in Record ${s}")))
             }
 
-            RecordValue(Record[MaraValue](tags: _*))
+            construct(tags: _*) match {
+              case Left(s) => ErrorValue(s)
+              case Right(r) => RecordValue(r)
+            }
         }
-
+      case e: ErrorValue => e
       case _ => ErrorValue(s"Get only applys to records, not ${record}")
     }
-
-//    record match {
-//      case MaraValue.RecordValue(r) => {
-//        val keys = args.map(_.eval)
-//
-//        keys.length match {
-//          case 0 => ErrorValue("Should be impossible")
-//          case 1 => ( keys(0) match {
-//            case StringValue(s) => r.get(s).getOrElse(ErrorValue(s"Key ${s} not found in Record ${r}"))
-//            case IntValue(i) => r.get(i).getOrElse(ErrorValue(s"Pos ${i} not found in Record ${i}"))
-//          } ).asInstanceOf[MaraValue]
-//          case _ => {
-//            val byKey = keys.collect{
-//              case StringValue(s) => (s, r(s).asInstanceOf[MaraValue])
-//            }
-//
-//            val byPos: Seq[(Int, MaraValue)] = keys.zipWithIndex.collect {
-//              case (IntValue(i), p) => (p, r.get(i).get.asInstanceOf[MaraValue])
-//            }
-//
-//            (byKey.length, byPos.length) match {
-//              case (0, _) => RecordValue(Record[MaraValue](byPos: _*))
-//              case (_, 0) => RecordValue(Record[MaraValue](byKey: _*))
-//              case (_, _) => ???
-//            }
-//
-//          }
-//        }
-//
-//      }
-//      case _ => ErrorValue(s"Get only applys to records, not ${record}")
-//    }
-
-    newIt
-
   }
 }

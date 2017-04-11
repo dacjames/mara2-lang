@@ -1,7 +1,7 @@
 lazy val commonSettings = Seq(
   organization := "io.dac",
   version := "0.1.0",
-  scalaVersion := "2.11.8",
+  scalaVersion := "2.12.1",
   libraryDependencies ++= Seq(
     // Scala Dependencies
     "org.parboiled" %% "parboiled" % "2.1.3",
@@ -35,14 +35,12 @@ lazy val core =
     )
   )
 
-lazy val root =
+lazy val all =
   (project in file(".")).
   settings(commonSettings: _*).
   settings(
     name := "mara-lang"
-  ).
-  dependsOn(macros, core).
-  aggregate(macros, core)
+  ).aggregate(macros, core)
 
 
 

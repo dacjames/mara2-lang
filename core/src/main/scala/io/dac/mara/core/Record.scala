@@ -9,7 +9,8 @@ import scala.util.{Failure, Success, Try}
 sealed trait Record[A] {
   def get(key: Record.Key): Option[A]
   def apply(key: Record.Key): A = this.get(key).get
-  def extend(other: Record[A]): Record[A]
+  def under(that: Record[A]): Record[A]
+  def over(that: Record[A]): Record[A] = that.under(this)
 }
 
 object Record {
@@ -35,16 +36,24 @@ object Record {
       nonNegative(index).map(values)
     }
 
-    override def extend(other: Record[T]): Record[T] =
-      extend(other.asInstanceOf[SeqRep[T]])
+    override def under(that: Record[T]): Record[T] =
+      extend(that.asInstanceOf[SeqRep[T]])
 
-    def extend(other: SeqRep[T]): Record[T] = {
-      println(s"this: ${this} other: ${other}")
+    def extend(that: SeqRep[T]): Record[T] = {
 
-      val newKeys = this.keys.filterNot(other.keys.contains(_)) ++ other.keys
-      println(s"New Keys: ${newKeys}")
+      // Using a fold here to get map and filter at once
+      // In mara, collections can implement map.filter
+      val newKeys =
+        this.keys.zipWithIndex.foldRight(Seq.empty[Key]) {
+          case ((key, index), restkeys: Seq[Key]) =>
+            if (index < that.keys.length ||
+                that.keys.contains(key)) restkeys
+            else restkeys :+ key
+
+        } ++ that.keys
+
       val newValues = newKeys.map { k =>
-        other.get(k).getOrElse(this(k))
+        that.get(k).getOrElse(this(k))
       }
 
       Record(newKeys zip newValues: _*)
@@ -68,108 +77,39 @@ object Record {
     }
   }
 
-
-  case class LabelRep[T](labels: Seq[Label],
-                         values: Seq[T])
-    extends Record[T] {
-
-    private[Record] def keys =
-      this.labels.zipWithIndex.map {
-        case (label, pos) => key(label, pos)
-      }
-
-    private[Record] def key(label: Label, pos: Int) =
-      label match {
-        case Some(s) => s
-        case None => s"_${pos}"
-      }
-
-    override def get(key: Key): Option[T] = {
-//      println(s"get(${key})")
-      val index = key match {
-        case IntKey(i) => i
-        case StringKey(s) => labels indexWhere { _.contains(s) }
-      }
-      nonNegative(index).map(values)
-    }
-
-    private[Record] def get(label: Label): Option[T] =
-      nonNegative(labels.indexWhere( _ == label )).map(values)
-
-    override def toString: String = {
-      val inner = (labels zip values).zipWithIndex map {
-        case ((l, v), p) => {
-          val k = l match {
-            case None => p
-            case Some(s) => s
-          }
-          s"$k: $v"
-        }
-      } mkString ", "
-
-      s"Record($inner)"
-    }
-
-
-    override def extend(other: Record[T]): Record[T] =
-      this.extend(other.asInstanceOf[LabelRep[T]])
-
-    def extend(that: LabelRep[T]): Record[T] = {
-     val (newLabels, newValues) =
-       this.labels.
-         zipAll(that.labels, null, null).
-         zipWithIndex.
-         flatMap {
-           case ((thisLabel, null), p) =>
-             Seq(
-               (thisLabel, that.get(thisLabel).getOrElse(this.values(p)))
-             )
-           case ((null, thatLabel), p) =>
-             Seq(
-               (thatLabel, that.values(p))
-             )
-           case ((thisLabel, thatLabel), p) =>
-             Seq(
-               (thisLabel, that.get(thisLabel).getOrElse(this.values(p))),
-               (thatLabel, that.values(p))
-             )
-         }.unzip
-      LabelRep(newLabels, newValues)
-    }
-  }
-
-  object LabelRep {
-    def apply[T](tags: (Key, T)*): Record[T] = {
-      val labels =
-        tags.map {
-          case (IntKey(i), _) => None
-          case (StringKey(s), _) => Some(s)
-        }
-
-      LabelRep(labels, tags.map(_._2))
-    }
-
-
-  }
-
   def apply[T](tags: (Key, T)*): Record[T] =
     SeqRep.apply(tags: _*)
 
-//  def apply[T](tags: (Key, T)*): Record[T] =
-//    LabelRep.apply(tags: _*)
-
-
-
   def construct[T](tags: (Key, T)*): Either[String, Record[T]] = {
-    val outOfOrder = tags.map(_._1).zipWithIndex.collect {
-      case (IntKey(i), p) if i != p => (i, p)
+    lazy val keys = tags.map(_._1)
+
+    def outOfOrder(record: Record[T]) = {
+      val bad = keys.zipWithIndex.collect {
+        case (IntKey(i), p) if i != p => (i, p)
+      }
+
+      bad.length match {
+        case 0 => Right(record)
+        case 1 => Left(s"Out of order keys ${bad}")
+      }
     }
 
-    outOfOrder.length match {
-      case 0 => Right(apply(tags: _*))
-      case 1 => Left(s"Out of order keys ${outOfOrder}")
+    def intAfterString(record: Record[T]): Either[String, Record[T]] = {
+      var isString = false
+      for (k <- keys) {
+        k match {
+          case StringKey(_) =>
+            isString = true
+
+          case IntKey(_) =>
+            if (isString) return Left(s"Int keys must proceed string keys")
+        }
+      }
+
+      Right(record)
     }
 
+    outOfOrder(apply(tags: _*)) flatMap intAfterString
   }
 
 

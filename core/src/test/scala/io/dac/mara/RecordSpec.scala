@@ -31,6 +31,10 @@ class RecordSpec extends MaraSpec {
     Record.construct(1 -> "x", "1" -> "y") shouldBe a[Left[_, _]]
   }
 
+  it should "reject string keys after int keys" in {
+    Record.construct(0 -> "x", "a" -> "y", 1 -> "b") shouldBe a[Left[_, _]]
+  }
+
   it should "have a get method returning None if the key does not exists" in {
     val r = Record(1 -> "x", "1" -> "y")
     r.get("x") should ===(None)
@@ -41,7 +45,7 @@ class RecordSpec extends MaraSpec {
     r("1") should ===("y")
   }
 
-  it should "have an apply method thowing an exception if the key does not exists" in {
+  it should "have an apply method that throws an exception if the key does not exists" in {
     val r = Record(1 -> "x", "1" -> "y")
     a[NoSuchElementException] shouldBe thrownBy{ r("x") }
   }
@@ -51,8 +55,11 @@ class RecordSpec extends MaraSpec {
   }
 
   it should "support extension" in {
-    (Record(0 -> "x") extend Record(0 -> "asdf", 1 -> "y")) shouldEqual Record(0 -> "asdf", 1 -> "y")
+    (Record(0 -> "x", "y" -> "xx") under Record(0 -> "asdf", 1 -> "y")) shouldEqual Record(0 -> "asdf", 1 -> "y")
   }
 
-
+  it should "support extension #2" in {
+    // TODO Consider ordering implications of Record.under
+    (Record("x" -> "x", "y" -> "y") under Record("y" -> "yy", "x" -> "xx")) shouldEqual Record("y" -> "yy", "x" -> "xx")
+  }
 }

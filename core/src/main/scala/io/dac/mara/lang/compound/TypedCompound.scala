@@ -30,29 +30,14 @@ trait TypedCompound extends TypedOp with CompoundAlg[Typed] {
   }
 
   override def record(tags: Seq[(Typed, Typed)]) = op {
-    val firstKey = tags.head._1.typex
-    try {
-      firstKey match {
-        case StringLiteralType(i) =>
-          val elems = tags.map {
-            case (k, v) =>
-              k.typex match {
-                case s: StringLiteralType => TagType(s, MaraType.promote(v.typex))
-              }
-          }
-          RecordType(elems)
-        case IntLiteralType(s) =>
-          val elems = tags.map {
-            case (k, v) =>
-              k.typex match {
-                case i: IntLiteralType => TagType(i, MaraType.promote(v.typex))
-              }
-          }
-          RecordType(elems)
-      }
-    } catch {
-      case e: MatchError => ErrorType("Cannot mix string and integer keys when constructing a record literal")
+    val kvps = tags.map {
+      case (k, v) =>
+        k.typex match {
+          case s: StringLiteralType => TagType(s, MaraType.promote(v.typex))
+          case i: IntLiteralType => TagType(i, MaraType.promote(v.typex))
+        }
     }
+    RecordType(kvps)
   }
 
 
