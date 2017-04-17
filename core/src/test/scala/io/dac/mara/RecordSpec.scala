@@ -62,4 +62,9 @@ class RecordSpec extends MaraSpec {
     // TODO Consider ordering implications of Record.under
     (Record("x" -> "x", "y" -> "y") under Record("y" -> "yy", "x" -> "xx")) shouldEqual Record("y" -> "yy", "x" -> "xx")
   }
+
+  "Record Keys" should "be required to be a set" in {
+    Record.construct("x" -> 1, "y" -> 2, "x" -> 3) shouldBe a[Left[_, _]]
+    Record.construct(0 -> 10, 1 -> 20, "x" -> 1) shouldBe a[Right[_, _]]
+  }
 }

@@ -105,11 +105,19 @@ object Record {
             if (isString) return Left(s"Int keys must proceed string keys")
         }
       }
-
       Right(record)
     }
 
-    outOfOrder(apply(tags: _*)) flatMap intAfterString
+    def keysAreSet(record: Record[T]): Either[String, Record[T]] = {
+      var keySet = Set.empty[Key]
+      for (k <- keys) {
+        if (keySet.contains(k)) return Left(s"Record contains duplicate key: ${k}")
+        else keySet += k
+      }
+      Right(record)
+    }
+
+    outOfOrder(apply(tags: _*)) flatMap intAfterString flatMap keysAreSet
   }
 
 
