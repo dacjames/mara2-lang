@@ -9,6 +9,10 @@ import scala.util.{Failure, Success, Try}
 sealed trait Record[A] {
   def get(key: Record.Key): Option[A]
   def apply(key: Record.Key): A = this.get(key).get
+
+  def keys: Seq[Record.Key]
+  def values: Seq[A]
+
   def under(that: Record[A]): Record[A]
   def over(that: Record[A]): Record[A] = that.under(this)
 }

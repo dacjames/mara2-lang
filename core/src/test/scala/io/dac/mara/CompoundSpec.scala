@@ -15,7 +15,7 @@ class CompoundSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "have a record type" in {
-    typed("[1, 'asdf', 2]") shouldEqual "RecordType(Vector(TagType(0,IntType()), TagType(1,StringType()), TagType(2,IntType())))"
+    typed("[1, 'asdf', 2]") shouldEqual "RecordType(0: IntType(), 1: StringType(), 2: IntType())"
   }
 
 
@@ -57,14 +57,14 @@ class CompoundSpec extends MaraSpec with MaraLanguage {
   }
 
   "Record Types" should "support string keys" in {
-    typed("[x: 10, y: 'hello']") shouldEqual "RecordType(Vector(TagType('x',IntType()), TagType('y',StringType())))"
+    typed("[x: 10, y: 'hello']") shouldEqual "RecordType(x: IntType(), y: StringType())"
   }
   it should "support int keys" in {
-    typed("[0: 10, 1: 'hello']") shouldEqual "RecordType(Vector(TagType(0,IntType()), TagType(1,StringType())))"
+    typed("[0: 10, 1: 'hello']") shouldEqual "RecordType(0: IntType(), 1: StringType())"
   }
 
   it should "support mixed keys" in {
-    typed("[0: 10, y: 'hello']") shouldEqual "RecordType(Vector(TagType(0,IntType()), TagType('y',StringType())))"
+    typed("[0: 10, y: 'hello']") shouldEqual "RecordType(0: IntType(), y: StringType())"
   }
 
 

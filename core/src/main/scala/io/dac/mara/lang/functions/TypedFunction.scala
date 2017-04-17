@@ -1,5 +1,5 @@
 package io.dac.mara.lang.functions
-import io.dac.mara.core.{MaraType, Namespace}
+import io.dac.mara.core.{MaraType, Namespace, Record}
 import io.dac.mara.exprops.{Typed, TypedOp}
 import io.dac.mara.lang.variables.VariableAlg
 
@@ -13,13 +13,15 @@ trait TypedFunction extends TypedOp with FunctionAlg[Typed] with VariableAlg[Typ
 
     // TODO: Function Type Parameters are ignored
 
-    val input = RecordType(valparams.map {
+    val tags = valparams.map {
       case (name, typex) =>
         typex match {
-          case Some(t) => TagType(StringLiteralType(name), lookupType(t))
-          case None => InferrableType()
+          case Some(t) => (name, lookupType(t))
+          case None => (name, InferrableType())
         }
-    })
+    }
+
+    val input = RecordType(Record(tags: _*))
 
     val withPreample = valparams.map{
       case (name, typeOpt) => valdeclare(name, typeOpt)
@@ -44,9 +46,11 @@ trait TypedFunction extends TypedOp with FunctionAlg[Typed] with VariableAlg[Typ
 
   override def call(name: String, args: Seq[Typed]) = op {
     val funcType = lookupType(name)
-    val argsType = RecordType(args.zipWithIndex.map{
-      case (arg, index) => TagType(IntLiteralType(index), arg.typex)
-    })
+    val argsTags = args.zipWithIndex.map{
+      case (arg, index) => (index, arg.typex)
+    }
+
+    val argsType = RecordType(Record(argsTags: _*))
 
     funcType match {
       case FunctionType(input, output) =>

@@ -11,4 +11,5 @@
 - [ ] Support multiline without Empty
 - [ ] Type Check Functions
 - [ ] Make Logging levels easy to control
-- [ ] Use Record to implement RecordType
+- [x] Use Record to implement RecordType
+- [ ] Decide on LLVM approach

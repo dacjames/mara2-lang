@@ -10,7 +10,7 @@ class FunctionSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "have the type of the function body" in {
-    typed("def foo(x, y) { 10 }") shouldEqual "FunctionType(RecordType(Vector(InferrableType(), InferrableType())),IntType())"
+    typed("def foo(x, y) { 10 }") shouldEqual "FunctionType(RecordType(x: InferrableType(), y: InferrableType()),IntType())"
   }
 
   it should "support trailing commas" in {
@@ -18,7 +18,7 @@ class FunctionSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "type function parameters" in {
-    typed("def foo(x: Int, y: Bool) { x }") shouldEqual "FunctionType(RecordType(Vector(TagType('x',IntType()), TagType('y',BoolType()))),IntType())"
+    typed("def foo(x: Int, y: Bool) { x }") shouldEqual "FunctionType(RecordType(x: IntType(), y: BoolType()),IntType())"
   }
 
   "Abstract Functions" should "evaluate to a FunctionValue" in {

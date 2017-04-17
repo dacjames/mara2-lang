@@ -47,36 +47,14 @@ object MaraType {
     val name = None
   }
 
-  case class RecordType(fields: Seq[MaraType]) extends MaraType {
+  case class RecordType(record: Record[MaraType]) extends MaraType {
     val name = None
 
-    private[MaraType] def compareWith(other: RecordType)(pred: (MaraType, MaraType) => Boolean): Boolean =
-      this.fields.length == other.fields.length &&
-        this.fields.zip(other.fields).forall(p => pred(p._1, p._2))
-
-    private[MaraType] def positionalSubtype(other: RecordType): Boolean = {
-      if (this.fields.length != other.fields.length) return false
-
-      var i = 0
-      while (i < this.fields.length) {
-        this.fields(i) match {
-          case TagType(_, thisvalue) =>
-            other.fields(i) match {
-              case TagType(_, othervalue) =>
-                if (!isSubtype(thisvalue, othervalue)) return false
-              case _ =>
-                return false
-            }
-          case _ =>
-            return false
-        }
-        i += 1
-      }
-
-      true
-    }
+    override def toString: String =
+      record.toString.replaceAll(raw"^Record\(", "RecordType(")
 
   }
+
   case class FunctionType(input: MaraType, output: MaraType) extends MaraType {
     val name = None
   }
@@ -90,7 +68,12 @@ object MaraType {
     case (a: BoolLiteralType, b: BoolType) => true
     case (a: TagType, b: TagType) => isSubtype(a.key, b.key) && isSubtype(a.value, b.value)
     case (a: RecordType, b: RecordType) =>
-      a.compareWith(b)(isSubtype) || a.positionalSubtype(b)
+      a.record.keys.forall { key =>
+        b.record.get(key) match {
+          case Some(bType) => isSubtype(a.record(key), bType)
+          case None => false
+        }
+      }
     case (a: FunctionType, b: FunctionType) =>
       isSubtype(a.input, b.input) && isSupertype(a.output, b.output)
     case _ => a == b
@@ -99,7 +82,13 @@ object MaraType {
   def isSupertype(a: MaraType, b: MaraType): Boolean = (a, b) match {
     case (AnyType(), _) => true
     case (ErrorType(_), _) => false
-    case (a: RecordType, b: RecordType) => a.compareWith(b)(isSupertype)
+    case (a: RecordType, b: RecordType) =>
+      a.record.keys.forall { key =>
+        b.record.get(key) match {
+          case Some(bType) => isSupertype(a.record(key), bType)
+          case None => false
+        }
+      }
     case (a: StringType, b: StringLiteralType) => true
     case (a: IntType, b: IntLiteralType) => true
     case (a: LiteralType[_], b: LiteralType[_]) => a.value == b.value
