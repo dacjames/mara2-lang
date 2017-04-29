@@ -36,4 +36,6 @@ object CLI extends MaraLanguage with TimeIt with App {
     case e: AssertionError => {}
   }
 
+  println(compiled("def foo(x) { x + 1 }"))
+
 }

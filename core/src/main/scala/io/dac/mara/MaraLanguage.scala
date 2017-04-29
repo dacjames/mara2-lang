@@ -59,6 +59,12 @@ trait MaraLanguage extends TimeIt {
       val alg = lang.alg.typed
     }
 
+  private def compiledParser(text: String) =
+    new MaraParser[Compiled, lang.CombinedCompiled] {
+      val input = ParserInput(text)
+      val alg = lang.alg.compiled
+    }
+
   def show(text: String) = run {
     showParser(text)
   }
@@ -70,6 +76,10 @@ trait MaraLanguage extends TimeIt {
 
   def typed(text: String) = run {
     typedParser(text)
+  }
+
+  def compiled(text: String) = run {
+    compiledParser(text)
   }
 
   def pipeline[E <: Expr, R](text: String) = {
