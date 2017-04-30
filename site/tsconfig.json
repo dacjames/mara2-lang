@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "types": ["vue-typescript-import-dts"],
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
