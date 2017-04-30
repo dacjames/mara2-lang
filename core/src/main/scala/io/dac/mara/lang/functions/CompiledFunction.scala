@@ -1,12 +1,15 @@
 package io.dac.mara.lang.functions
 
 import io.dac.mara.exprops.{Compiled, CompiledOp, Typed}
+import io.dac.mara.ir.IrFragment
 
 /**
   * Created by dcollins on 4/28/17.
   */
 trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] {
   def typedAlg: FunctionAlg[Typed]
+
+  import io.dac.mara.ir.implicits._
 
   override def defconcrete(name: String,
                            typeparams: Seq[(String, Option[String])],
@@ -18,14 +21,12 @@ trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] {
       case (name, typeOpt) => s"i32 %$name"
     }.mkString(",")
 
-    val bytecode = Seq(
-      s"define i32 @$name($paramlist) {",
-      "entry:"
-    ) ++ body.flatMap(_.bytecode) ++
-    Seq(
-      s"ret i32 ${body.last.result};",
+    val bytecode =
+      s"define i32 @$name($paramlist) {" /|
+      "entry:" ++
+      body.flatMap(_.bytecode).toVector ++
+      s"ret i32 ${body.last.result};" /|
       "}"
-    )
 
     val result = s"@$name"
 

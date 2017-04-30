@@ -2,13 +2,14 @@ package io.dac.mara.exprops
 
 import io.dac.mara.core.Expr.Replable
 import io.dac.mara.core.Expr
+import io.dac.mara.ir.IrFragment
 
 /**
   * Created by dcollins on 4/28/17.
   */
 trait Compiled extends Expr {
-  def bytecode: Seq[String]
-  def result: String
+  def bytecode: Vector[IrFragment]
+  def result: IrFragment
 }
 
 object Compiled {
@@ -18,9 +19,10 @@ object Compiled {
 }
 
 trait CompiledOp {
-  def op(f: => (Seq[String], String)): Compiled =
+  def op(f: => (Vector[IrFragment], IrFragment)): Compiled =
     new Compiled {
-      override def bytecode: Seq[String] = f._1
+      override def bytecode = f._1
       override def result = f._2
+
     }
 }
