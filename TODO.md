@@ -9,12 +9,16 @@
 - [x] Support Trailing Commas
 - [ ] Investigate Parser initialization overhead
 - [ ] Support multiline without Empty
-- [ ] Type Check Functions
+- [x] Type Check Functions
 - [ ] Make Logging levels easy to control
 - [x] Use Record to implement RecordType
-- [ ] Decide on LLVM approach
+- [x] Decide on LLVM approach
+- [ ] Implement REPL
+- [ ] Integrate Pipeline steps
+- [ ] `def` to `fun`
 
 
 # Implement Pipeline
 
 - PhaseInfo implicit to algebra functions
+
