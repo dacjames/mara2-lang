@@ -13,3 +13,8 @@
 - [ ] Make Logging levels easy to control
 - [x] Use Record to implement RecordType
 - [ ] Decide on LLVM approach
+
+
+# Implement Pipeline
+
+- PhaseInfo implicit to algebra functions
