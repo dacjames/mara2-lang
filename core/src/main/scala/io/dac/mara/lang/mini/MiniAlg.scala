@@ -106,20 +106,21 @@ trait EvalAgain[Alg[_]] {
 
 
 class PhaseContextTracker extends PhaseContext {
+  implicit def wrapPhase: Int => Phase = Phase(_)
+  implicit def unwrapPhase: Phase => Int = _.index
 
-  private[this] val counters = mutable.Map.empty[ClassTag[_], Int]
+  private[this] val counters = mutable.Map.empty[ClassTag[_], Phase]
   private[this] val lookup = mutable.Map.empty[(Phase, ClassTag[_]), Any]
 
   override def phase[E](implicit cls: ClassTag[E]): Phase =
-    Phase(counters.getOrElse(cls, 0))
+    counters.getOrElse(cls, Phase(0))
 
   override def track[E](node: Phase => E)
                        (implicit cls: ClassTag[E]): E = {
-    val nextIndex = counters.getOrElse(cls, 0) + 1
-    counters.put(cls, nextIndex)
-    val phase = Phase(nextIndex)
-    val thunk = node(phase)
-    lookup.put((phase, cls), thunk)
+    val nextPhase = counters.getOrElse(cls, Phase(0)) + 1
+    counters.put(cls, nextPhase)
+    val thunk = node(nextPhase)
+    lookup.put((nextPhase, cls), thunk)
     thunk
   }
 
