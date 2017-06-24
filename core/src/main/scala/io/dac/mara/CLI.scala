@@ -19,9 +19,10 @@ object CLI extends MaraLanguage with TimeIt with App {
   for { i <- 1 until 1000} {
     eval("def fib(x) { if x <= 1 { 1 } else { .self(x-1) + .self(x-2) } }")
     eval(".fib(10)")
+    eval(".foo(x) { 1 + 2 + 3 }")
   }
   timeIt {
-    eval("do { .fib(10); .fib(10) }")
+    eval(".foo")
   }
 
   println(litpipeline("5"))

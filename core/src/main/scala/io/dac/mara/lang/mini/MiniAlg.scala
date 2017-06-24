@@ -1,20 +1,21 @@
 package io.dac.mara.lang.mini
 
 
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.{ConcurrentHashMap, Executor}
 
 import io.dac.mara.core.MaraValue.{ErrorValue, IntValue}
 import io.dac.mara.core.{MaraType, MaraValue}
 import io.dac.mara.lang.root.LangAlg
 import io.dac.mara.utils.TimeIt
 
-import scala.concurrent.{Await, Future, Promise}
+import scala.concurrent.{Await, ExecutionContext, Future, Promise}
 import scala.reflect.ClassTag
 import scala.collection.concurrent
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
+
 
 
 
@@ -100,7 +101,6 @@ case class Phase(index: Int) extends AnyVal
 
 class PhaseContext {
   type Key = (Phase, ClassTag[_])
-  import scala.collection.JavaConverters._
 
   implicit def wrapPhase: Int => Phase = Phase(_)
   implicit def unwrapPhase: Phase => Int = _.index
@@ -120,71 +120,51 @@ class PhaseContext {
     }
   }
 
-  private[this] val counters: mutable.Map[ClassTag[_], Phase] =
-    new ConcurrentHashMap[ClassTag[_], Phase]().asScala
-
-  private[this] val lookup: concurrent.Map[Key, Memo] =
-    new ConcurrentHashMap[Key, Memo]().asScala
-
-  private[this] val triggers: concurrent.Map[Key, Promise[Any]] =
-    new ConcurrentHashMap[Key, Promise[Any]]().asScala
+  private[this] val stacks: mutable.Map[ClassTag[_], mutable.ArrayBuffer[Memo]] =
+    mutable.Map.empty
 
   def phase[E](implicit cls: ClassTag[E]): Phase =
-    counters.getOrElse(cls, Phase(0))
+    stacks.get(cls).map(stack => Phase(stack.size - 1)).getOrElse(Phase(-1))
 
   def track[E <: MiniExpr[_]](node: Phase => E)
                                    (implicit cls: ClassTag[E]): E = {
-    val nextPhase = this.phase[E] + 1
-    counters.put(cls, nextPhase)
+    val stack = stacks.getOrElseUpdate(cls, mutable.ArrayBuffer.empty)
+    val nextPhase = stack.size
+
     val thunk = node(nextPhase)
-    val key: (Phase, ClassTag[_]) = (nextPhase, cls)
-
-    lookup.put(key, Memo.Pending(thunk))
-
-    triggers.remove(key) match {
-      case Some(trigger) =>
-        thunk.exec.onComplete {
-          case Success(target) => trigger.success(target)
-          case Failure(e) => trigger.failure(e)
-        }
-      case None => ()
-    }
+    stack += Memo.Pending(thunk)
 
     thunk
   }
 
   def retrieve[E <: MiniExpr[_]](phase: Phase)
                                       (implicit cls: ClassTag[E]): Future[E#Target] = {
-    val key: (Phase, ClassTag[_]) = (phase, cls)
+    val result =
+      stacks.get(cls)
+            .map(_(phase).resolve)
+            .getOrElse(Future.failed(new Exception("Unknown phase error")))
 
-    lookup.get(key) match {
-      case Some(memo) =>
-        memo.resolve
-      case None => {
-        val p = Promise[E#Target]()
-        triggers.put(key, p.asInstanceOf[Promise[Any]])
-        p.future
-      }
-    }
+    result
   }
 
   def rememberSuccess[E <: MiniExpr[_]](phase: Phase, target: E#Target)
                                                 (implicit cls: ClassTag[E]): Unit = {
-    lookup.put((phase, cls), Memo.Resolved(target))
+    println(s"Remember ${phase}, ${cls}")
+    stacks(cls).update(phase, Memo.Resolved(target))
   }
+
 
   def rememberFailure[E <: MiniExpr[_]](phase: Phase, error: Throwable)
                                                 (implicit cls: ClassTag[E]): Unit =
-    lookup.put((phase, cls), Memo.Failed(error))
+    stacks(cls).update(phase, Memo.Failed(error))
 
   def lookupOpt[E <: MiniExpr[_]](phase: Phase)
-                                          (implicit cls: ClassTag[E]): Option[E#Target] = {
-    lookup.get((phase, cls)).flatMap {
+                                          (implicit cls: ClassTag[E]): Option[E#Target] =
+    stacks(cls)(phase) match {
       case Memo.Pending(expr) => None
-      case Memo.Resolved(target) => Some(target.asInstanceOf[E#Target])
+      case Memo.Resolved(target) =>  Some(target.asInstanceOf[E#Target])
       case Memo.Failed(error) => None
     }
-  }
 
 
 }
@@ -201,7 +181,7 @@ trait MiniAlg2[E] extends LangAlg[E] {
 }
 
 
-trait EvalMini extends MiniEvalOp with MiniAlg[MiniEval] {
+trait EvalMini extends MiniEvalOp with MiniAlg[MiniEval] with MiniAlg2[MiniEval] {
   import io.dac.mara.core.MaraValue._
 
   override def litint(i: Int): MiniEval = op { phase =>
@@ -229,9 +209,7 @@ trait EvalMini extends MiniEvalOp with MiniAlg[MiniEval] {
         ErrorValue("???")
     }
   }
-}
 
-trait EvalMini2 extends MiniEvalOp with MiniAlg2[MiniEval] {
   override def sub(x: MiniEval, y: MiniEval): MiniEval = op { phase =>
     for {
       ax <- x.exec
@@ -244,6 +222,7 @@ trait EvalMini2 extends MiniEvalOp with MiniAlg2[MiniEval] {
     }
   }
 }
+
 
 trait ShowMini extends MiniShowOp with MiniAlg[MiniShow] {
   override def litint(i: Int): MiniShow = op { phase =>
@@ -277,42 +256,40 @@ trait ShowMini2 extends MiniShowOp with MiniAlg2[MiniShow] {
 }
 
 
-trait PipelineResult {
-  def retrieve[E <: MiniExpr[E]](implicit cls: ClassTag[E]): Future[E#Target]
+case class PipelineResult(implicit val context: PhaseContext) {
+  def retrieve[E <: MiniExpr[E]](implicit cls: ClassTag[E]): Future[E#Target] =
+    context.retrieve[E](context.phase[E])
+
   def await[E <: MiniExpr[E]](atMost: Duration)(implicit cls: ClassTag[E]) =
     Await.result(retrieve[E], atMost)
 }
 
 class MiniLang {
-  val langContextTracker = new PhaseContext
+  implicit val langContextTracker = new PhaseContext
+
 
   type LangAlg[E] = MiniAlg[E] with MiniAlg2[E]
 
   private[this] def stages: Seq[LangAlg[MiniExpr[_]]] = Seq(
 
-    new ShowMini with ShowMini2 {
+    new EvalMini {
       override val phaseContext = langContextTracker
     }.asInstanceOf[LangAlg[MiniExpr[_]]],
 
-    new EvalMini with EvalMini2 {
+    new ShowMini with ShowMini2 {
       override val phaseContext = langContextTracker
     }.asInstanceOf[LangAlg[MiniExpr[_]]]
+
   )
 
   def pipeline(expr: LangAlg[MiniExpr[_]] => MiniExpr[_]): PipelineResult = {
     stages.map(expr).foreach(_.exec)
-    new PipelineResult {
-      override def retrieve[E <: MiniExpr[_]](implicit cls: ClassTag[E]): Future[E#Target] =
-        langContextTracker.retrieve[E](langContextTracker.phase[E])
-    }
+    PipelineResult()
   }
 
   def parPipeline(expr: LangAlg[MiniExpr[_]] => MiniExpr[_]): PipelineResult = {
     stages.par.map(expr).foreach(_.exec)
-    new PipelineResult {
-      override def retrieve[E <: MiniExpr[_]](implicit cls: ClassTag[E]): Future[E#Target] =
-        langContextTracker.retrieve[E](langContextTracker.phase[E])
-    }
+    PipelineResult()
   }
 
 }
@@ -320,6 +297,8 @@ class MiniLang {
 
 object MiniTest extends App with TimeIt {
   val lang = new MiniLang
+
+
 
   def expr(alg: MiniLang#LangAlg[MiniExpr[_]]): MiniExpr[_] =
     alg.sub(alg.add(alg.add(alg.litint(1), alg.litint(2)), alg.litint(3)), alg.litint(3))
@@ -330,9 +309,8 @@ object MiniTest extends App with TimeIt {
   }
 
   timeIt {
-    val result = timeThe("pipeline") {
+    val result =
       lang.pipeline(expr)
-    }
 
     println(s"${result.await[MiniShow](1.second)} ==> ${result.await[MiniEval](1.second)}")
   }
