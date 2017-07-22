@@ -17,44 +17,24 @@ import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
 
 
+case class Phase(index: Int) extends AnyVal
+abstract class PhaseKey[A] {
+  def phaseIndex: Int
+}
 
-
-abstract class MiniExpr[E <: MiniExpr[E]](val phase: Phase, context: PhaseContext)
-                                         (implicit cls: ClassTag[E]) {
+abstract class MiniExpr[E <: MiniExpr[E]](val phase: Phase, context: PhaseContext){
   type Target
 
-  def target: Future[E#Target]
-  def shouldMemoize: Boolean = true
-
-  def exec: Future[E#Target] = {
-    if (shouldMemoize) {
-      context.lookupOpt[E](phase) match {
-        case Some(target) => Future(target)
-        case None =>
-          val result = this.target
-
-          result.onComplete {
-            case Success(target) =>
-              context.rememberSuccess[E](phase, target)
-            case Failure(error) =>
-              context.rememberFailure[E](phase, error)
-          }
-          result
-      }
-    } else {
-      this.target
-    }
-
-  }
+  def exec: Future[E#Target]
 
   def await(atMost: Duration): E#Target =
     Await.result(this.exec, atMost)
 
-  def retrieve[E <: MiniExpr[_]](implicit cls: ClassTag[E]): Future[E#Target] =
+  def retrieve[E <: MiniExpr[_]: PhaseKey]: Future[E#Target] =
     context.retrieve[E](this.phase)
 }
 
-abstract class ExprOps[E <: MiniExpr[E]](implicit cls: ClassTag[E]) {
+abstract class ExprOps[E <: MiniExpr[E]: PhaseKey] {
   implicit val phaseContext: PhaseContext
 
 
@@ -73,11 +53,17 @@ abstract class MiniShow(phase: Phase)
   override type Target = String
 }
 
+object MiniShow {
+  implicit object MiniShowKey extends PhaseKey[MiniShow] {
+    override def phaseIndex: Int = 0
+  }
+}
+
 abstract class MiniShowOp extends ExprOps[MiniShow] {
   override def build(fn: (Phase) => Future[String])
                     (phase: Phase): MiniShow =
     new MiniShow(phase) {
-      override def target = fn(this.phase)
+      override def exec = fn(this.phase)
     }
 }
 
@@ -87,85 +73,62 @@ abstract class MiniEval(phase: Phase)
   override type Target = MaraValue
 }
 
+object MiniEval {
+  implicit object MiniEvalKey extends PhaseKey[MiniEval] {
+    override def phaseIndex: Int = 1
+  }
+}
+
 abstract class MiniEvalOp extends ExprOps[MiniEval] {
   override def build(fn: (Phase) => Future[MaraValue])
                     (phase: Phase): MiniEval =
     new MiniEval(phase) {
-      override def target = fn(this.phase)
+      override def exec = fn(this.phase)
     }
 }
 
-// ################## Phase Tracking ################## //
 
-case class Phase(index: Int) extends AnyVal
 
 class PhaseContext {
-  type Key = (Phase, ClassTag[_])
 
-  implicit def wrapPhase: Int => Phase = Phase(_)
+  implicit def wrapPhase: Int => Phase = Phase
   implicit def unwrapPhase: Phase => Int = _.index
 
-  sealed abstract class Memo {
-    def resolve[E <: MiniExpr[E]]: Future[E#Target]
-  }
-  object Memo {
-    case class Pending(expr: Any) extends Memo {
-      override def resolve[E <: MiniExpr[E]]: Future[E#Target] = expr.asInstanceOf[E].exec
+
+  private[this] val exprLogs: mutable.ArrayBuffer[mutable.ArrayBuffer[Any]] =
+    mutable.ArrayBuffer.empty
+
+  def phase[E: PhaseKey]: Phase =
+    Phase(exprLogs(implicitly[PhaseKey[E]].phaseIndex).size - 1)
+
+  def track[E <: MiniExpr[_]: PhaseKey](node: Phase => E): E = {
+    val index = implicitly[PhaseKey[E]].phaseIndex
+    while (index >= exprLogs.size) {
+      exprLogs += mutable.ArrayBuffer.empty
     }
-    case class Resolved(target: Any) extends Memo {
-      override def resolve[E <: MiniExpr[E]]: Future[E#Target] = Future(target.asInstanceOf[E#Target])
-    }
-    case class Failed(error: Throwable) extends Memo {
-      override def resolve[E <: MiniExpr[E]]: Future[E#Target] = Future.failed(error)
-    }
-  }
 
-  private[this] val stacks: mutable.Map[ClassTag[_], mutable.ArrayBuffer[Memo]] =
-    mutable.Map.empty
-
-  def phase[E](implicit cls: ClassTag[E]): Phase =
-    stacks.get(cls).map(stack => Phase(stack.size - 1)).getOrElse(Phase(-1))
-
-  def track[E <: MiniExpr[_]](node: Phase => E)
-                                   (implicit cls: ClassTag[E]): E = {
-    val stack = stacks.getOrElseUpdate(cls, mutable.ArrayBuffer.empty)
-    val nextPhase = stack.size
-
-    val thunk = node(nextPhase)
-    stack += Memo.Pending(thunk)
+    val targetLog = exprLogs(index)
+    val thunk = node(targetLog.size)
+    targetLog += thunk
 
     thunk
   }
 
-  def retrieve[E <: MiniExpr[_]](phase: Phase)
-                                      (implicit cls: ClassTag[E]): Future[E#Target] = {
+  private[this] def coerce[E <: MiniExpr[E]](expr: Any): Future[E#Target] =
+    expr.asInstanceOf[E].exec
+
+
+  def retrieve[E <: MiniExpr[_]: PhaseKey](phase: Phase): Future[E#Target] = {
+    val index = implicitly[PhaseKey[E]].phaseIndex
     val result =
-      stacks.get(cls)
-            .map(_(phase).resolve)
-            .getOrElse(Future.failed(new Exception("Unknown phase error")))
+      if (index < exprLogs.size && phase.index < exprLogs(index).size) {
+        coerce(exprLogs(index)(phase.index))
+      } else {
+        Future.failed(new Exception("Unknown phase error!"))
+      }
 
     result
   }
-
-  def rememberSuccess[E <: MiniExpr[_]](phase: Phase, target: E#Target)
-                                                (implicit cls: ClassTag[E]): Unit = {
-    println(s"Remember ${phase}, ${cls}")
-    stacks(cls).update(phase, Memo.Resolved(target))
-  }
-
-
-  def rememberFailure[E <: MiniExpr[_]](phase: Phase, error: Throwable)
-                                                (implicit cls: ClassTag[E]): Unit =
-    stacks(cls).update(phase, Memo.Failed(error))
-
-  def lookupOpt[E <: MiniExpr[_]](phase: Phase)
-                                          (implicit cls: ClassTag[E]): Option[E#Target] =
-    stacks(cls)(phase) match {
-      case Memo.Pending(expr) => None
-      case Memo.Resolved(target) =>  Some(target.asInstanceOf[E#Target])
-      case Memo.Failed(error) => None
-    }
-
 
 }
 
@@ -257,10 +220,10 @@ trait ShowMini2 extends MiniShowOp with MiniAlg2[MiniShow] {
 
 
 case class PipelineResult(implicit val context: PhaseContext) {
-  def retrieve[E <: MiniExpr[E]](implicit cls: ClassTag[E]): Future[E#Target] =
+  def retrieve[E <: MiniExpr[E]: PhaseKey](implicit cls: ClassTag[E]): Future[E#Target] =
     context.retrieve[E](context.phase[E])
 
-  def await[E <: MiniExpr[E]](atMost: Duration)(implicit cls: ClassTag[E]) =
+  def await[E <: MiniExpr[E]: PhaseKey](atMost: Duration)(implicit cls: ClassTag[E]) =
     Await.result(retrieve[E], atMost)
 }
 
