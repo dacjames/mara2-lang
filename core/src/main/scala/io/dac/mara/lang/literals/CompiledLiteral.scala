@@ -5,7 +5,7 @@ import io.dac.mara.exprops.{Compiled, CompiledOp}
 /**
   * Created by dcollins on 4/28/17.
   */
-trait CompiledLiteral extends LiteralAlg[Compiled] with CompiledOp {
+trait CompiledLiteral extends CompiledOp with LiteralAlg[Compiled] {
   import io.dac.mara.ir.implicits._
 
   override def litint(it: Int): Compiled =

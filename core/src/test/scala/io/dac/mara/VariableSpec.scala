@@ -26,7 +26,7 @@ class VariableSpec extends MaraSpec with MaraLanguage {
   }
 
   "Variable substition" should "have the type of the value" in {
-    typed("do {val x: Int; x}") should be("IntType()")
+    typed("do {val x: Int; x}") should be("IntType(wtf)")
   }
 
 //  it should "work with operators" in {

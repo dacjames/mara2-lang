@@ -2,7 +2,7 @@ package io.dac.mara
 
 import java.io.{PrintWriter, StringWriter}
 
-import io.dac.mara.core.Expr
+import io.dac.mara.core.{Expr, PhaseContext}
 import io.dac.mara.core.Expr.Replable
 import io.dac.mara.utils.TimeIt
 import io.dac.mara.exprops._
@@ -29,6 +29,8 @@ trait MaraLanguage extends TimeIt {
     e.printStackTrace(new PrintWriter(sw))
     sw.toString
   }
+
+  implicit val context = new PhaseContext
 
   private[this] def run[E, Alg <: LangAlg[E], R](parser: LangParser[E, Alg])(implicit f: Expr.Replable[E, R]) =
     timeInner("Parser") {
@@ -78,11 +80,11 @@ trait MaraLanguage extends TimeIt {
     typedParser(text)
   }
 
-  def compiled(text: String) = run {
-    compiledParser(text)
-  }
+//  def compiled(text: String) = run {
+//    compiledParser(text)
+//  }
 
-  def pipeline[E <: Expr, R](text: String) = {
+  def pipeline[E <: Expr[E], R](text: String) = {
     var parser = showParser(text)
 
     (for {
@@ -97,22 +99,22 @@ trait MaraLanguage extends TimeIt {
       case Failure(error: Throwable) => trace2string(error)
     }
   }
-
-  def litpipeline(text: String) = {
-
-    implicit object pipelineReplable$ extends Replable[(Show, Typed, Eval), String] {
-      override def value(e: (Show, Typed, Eval)) = s"${e._1.show} :: ${e._2.typex} ==> ${e._3.eval}"
-    }
-
-    val parser = new MaraParser[(Show, Typed, Eval), lang.CombinedAlg[(Show, Typed, Eval)]] {
-      val alg = new PipelineLiteral(lang.alg.show, lang.alg.typed, lang.alg.eval).asInstanceOf[lang.CombinedAlg[(Show, Typed, Eval)]  ]
-      val input = ParserInput(text)
-    }
-
-    parser.Root.run() map {
-      case (s: Show, t: Typed, e: Eval) => s"${s.show} :: ${t.typex} ==> ${e.eval}"
-    }
-  }
+//
+//  def litpipeline(text: String) = {
+//
+//    implicit object pipelineReplable$ extends Replable[(Show, Typed, Eval), String] {
+//      override def value(e: (Show, Typed, Eval)) = s"${e._1.show} :: ${e._2.typex} ==> ${e._3.eval}"
+//    }
+//
+//    val parser = new MaraParser[(Show, Typed, Eval), lang.CombinedAlg[(Show, Typed, Eval)]] {
+//      val alg = new PipelineLiteral(lang.alg.show, lang.alg.typed, lang.alg.eval).asInstanceOf[lang.CombinedAlg[(Show, Typed, Eval)]  ]
+//      val input = ParserInput(text)
+//    }
+//
+//    parser.Root.run() map {
+//      case (s: Show, t: Typed, e: Eval) => s"${s.show} :: ${t.typex} ==> ${e.eval}"
+//    }
+//  }
 
 
 }

@@ -24,19 +24,19 @@ object CLI extends MaraLanguage with TimeIt with App {
   timeIt {
     eval(".foo")
   }
+//
+//  println(litpipeline("5"))
+//
+//
+//  import PipelineBuilder._
+//
+//  myassert(true, "Not seen")
+//  try {
+//    myassert(false, "Thrown")
+//  } catch {
+//    case e: AssertionError => {}
+//  }
 
-  println(litpipeline("5"))
-
-
-  import PipelineBuilder._
-
-  myassert(true, "Not seen")
-  try {
-    myassert(false, "Thrown")
-  } catch {
-    case e: AssertionError => {}
-  }
-
-  println(compiled("def foo(x) { x + 1 }"))
+//  println(compiled("def foo(x) { x + 1 }"))
 
 }

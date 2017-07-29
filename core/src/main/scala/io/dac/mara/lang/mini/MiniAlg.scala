@@ -17,12 +17,12 @@ import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
 
 
-case class Phase(index: Int) extends AnyVal
-abstract class PhaseKey[A] {
+case class MiniPhase(index: Int) extends AnyVal
+abstract class MiniPhaseKey[A] {
   def phaseIndex: Int
 }
 
-abstract class MiniExpr[E <: MiniExpr[E]](val phase: Phase, context: PhaseContext){
+abstract class MiniExpr[E <: MiniExpr[E]](val phase: MiniPhase, context: PhaseContext){
   type Target
 
   def exec: Future[E#Target]
@@ -30,58 +30,58 @@ abstract class MiniExpr[E <: MiniExpr[E]](val phase: Phase, context: PhaseContex
   def await(atMost: Duration): E#Target =
     Await.result(this.exec, atMost)
 
-  def retrieve[E <: MiniExpr[_]: PhaseKey]: Future[E#Target] =
+  def retrieve[E <: MiniExpr[_]: MiniPhaseKey]: Future[E#Target] =
     context.retrieve[E](this.phase)
 }
 
-abstract class ExprOps[E <: MiniExpr[E]: PhaseKey] {
+abstract class ExprOps[E <: MiniExpr[E]: MiniPhaseKey] {
   implicit val phaseContext: PhaseContext
 
 
-  def build(fn: Phase => Future[E#Target])(phase: Phase): E
+  def build(fn: MiniPhase => Future[E#Target])(phase: MiniPhase): E
 
-  def op(f: Phase => Future[E#Target]): E = {
+  def op(f: MiniPhase => Future[E#Target]): E = {
     phaseContext.track[E](build(f))
   }
 }
 
 // ################## Expr Types ################## //
 
-abstract class MiniShow(phase: Phase)
+abstract class MiniShow(phase: MiniPhase)
                        (implicit context: PhaseContext)
   extends MiniExpr[MiniShow](phase, context) {
   override type Target = String
 }
 
 object MiniShow {
-  implicit object MiniShowKey extends PhaseKey[MiniShow] {
+  implicit object MiniShowKey extends MiniPhaseKey[MiniShow] {
     override def phaseIndex: Int = 0
   }
 }
 
 abstract class MiniShowOp extends ExprOps[MiniShow] {
-  override def build(fn: (Phase) => Future[String])
-                    (phase: Phase): MiniShow =
+  override def build(fn: (MiniPhase) => Future[String])
+                    (phase: MiniPhase): MiniShow =
     new MiniShow(phase) {
       override def exec = fn(this.phase)
     }
 }
 
-abstract class MiniEval(phase: Phase)
+abstract class MiniEval(phase: MiniPhase)
                        (implicit context: PhaseContext)
   extends MiniExpr[MiniEval](phase, context) {
   override type Target = MaraValue
 }
 
 object MiniEval {
-  implicit object MiniEvalKey extends PhaseKey[MiniEval] {
+  implicit object MiniEvalKey extends MiniPhaseKey[MiniEval] {
     override def phaseIndex: Int = 1
   }
 }
 
 abstract class MiniEvalOp extends ExprOps[MiniEval] {
-  override def build(fn: (Phase) => Future[MaraValue])
-                    (phase: Phase): MiniEval =
+  override def build(fn: (MiniPhase) => Future[MaraValue])
+                    (phase: MiniPhase): MiniEval =
     new MiniEval(phase) {
       override def exec = fn(this.phase)
     }
@@ -91,18 +91,18 @@ abstract class MiniEvalOp extends ExprOps[MiniEval] {
 
 class PhaseContext {
 
-  implicit def wrapPhase: Int => Phase = Phase
-  implicit def unwrapPhase: Phase => Int = _.index
+  implicit def wrapPhase: Int => MiniPhase = MiniPhase
+  implicit def unwrapPhase: MiniPhase => Int = _.index
 
 
   private[this] val exprLogs: mutable.ArrayBuffer[mutable.ArrayBuffer[Any]] =
     mutable.ArrayBuffer.empty
 
-  def phase[E: PhaseKey]: Phase =
-    Phase(exprLogs(implicitly[PhaseKey[E]].phaseIndex).size - 1)
+  def phase[E: MiniPhaseKey]: MiniPhase =
+    MiniPhase(exprLogs(implicitly[MiniPhaseKey[E]].phaseIndex).size - 1)
 
-  def track[E <: MiniExpr[_]: PhaseKey](node: Phase => E): E = {
-    val index = implicitly[PhaseKey[E]].phaseIndex
+  def track[E <: MiniExpr[_]: MiniPhaseKey](node: MiniPhase => E): E = {
+    val index = implicitly[MiniPhaseKey[E]].phaseIndex
     while (index >= exprLogs.size) {
       exprLogs += mutable.ArrayBuffer.empty
     }
@@ -118,8 +118,8 @@ class PhaseContext {
     expr.asInstanceOf[E].exec
 
 
-  def retrieve[E <: MiniExpr[_]: PhaseKey](phase: Phase): Future[E#Target] = {
-    val index = implicitly[PhaseKey[E]].phaseIndex
+  def retrieve[E <: MiniExpr[_]: MiniPhaseKey](phase: MiniPhase): Future[E#Target] = {
+    val index = implicitly[MiniPhaseKey[E]].phaseIndex
     val result =
       if (index < exprLogs.size && phase.index < exprLogs(index).size) {
         coerce(exprLogs(index)(phase.index))
@@ -220,10 +220,10 @@ trait ShowMini2 extends MiniShowOp with MiniAlg2[MiniShow] {
 
 
 case class PipelineResult(implicit val context: PhaseContext) {
-  def retrieve[E <: MiniExpr[E]: PhaseKey](implicit cls: ClassTag[E]): Future[E#Target] =
+  def retrieve[E <: MiniExpr[E]: MiniPhaseKey](implicit cls: ClassTag[E]): Future[E#Target] =
     context.retrieve[E](context.phase[E])
 
-  def await[E <: MiniExpr[E]: PhaseKey](atMost: Duration)(implicit cls: ClassTag[E]) =
+  def await[E <: MiniExpr[E]: MiniPhaseKey](atMost: Duration)(implicit cls: ClassTag[E]) =
     Await.result(retrieve[E], atMost)
 }
 

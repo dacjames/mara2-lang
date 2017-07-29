@@ -5,7 +5,7 @@ import io.dac.mara.exprops.{Compiled, CompiledOp}
 /**
   * Created by dcollins on 4/28/17.
   */
-trait CompiledOperator extends OperatorAlg[Compiled] with CompiledOp {
+trait CompiledOperator extends CompiledOp with OperatorAlg[Compiled]  {
   import io.dac.mara.ir.implicits._
 
   override def plus(x: Compiled, y: Compiled): Compiled =
