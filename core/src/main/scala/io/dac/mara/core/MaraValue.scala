@@ -19,7 +19,7 @@ object MaraValue {
   }
   case class ValueParamValue(value: String, typex: MaraType) extends MaraValue
   case class TypeParamValue(value: String, typex: MaraType) extends MaraValue
-  case class FunctionValue[E <: Expr](name: String, typeparams: Seq[TypeParamValue], valparams: Seq[ValueParamValue], body: Seq[E]) extends MaraValue
+  case class FunctionValue[E <: Expr[E]](name: String, typeparams: Seq[TypeParamValue], valparams: Seq[ValueParamValue], body: Seq[E]) extends MaraValue
   case class ErrorValue(msg: String) extends MaraValue
   case class UnitValue() extends MaraValue
   case class EmptyValue() extends MaraValue // Special value used for empty expressions.  Find a better solution for this!

@@ -7,8 +7,6 @@ import io.dac.mara.ir.IrFragment
   * Created by dcollins on 4/28/17.
   */
 trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] {
-  def typedAlg: FunctionAlg[Typed]
-
   import io.dac.mara.ir.implicits._
 
   override def defconcrete(name: String,

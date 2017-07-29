@@ -19,23 +19,16 @@ object CLI extends MaraLanguage with TimeIt with App {
   for { i <- 1 until 1000} {
     eval("def fib(x) { if x <= 1 { 1 } else { .self(x-1) + .self(x-2) } }")
     eval(".fib(10)")
+    eval(".foo(x) { 1 + 2 + 3 }")
   }
   timeIt {
-    eval("do { .fib(10); .fib(10) }")
+    eval("do { .foo; .foo }")
   }
 
-  println(litpipeline("5"))
+  println(factory("10"))
 
+  println(eval("10"))
 
-  import PipelineBuilder._
-
-  myassert(true, "Not seen")
-  try {
-    myassert(false, "Thrown")
-  } catch {
-    case e: AssertionError => {}
-  }
-
-  println(compiled("def foo(x) { x + 1 }"))
+  println(factory("if x < 0 { 1 + 2 } else { 3 }"))
 
 }
