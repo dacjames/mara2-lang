@@ -1,6 +1,6 @@
-package io.dac.mara.exprops
+package io.dac.mara.phases
 
-import io.dac.mara.core.{Expr, ExprOps, Phase, PhaseKey}
+import io.dac.mara.core.{Expr, ExprOps, Phase}
 import io.dac.mara.ir.IrFragment
 
 /**
@@ -15,7 +15,7 @@ trait Compiled extends Expr[Compiled] {
 }
 
 object Compiled {
-  implicit object CompiledPhaseKey extends PhaseKey[Compiled] {
+  implicit object CompiledPhase extends Phase[Compiled] {
     override def key: Int = 3
   }
 }
@@ -25,6 +25,6 @@ trait CompiledOp extends ExprOps[Compiled] {
     new Compiled {
       override def bytecode = f._1
       override def result = f._2
-      override val phase = context.nextPhase[Compiled]
+      override val phase = context.nextIndex[Compiled]
     }
 }

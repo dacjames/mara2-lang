@@ -2,10 +2,9 @@ package io.dac.mara
 
 import java.io.{PrintWriter, StringWriter}
 
-import io.dac.mara.core.{Expr, PhaseContext}
+import io.dac.mara.core.{Expr, TreeContext, _}
+import io.dac.mara.phases._
 import io.dac.mara.utils.TimeIt
-import io.dac.mara.exprops._
-import io.dac.mara.lang.root.LangAlg
 import org.parboiled2.{ErrorFormatter, ParseError, ParserInput}
 
 import scala.util.{Failure, Success}
@@ -21,7 +20,7 @@ trait MaraLanguage extends TimeIt {
     sw.toString
   }
 
-  implicit val context = new PhaseContext
+  implicit val context = new TreeContext
 
   private def factoryParser(text: String) =
     new MaraParser[Factory, lang.CombinedFactory] {
@@ -29,7 +28,7 @@ trait MaraLanguage extends TimeIt {
       val alg = lang.alg.factory
     }
 
-  def run[E <: Expr[E], R](text: String, alg: LangAlg[E]) = {
+  def run[E <: Expr[E], R](text: String, alg: ExprAlg[E]) = {
     val parser = factoryParser(text)
     parser.Root.run().map { factory =>
       val tree = factory.build

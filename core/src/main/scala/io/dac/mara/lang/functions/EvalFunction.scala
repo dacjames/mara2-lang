@@ -1,10 +1,9 @@
 package io.dac.mara.lang.functions
 
-import io.dac.mara.core.Namespace
-import io.dac.mara.exprops.{Eval, EvalOp}
+import io.dac.mara.core.{MaraValue, Namespace}
+import io.dac.mara.phases.{Eval, EvalOp}
 
 import scala.collection.mutable
-import io.dac.mara.core.MaraValue
 
 /**
   * Created by dcollins on 8/28/16.

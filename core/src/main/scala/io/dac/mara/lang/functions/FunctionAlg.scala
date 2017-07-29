@@ -1,12 +1,12 @@
 package io.dac.mara.lang.functions
 
 import com.typesafe.scalalogging.LazyLogging
-import io.dac.mara.lang.root.LangAlg
+import io.dac.mara.core._
 
 /**
   * Created by dcollins on 8/28/16.
   */
-trait FunctionAlg[E] extends LangAlg[E] with LazyLogging {
+trait FunctionAlg[E] extends ExprAlg[E] with LazyLogging {
 
   type Param = (String, Option[String])
 

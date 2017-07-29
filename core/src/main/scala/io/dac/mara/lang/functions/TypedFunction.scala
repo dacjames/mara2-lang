@@ -1,6 +1,6 @@
 package io.dac.mara.lang.functions
 import io.dac.mara.core.{MaraType, Namespace, Record}
-import io.dac.mara.exprops.{Typed, TypedOp}
+import io.dac.mara.phases.{Typed, TypedOp}
 import io.dac.mara.lang.variables.VariableAlg
 
 /**

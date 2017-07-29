@@ -1,9 +1,9 @@
-import asyncio
 import json
-import sys
 import traceback
 
+import asyncio
 import msgpack
+import sys
 
 
 class InvalidMagicByte(Exception):

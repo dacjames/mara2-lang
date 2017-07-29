@@ -1,15 +1,15 @@
 package io.dac.mara.lang.operators
 
 import io.dac.mara.core.MaraValue
-import io.dac.mara.exprops.{Eval, EvalOp}
+import io.dac.mara.phases.{Eval, EvalOp}
 
 /**
   * Created by dcollins on 8/2/16.
   */
 trait EvalOperator extends EvalOp with OperatorAlg[Eval] {
+  import MaraValue._
   import MaraValue.implicits._
   import MaraValue.implicits.truthy._
-  import MaraValue._
 
   private[this] def intop(xv: => MaraValue, yv: => MaraValue)(f: (Int, Int) => MaraValue) = op {
     (xv, yv) match {

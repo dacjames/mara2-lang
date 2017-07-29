@@ -1,11 +1,11 @@
 package io.dac.mara.lang.operators
 
-import io.dac.mara.lang.root.LangAlg
+import io.dac.mara.core._
 
 /**
   * Created by dcollins on 8/2/16.
   */
-trait OperatorAlg[E] extends LangAlg[E] {
+trait OperatorAlg[E] extends ExprAlg[E] {
   def plus(x: E, y: E): E = ???
   def minus(x: E, y: E): E = ???
   def times(x: E, y: E): E = ???

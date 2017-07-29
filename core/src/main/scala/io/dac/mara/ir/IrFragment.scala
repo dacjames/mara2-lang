@@ -1,7 +1,5 @@
 package io.dac.mara.ir
 
-import implicits._
-
 /**
   * Created by dcollins on 4/30/17.
   */

@@ -1,4 +1,4 @@
-package io.dac.mara.exprops
+package io.dac.mara.phases
 
 import io.dac.mara.core._
 
@@ -13,7 +13,7 @@ trait Show extends Expr[Show] {
 }
 
 object Show {
-  implicit object ShowPhaseKey extends PhaseKey[Show] {
+  implicit object ShowPhase extends Phase[Show] {
     override def key: Int = 0
   }
 }
@@ -21,6 +21,6 @@ object Show {
 trait ShowOp extends ExprOps[Show] {
   def op(f: => String) = new Show {
     override def show = f
-    override val phase: Phase = context.nextPhase[Show]
+    override val phase: TreeIndex = context.nextIndex[Show]
   }
 }

@@ -1,6 +1,6 @@
 package io.dac.mara.lang.operators
 
-import io.dac.mara.lang.root.LangParser
+import io.dac.mara.lang.parsers.LangParser
 import org.parboiled2._
 
 /**

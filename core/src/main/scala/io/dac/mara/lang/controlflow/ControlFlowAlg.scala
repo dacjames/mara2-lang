@@ -1,11 +1,11 @@
 package io.dac.mara.lang.controlflow
 
-import io.dac.mara.lang.root.LangAlg
+import io.dac.mara.core._
 
 /**
   * Created by dcollins on 8/6/16.
   */
-trait ControlFlowAlg[E] extends LangAlg[E] {
+trait ControlFlowAlg[E] extends ExprAlg[E] {
   def ifx(pred: E, body: E): E = ???
   def elsex(expr: E, otherwise: E): E = ???
 }

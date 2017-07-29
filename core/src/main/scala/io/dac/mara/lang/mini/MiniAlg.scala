@@ -1,20 +1,14 @@
 package io.dac.mara.lang.mini
 
 
-import java.util.concurrent.{ConcurrentHashMap, Executor}
-
-import io.dac.mara.core.MaraValue.{ErrorValue, IntValue}
-import io.dac.mara.core.{MaraType, MaraValue}
-import io.dac.mara.lang.root.LangAlg
+import io.dac.mara.core.{MaraValue, _}
 import io.dac.mara.utils.TimeIt
 
-import scala.concurrent.{Await, ExecutionContext, Future, Promise}
-import scala.reflect.ClassTag
-import scala.collection.concurrent
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.{Await, Future}
+import scala.reflect.ClassTag
 
 
 case class MiniPhase(index: Int) extends AnyVal
@@ -134,12 +128,12 @@ class PhaseContext {
 
 // ################## Algebras ################## //
 
-trait MiniAlg[E] extends LangAlg[E] {
+trait MiniAlg[E] extends ExprAlg[E] {
   def litint(i: Int): E
   def add(x: E, y: E): E
 }
 
-trait MiniAlg2[E] extends LangAlg[E] {
+trait MiniAlg2[E] extends ExprAlg[E] {
   def sub(x: E, y: E): E
 }
 

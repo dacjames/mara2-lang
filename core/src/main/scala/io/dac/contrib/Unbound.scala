@@ -143,7 +143,8 @@ object UnboundExample extends App {
   import Unbound._
 
   def program(implicit C: Crud.Dsl[Command], S: Search.Dsl[Command]): Free[Command, Stream] = {
-    import C._, S._
+    import C._
+    import S._
 
     for {
       s1 <- create("dac.dummy")

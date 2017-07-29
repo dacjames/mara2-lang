@@ -1,120 +1,120 @@
 package io.dac.mara.lang.operators
 
-import io.dac.mara.exprops.{Factory, FactoryOp, Node}
-import io.dac.mara.lang.root.LangAlg
+import io.dac.mara.core.ExprAlg
+import io.dac.mara.phases.{Factory, FactoryOp, Node}
 
 trait FactoryOperator extends FactoryOp with OperatorAlg[Factory] {
 
   case class Plus(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.plus(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Minus(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.minus(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Times(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.times(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Divide(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.divide(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Power(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.power(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Lt(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.lt(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Gt(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.gt(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Lte(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.lte(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Gte(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.gte(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Ne(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.ne(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Eq(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.eq(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class And(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.and(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Or(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.or(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Not(x: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.not(x.build.exec(alg))
     }
   }
 
   case class Nand(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.nand(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Base(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.base(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Low(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.low(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class Medium(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.medium(x.build.exec(alg), y.build.exec(alg))
     }
   }
 
   case class High(x: Factory, y: Factory) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: OperatorAlg[E] => alg.high(x.build.exec(alg), y.build.exec(alg))
     }
   }

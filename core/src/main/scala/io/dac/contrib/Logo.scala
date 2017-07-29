@@ -122,7 +122,8 @@ object Logo {
 
 
   def program(start: Position)(implicit M: dsl.Moves[LogoApp], A: dsl.PencilActions[LogoApp]): Free[LogoApp, Unit] = {
-    import M._, A._
+    import A._
+    import M._
     for {
       p1 <- forward(start, 10)
       p2 <- right(p1)

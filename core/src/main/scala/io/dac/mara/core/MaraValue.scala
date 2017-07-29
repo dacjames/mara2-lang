@@ -1,7 +1,6 @@
 package io.dac.mara.core
 
-import com.typesafe.scalalogging.LazyLogging
-import io.dac.mara.core.MaraType.IntLiteralType
+import io.dac.mara.utils.IntBoolConverters
 
 /**
   * Created by dcollins on 8/21/16.

@@ -1,7 +1,6 @@
 package io.dac.mara.ports
 
-import io.netty.buffer.{ByteBuf, Unpooled}
-import io.netty.channel.{ChannelHandlerContext, ChannelInboundHandlerAdapter, SimpleChannelInboundHandler}
+import io.netty.channel.{ChannelHandlerContext, ChannelInboundHandlerAdapter}
 
 /**
   * Created by dcollins on 8/6/16.

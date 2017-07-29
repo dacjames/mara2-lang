@@ -6,8 +6,8 @@ package io.dac.mara.core
 abstract class Expr[+E <: Expr[E]] {
   type Target
 
-  def phase: Phase
+  def phase: TreeIndex
   def value: Target
 }
 
-abstract class ExprOps[E <: Expr[E]: PhaseKey](implicit val context: PhaseContext)
+abstract class ExprOps[E <: Expr[E]: Phase](implicit val context: TreeContext)

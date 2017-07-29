@@ -1,6 +1,6 @@
 package io.dac.mara.lang.operators
 
-import io.dac.mara.exprops.{Show, ShowOp}
+import io.dac.mara.phases.{Show, ShowOp}
 
 trait ShowOperatorSymbols extends ShowOp with OperatorAlg[Show] {
   private[this] def binop(x: Show, y: Show, sym: String) = op { s"(${x.show} ${sym} ${y.show})" }

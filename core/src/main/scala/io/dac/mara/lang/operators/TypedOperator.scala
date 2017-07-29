@@ -1,7 +1,7 @@
 package io.dac.mara.lang.operators
 
-import io.dac.mara.exprops.{Typed, TypedOp}
 import io.dac.mara.core.MaraType
+import io.dac.mara.phases.{Typed, TypedOp}
 
 /**
   * Created by dcollins on 8/27/16.

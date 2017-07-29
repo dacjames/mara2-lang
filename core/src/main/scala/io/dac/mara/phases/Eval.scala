@@ -1,4 +1,4 @@
-package io.dac.mara.exprops
+package io.dac.mara.phases
 
 import io.dac.mara.core._
 
@@ -15,7 +15,7 @@ trait Eval extends Expr[Eval] {
 }
 
 object Eval {
-  implicit object EvalPhaseKey extends PhaseKey[Eval] {
+  implicit object EvalPhase extends Phase[Eval] {
     override def key: Int = 2
   }
 }
@@ -25,7 +25,7 @@ trait EvalOp extends ExprOps[Eval] {
   def op(f: => MaraValue) = {
     new Eval {
       override def eval = f
-      override val phase: Phase = context.nextPhase[Eval]
+      override val phase: TreeIndex = context.nextIndex[Eval]
     }
   }
 }

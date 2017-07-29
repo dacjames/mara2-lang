@@ -1,7 +1,7 @@
 package io.dac.mara.lang.literals
 
-import io.dac.mara.exprops.{Eval, EvalOp}
 import io.dac.mara.core.MaraValue
+import io.dac.mara.phases.{Eval, EvalOp}
 
 /**
   * Created by dcollins on 8/2/16.

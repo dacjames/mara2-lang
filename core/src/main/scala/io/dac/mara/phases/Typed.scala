@@ -1,4 +1,4 @@
-package io.dac.mara.exprops
+package io.dac.mara.phases
 
 import io.dac.mara.core._
 
@@ -15,7 +15,7 @@ trait Typed extends Expr[Typed] {
 }
 
 object Typed {
-  implicit object TypedPhaseKey extends PhaseKey[Typed] {
+  implicit object TypedPhase extends Phase[Typed] {
     override def key: Int = 1
   }
 }
@@ -23,7 +23,7 @@ object Typed {
 trait TypedOp extends ExprOps[Typed] {
   def op(f: => MaraType) = new Typed {
     override def typex = f
-    override val phase: Phase = context.nextPhase[Typed]
+    override val phase: TreeIndex = context.nextIndex[Typed]
   }
 }
 

@@ -1,7 +1,6 @@
 package io.dac.mara.lang.functions
 
-import io.dac.mara.exprops.{Compiled, CompiledOp, Typed}
-import io.dac.mara.ir.IrFragment
+import io.dac.mara.phases.{Compiled, CompiledOp}
 
 /**
   * Created by dcollins on 4/28/17.

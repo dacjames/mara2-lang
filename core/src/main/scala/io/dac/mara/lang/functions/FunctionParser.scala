@@ -1,10 +1,7 @@
 package io.dac.mara.lang.functions
 
-import io.dac.mara.lang.parsers.{BlockParser, IdentifierParser, TupleParser}
-import io.dac.mara.lang.root.LangParser
+import io.dac.mara.lang.parsers.{BlockParser, IdentifierParser, LangParser, TupleParser}
 import org.parboiled2._
-
-import scala.collection.{GenTraversable, GenTraversableOnce}
 
 /**
   * Created by dcollins on 8/28/16.

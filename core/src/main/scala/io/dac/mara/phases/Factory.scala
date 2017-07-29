@@ -1,10 +1,9 @@
-package io.dac.mara.exprops
+package io.dac.mara.phases
 
 import io.dac.mara.core._
-import io.dac.mara.lang.root.LangAlg
 
 abstract class Node {
-  def exec[E](alg: LangAlg[E]): E
+  def exec[E](alg: ExprAlg[E]): E
 }
 
 trait Factory extends Expr[Factory] {
@@ -15,7 +14,7 @@ trait Factory extends Expr[Factory] {
 }
 
 object Factory {
-  implicit object FactoryPhaseKey extends PhaseKey[Factory] {
+  implicit object FactoryPhase extends Phase[Factory] {
     override def key: Int = 3
   }
 }
@@ -24,7 +23,7 @@ trait FactoryOp extends ExprOps[Factory] {
   def op(f: => Node) = {
     new Factory {
       override def build = f
-      override val phase: Phase = context.nextPhase[Factory]
+      override val phase: TreeIndex = context.nextIndex[Factory]
     }
   }
 }

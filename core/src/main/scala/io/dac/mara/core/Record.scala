@@ -1,7 +1,5 @@
 package io.dac.mara.core
 
-import scala.util.{Failure, Success, Try}
-
 /**
   * Created by dcollins on 8/20/16.
   */

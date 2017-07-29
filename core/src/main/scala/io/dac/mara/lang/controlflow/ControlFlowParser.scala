@@ -1,7 +1,7 @@
 package io.dac.mara.lang.controlflow
 
-import io.dac.mara.lang.root.LangParser
-import org.parboiled2.{Parser, ParserInput, Rule1}
+import io.dac.mara.lang.parsers.LangParser
+import org.parboiled2.Rule1
 
 /**
   * Created by dcollins on 8/6/16.

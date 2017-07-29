@@ -1,7 +1,6 @@
 package io.dac.mara.lang.variables
 
-import io.dac.mara.lang.parsers.IdentifierParser
-import io.dac.mara.lang.root.LangParser
+import io.dac.mara.lang.parsers.{IdentifierParser, LangParser}
 import org.parboiled2._
 
 /**

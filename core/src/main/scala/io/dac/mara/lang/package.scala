@@ -1,14 +1,13 @@
 package io.dac.mara
 
-import io.dac.mara.core.PhaseContext
-import io.dac.mara.exprops.{Compiled, Factory, Typed}
-import io.dac.mara.lang.compound.CompoundAlg
+import io.dac.mara.core.TreeContext
+import io.dac.mara.phases.{Compiled, Factory}
+import io.dac.mara.lang.compound.{CompoundAlg, _}
 import io.dac.mara.lang.controlflow._
 import io.dac.mara.lang.functions._
 import io.dac.mara.lang.literals._
 import io.dac.mara.lang.operators._
 import io.dac.mara.lang.variables._
-import io.dac.mara.lang.compound._
 
 /**
   * Created by dcollins on 3/18/17.
@@ -37,10 +36,10 @@ package object lang {
 
 
   object alg {
-    def show(implicit context: PhaseContext) = new ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable with ShowCompound
-    def eval(implicit context: PhaseContext) = new EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable with EvalCompound
-    def typed(implicit context: PhaseContext) = new TypedLiteral with TypedOperator with TypedControlFlow with TypedFunction with TypedVariable with TypedCompound
-    def compiled(implicit context: PhaseContext) = new CompiledLiteral with CompiledOperator with CompiledVariable with CompiledFunction with MissingImpl[Compiled]
-    def factory(implicit context: PhaseContext) = new FactoryLiteral with FactoryOperator with FactoryControlFlow with FactoryFunction with FactoryVariable with FactoryCompound with MissingImpl[Factory]
+    def show(implicit context: TreeContext) = new ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable with ShowCompound
+    def eval(implicit context: TreeContext) = new EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable with EvalCompound
+    def typed(implicit context: TreeContext) = new TypedLiteral with TypedOperator with TypedControlFlow with TypedFunction with TypedVariable with TypedCompound
+    def compiled(implicit context: TreeContext) = new CompiledLiteral with CompiledOperator with CompiledVariable with CompiledFunction with MissingImpl[Compiled]
+    def factory(implicit context: TreeContext) = new FactoryLiteral with FactoryOperator with FactoryControlFlow with FactoryFunction with FactoryVariable with FactoryCompound with MissingImpl[Factory]
   }
 }

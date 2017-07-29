@@ -1,8 +1,8 @@
 package io.dac.mara.lang.compound
 
-import io.dac.mara.lang.root.LangAlg
+import io.dac.mara.core._
 
-trait CompoundAlg[E] extends LangAlg[E] {
+trait CompoundAlg[E] extends ExprAlg[E] {
 	def empty: E = ???
 	def dox(block: Seq[E]): E = ???
 	def list(exprs: Seq[E]): E = ???

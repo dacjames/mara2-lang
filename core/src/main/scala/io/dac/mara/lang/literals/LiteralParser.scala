@@ -1,7 +1,6 @@
 package io.dac.mara.lang.literals
 
-import io.dac.mara.lang.parsers.LiteralSyntaxParser
-import io.dac.mara.lang.root.LangParser
+import io.dac.mara.lang.parsers.{LangParser, LiteralSyntaxParser}
 import org.parboiled2._
 
 

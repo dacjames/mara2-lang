@@ -1,7 +1,7 @@
 package io.dac.mara.lang.functions
 
-import io.dac.mara.exprops.{Factory, FactoryOp, Node}
-import io.dac.mara.lang.root.LangAlg
+import io.dac.mara.core.ExprAlg
+import io.dac.mara.phases.{Factory, FactoryOp, Node}
 
 trait FactoryFunction extends FactoryOp with FunctionAlg[Factory] {
   case class DefConcrete(name: String,
@@ -10,7 +10,7 @@ trait FactoryFunction extends FactoryOp with FunctionAlg[Factory] {
                          typex: Option[String],
                          body: Seq[Factory])
     extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: FunctionAlg[E] => alg.defconcrete(name, typeparams, valparams, typex, body.map(_.build.exec(alg)))
     }
   }
@@ -20,13 +20,13 @@ trait FactoryFunction extends FactoryOp with FunctionAlg[Factory] {
                          valparams: Seq[(String, Option[String])],
                          typex: Option[String])
     extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: FunctionAlg[E] => alg.defabstract(name, typeparams, valparams, typex)
     }
   }
 
   case class Call(name: String, args: Seq[Factory]) extends Node {
-    override def exec[E](alg: LangAlg[E]): E = alg match {
+    override def exec[E](alg: ExprAlg[E]): E = alg match {
       case alg: FunctionAlg[E] => alg.call(name, args.map(_.build.exec(alg)))
     }
   }

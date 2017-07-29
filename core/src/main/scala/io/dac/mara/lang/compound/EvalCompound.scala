@@ -1,10 +1,7 @@
 package io.dac.mara.lang.compound
 
-import io.dac.mara.core.MaraValue.EmptyValue
-import io.dac.mara.exprops.{Eval, EvalOp}
 import io.dac.mara.core.{MaraValue, Namespace, Record}
-
-import scala.collection.mutable
+import io.dac.mara.phases.{Eval, EvalOp}
 
 /**
   * Created by dcollins on 3/24/17.
