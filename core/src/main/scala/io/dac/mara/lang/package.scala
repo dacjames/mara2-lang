@@ -1,7 +1,7 @@
 package io.dac.mara
 
 import io.dac.mara.core.PhaseContext
-import io.dac.mara.exprops.{Compiled, Typed}
+import io.dac.mara.exprops.{Compiled, Factory, Typed}
 import io.dac.mara.lang.compound.CompoundAlg
 import io.dac.mara.lang.controlflow._
 import io.dac.mara.lang.functions._
@@ -32,14 +32,15 @@ package object lang {
   type CombinedShow =  ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable with ShowCompound
   type CombinedEval =  EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable with EvalCompound
   type CombinedTyped = TypedLiteral with TypedOperator with TypedControlFlow with TypedFunction with TypedVariable with TypedCompound
-  type CombinedCompiled = MissingImpl[Compiled] with CompiledLiteral with CompiledOperator with CompiledVariable with CompiledFunction
+  type CombinedCompiled =  CompiledLiteral with CompiledOperator with CompiledVariable with CompiledFunction with MissingImpl[Compiled]
+  type CombinedFactory = FactoryLiteral with FactoryOperator with FactoryControlFlow with FactoryFunction with FactoryVariable with FactoryCompound with MissingImpl[Factory]
 
 
   object alg {
     def show(implicit context: PhaseContext) = new ShowLiteral with ShowOperator with ShowControlFlow with ShowFunction with ShowVariable with ShowCompound
     def eval(implicit context: PhaseContext) = new EvalLiteral with EvalOperator with EvalControlFlow with EvalFunction with EvalVariable with EvalCompound
     def typed(implicit context: PhaseContext) = new TypedLiteral with TypedOperator with TypedControlFlow with TypedFunction with TypedVariable with TypedCompound
-
     def compiled(implicit context: PhaseContext) = new CompiledLiteral with CompiledOperator with CompiledVariable with CompiledFunction with MissingImpl[Compiled]
+    def factory(implicit context: PhaseContext) = new FactoryLiteral with FactoryOperator with FactoryControlFlow with FactoryFunction with FactoryVariable with FactoryCompound with MissingImpl[Factory]
   }
 }

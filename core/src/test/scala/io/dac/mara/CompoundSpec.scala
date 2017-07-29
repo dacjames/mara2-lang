@@ -7,6 +7,11 @@ class CompoundSpec extends MaraSpec with MaraLanguage {
   "Do Blocks" should "evaluate their arguments in order and return the last result" in {
     eval("do { 1; 2; 3 } ") shouldEqual "IntValue(3)"
   }
+
+  it should "support pipeline" in {
+    pipeline("do { 1; 2; 3}") should be("do {1; 2; 3} :: 3 ==> IntValue(3)")
+  }
+
   "Lists" should "evaluate to a Record with integer keys" in {
     eval("[1, 'asdf', 2]") shouldEqual "Record(0: IntValue(1), 1: StringValue(asdf), 2: IntValue(2))"
   }

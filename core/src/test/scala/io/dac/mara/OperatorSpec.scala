@@ -8,6 +8,10 @@ class OperatorSpec extends MaraSpec with MaraLanguage {
     typed("1 + 2") should be("IntType()")
   }
 
+  it should "support pipeline" in {
+    pipeline("1 + 2") should be("(1 + 2) :: IntType() ==> IntValue(3)")
+  }
+
   it should "give a type error for non-int arguments" in {
     typed("1 + true") should include("ErrorType")
   }

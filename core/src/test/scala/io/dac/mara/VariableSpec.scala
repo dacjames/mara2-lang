@@ -6,6 +6,9 @@ package io.dac.mara
 class VariableSpec extends MaraSpec with MaraLanguage {
   "Variables assignment" should "parse without types" in {
     eval("val x = 10") should be("IntValue(10)")
+  }
+
+  it should "support pipeline" in {
     pipeline("val x = 10") should be("val x = 10 :: 10 ==> IntValue(10)")
   }
 
@@ -26,10 +29,10 @@ class VariableSpec extends MaraSpec with MaraLanguage {
   }
 
   "Variable substition" should "have the type of the value" in {
-    typed("do {val x: Int; x}") should be("IntType(wtf)")
+    typed("do {val x: Int; x}") should be("IntType()")
   }
 
-//  it should "work with operators" in {
-//    eval("do { val x = 10; x + 2 }") should be("IntValue(12)")
-//  }
+  it should "work with operators" in {
+    eval("do { val x = 10; x + 2 }") should be("IntValue(12)")
+  }
 }

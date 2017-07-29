@@ -8,6 +8,10 @@ class ControlFowSpec extends MaraSpec with MaraLanguage {
     show("if 1 {1}") should be("if 1 { 1 }")
   }
 
+  it should "support pipeline" in {
+    pipeline("if 1 {1}") should be("if 1 { 1 } :: AnyType() ==> IntValue(1)")
+  }
+
   it should "evaluate the if statement with trueish predicate" in {
     eval("if 1 { 3 }") should be("IntValue(3)")
   }

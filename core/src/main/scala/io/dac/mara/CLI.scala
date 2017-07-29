@@ -22,21 +22,13 @@ object CLI extends MaraLanguage with TimeIt with App {
     eval(".foo(x) { 1 + 2 + 3 }")
   }
   timeIt {
-    eval(".foo")
+    eval("do { .foo; .foo }")
   }
-//
-//  println(litpipeline("5"))
-//
-//
-//  import PipelineBuilder._
-//
-//  myassert(true, "Not seen")
-//  try {
-//    myassert(false, "Thrown")
-//  } catch {
-//    case e: AssertionError => {}
-//  }
 
-//  println(compiled("def foo(x) { x + 1 }"))
+  println(factory("10"))
+
+  println(eval("10"))
+
+  println(factory("if x < 0 { 1 + 2 } else { 3 }"))
 
 }
