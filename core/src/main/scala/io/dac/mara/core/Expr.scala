@@ -10,4 +10,6 @@ abstract class Expr[+E <: Expr[E]] {
   def value: Target
 }
 
-abstract class ExprOps[E <: Expr[E]: Phase](implicit val context: TreeContext)
+abstract class ExprOps[E <: Expr[E]: Phase](implicit val context: TreeContext) {
+  def op(f: => E#Target): E
+}

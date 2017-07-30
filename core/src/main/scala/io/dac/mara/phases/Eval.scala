@@ -22,7 +22,7 @@ object Eval {
 
 
 trait EvalOp extends ExprOps[Eval] {
-  def op(f: => MaraValue) = {
+  override def op(f: => MaraValue) = {
     new Eval {
       override def eval = f
       override val phase: TreeIndex = context.nextIndex[Eval]

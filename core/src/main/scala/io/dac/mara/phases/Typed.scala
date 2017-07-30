@@ -21,7 +21,7 @@ object Typed {
 }
 
 trait TypedOp extends ExprOps[Typed] {
-  def op(f: => MaraType) = new Typed {
+  override def op(f: => MaraType) = new Typed {
     override def typex = f
     override val phase: TreeIndex = context.nextIndex[Typed]
   }

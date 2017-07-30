@@ -21,7 +21,7 @@ object Compiled {
 }
 
 trait CompiledOp extends ExprOps[Compiled] {
-  def op(f: => (Vector[IrFragment], IrFragment)): Compiled =
+  override def op(f: => (Vector[IrFragment], IrFragment)): Compiled =
     new Compiled {
       override def bytecode = f._1
       override def result = f._2
