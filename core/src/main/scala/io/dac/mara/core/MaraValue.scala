@@ -7,7 +7,6 @@ import io.dac.mara.utils.IntBoolConverters
   */
 sealed trait MaraValue extends MaraRoot
 
-
 object MaraValue {
 
   case class IntValue(value: Int) extends MaraValue
@@ -23,6 +22,7 @@ object MaraValue {
   case class UnitValue() extends MaraValue
   case class EmptyValue() extends MaraValue // Special value used for empty expressions.  Find a better solution for this!
   case class UnitValueNamed(name: String) extends MaraValue
+  case class ExecutableValue(name: String, path: String) extends MaraValue
 
   object implicits {
     implicit def int2value(x: Int): IntValue = IntValue(x)

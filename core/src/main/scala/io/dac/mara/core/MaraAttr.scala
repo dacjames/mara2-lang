@@ -5,4 +5,5 @@ sealed trait MaraAttr extends MaraRoot
 object MaraAttr {
   case class ErrorAttr(msg: String) extends MaraAttr
   case class CodeAttr(code: String) extends MaraAttr
+  case class ValueAttr(value: MaraValue) extends MaraAttr
 }

@@ -65,6 +65,31 @@ trait MaraLanguage extends TimeIt {
     }
   }
 
+  def fullPipeline[E <: Expr[E]](text: String, n: Int) = {
+    var parser = factoryParser(text)
+    timeInner("Parser")(parser.Root.run()) map { factory =>
+      val tree = factory.build
+      val showResult = timeInner("Show")(tree.exec(lang.alg.show)).value
+      val typedResult = timeInner("Typed")(tree.exec(lang.alg.typed)).value
+      val compiledResult = timeInner("Compiled")(tree.exec(lang.alg.compiled)).value
+      val stagedResult = timeInner("Staged")(tree.exec(lang.alg.staged)).value
+      val evalResult = timeInner("Eval")(tree.exec(lang.alg.eval)).value
+
+      (n match {
+        case 0 => showResult
+        case 1 => typedResult
+        case 2 => compiledResult
+        case 3 => stagedResult
+        case 4 => evalResult
+      }).toString
+
+    } match {
+      case Success(it) => it
+      case Failure(error: ParseError) => parser.formatError(error, new ErrorFormatter(showTraces = true))
+      case Failure(error: Throwable) => trace2string(error)
+    }
+  }
+
 
   def show(text: String) = run(text, lang.alg.show)
   def eval(text: String) = run(text, lang.alg.eval)

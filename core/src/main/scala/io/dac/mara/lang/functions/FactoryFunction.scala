@@ -11,7 +11,7 @@ trait FactoryFunction extends FactoryOp with FunctionAlg[Factory] {
                          body: Seq[Factory])
     extends Node {
     override def exec[E](alg: ExprAlg[E]): E = alg match {
-      case alg: FunctionAlg[E] => alg.defconcrete(name, typeparams, valparams, typex, body.map(_.build.exec(alg)))
+      case alg: FunctionAlg[E] => alg.defconcrete(name, typeparams, valparams, typex, body.view.map(_.build.exec(alg)))
     }
   }
 
@@ -27,7 +27,7 @@ trait FactoryFunction extends FactoryOp with FunctionAlg[Factory] {
 
   case class Call(name: String, args: Seq[Factory]) extends Node {
     override def exec[E](alg: ExprAlg[E]): E = alg match {
-      case alg: FunctionAlg[E] => alg.call(name, args.map(_.build.exec(alg)))
+      case alg: FunctionAlg[E] => alg.call(name, args.view.map(_.build.exec(alg)))
     }
   }
 

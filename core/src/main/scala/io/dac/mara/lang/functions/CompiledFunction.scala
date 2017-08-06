@@ -1,11 +1,13 @@
 package io.dac.mara.lang.functions
 
+import io.dac.mara.core.MaraAttr.CodeAttr
+import io.dac.mara.core.NamespaceLookup
 import io.dac.mara.phases.{Compiled, CompiledOp}
 
 /**
   * Created by dcollins on 4/28/17.
   */
-trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] {
+trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] with NamespaceLookup {
   import io.dac.mara.ir.implicits._
 
   override def defconcrete(name: String,
@@ -26,6 +28,12 @@ trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] {
       "}"
 
     val result = s"@$name"
+
+    bindAttr(
+      name,
+      "code",
+      CodeAttr(bytecode.mkString("\n"))
+    )
 
     (bytecode, result)
   }

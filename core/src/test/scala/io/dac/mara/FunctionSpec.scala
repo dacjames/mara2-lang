@@ -21,6 +21,10 @@ class FunctionSpec extends MaraSpec with MaraLanguage {
     typed("def foo(x: Int, y: Bool) { x }") shouldEqual "FunctionType(RecordType(x: IntType(), y: BoolType()),IntType())"
   }
 
+//  it should "be compiled" in {
+//    fullPipeline("def foo(x: Int, y: Int) { x + y }", 3) shouldEqual "WTF"
+//  }
+
   "Abstract Functions" should "evaluate to a FunctionValue" in {
     eval("def foo(A, B)(x, y)") should include("FunctionValue")
   }
