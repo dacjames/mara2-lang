@@ -55,5 +55,5 @@ class Scope[Kind](parent: Option[Scope[Kind]]) extends ScopeLike[String, Option[
   def pop: Option[Scope[Kind]] = parentOpt
 }
 object Scope {
-  def empty[Kind <: MaraRoot] = new Scope[Kind](None)
+  def empty[Kind] = new Scope[Kind](None)
 }

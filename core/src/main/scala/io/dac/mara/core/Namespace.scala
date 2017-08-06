@@ -8,9 +8,12 @@ import com.typesafe.scalalogging.LazyLogging
 class Namespace extends LazyLogging {
   import MaraType._
   import MaraValue._
+  import MaraAttr._
+
 
   var valuespace: Scope[MaraValue] = Scope.empty
   var typespace: Scope[MaraType] = Scope.empty
+  var attrspace: Scope[MaraAttr] = Scope.empty
 
   abstract class UniqueSpace[A] {
     def space: Scope[A]
@@ -23,18 +26,27 @@ class Namespace extends LazyLogging {
     override def space: Scope[MaraValue] = valuespace
     override def name: String = "Value"
     override def undeclared(name: String): MaraValue =
-      ErrorValue(s"Unassigned Value ${name}")
-    override def unassigned(name: String): MaraValue =
       ErrorValue(s"Undeclared Value ${name}")
+    override def unassigned(name: String): MaraValue =
+      ErrorValue(s"Unassigned Value ${name}")
   }
 
   implicit object TypeSpace extends UniqueSpace[MaraType] {
     override def space: Scope[MaraType] = typespace
     override def name: String = "Type"
     override def undeclared(name: String): MaraType =
-      ErrorType(s"Unassigned Type ${name}")
-    override def unassigned(name: String): MaraType =
       ErrorType(s"Undeclared Type ${name}")
+    override def unassigned(name: String): MaraType =
+      ErrorType(s"Unassigned Type ${name}")
+  }
+
+  implicit object AttributeSpace extends UniqueSpace[MaraAttr] {
+    override def space: Scope[MaraAttr] = attrspace
+    override def name: String = "Attribute"
+    override def undeclared(name: String): MaraAttr =
+      ErrorAttr(s"Undeclared Attribute ${name}")
+    override def unassigned(name: String): MaraAttr =
+      ErrorAttr(s"Unassigned Attribute ${name}")
   }
 
   private[this] def lookup[A](name: String)(implicit kind: UniqueSpace[A]): A = {
@@ -97,6 +109,14 @@ class Namespace extends LazyLogging {
   def bindType(name: String, typex: MaraType): MaraType = bind[MaraType](name, typex)
   def unbindType(name: String): Scope[MaraType] = unbind[MaraType](name)
 
+
+  private[this] def attrKey(name: String, attr: String) = s"${name}:${attr}"
+
+  def lookupAttr(name: String, attr: String): MaraAttr = lookup[MaraAttr](attrKey(name, attr))
+  def declareAttr(name: String, attr: String): Scope[MaraAttr] = declare[MaraAttr](attrKey(name, attr))
+  def bindAttr(name: String, attr: String, typex: MaraAttr): MaraAttr = bind[MaraAttr](attrKey(name, attr), typex)
+  def unbindAttr(name: String, attr: String): Scope[MaraAttr] = unbind[MaraAttr](attrKey(name, attr))
+
   require {
     Builtins.types.foreach {
       case (name, typex) => bindType(name, typex)
@@ -125,6 +145,11 @@ trait NamespaceLookup {
   def declareType(name: String): Scope[MaraType] = namespace.declareType(name)
   def bindType(name: String, typex: MaraType): MaraType = namespace.bindType(name, typex)
   def unbindType(name: String): Scope[MaraType] = namespace.unbindType(name)
+
+  def lookupAttr(name: String, attr: String): MaraAttr = namespace.lookupAttr(name, attr)
+  def declareAttr(name: String, attr: String): Scope[MaraAttr] = namespace.declareAttr(name, attr)
+  def bindAttr(name: String, attr: String, typex: MaraAttr): MaraAttr = namespace.bindAttr(name, attr, typex)
+  def unbindAttr(name: String, attr: String): Scope[MaraAttr] = namespace.unbindAttr(name, attr)
 
 
   def inNewScope[T](f: => T): T = {
