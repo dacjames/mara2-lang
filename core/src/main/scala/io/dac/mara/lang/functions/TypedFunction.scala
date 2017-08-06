@@ -1,12 +1,12 @@
 package io.dac.mara.lang.functions
-import io.dac.mara.core.{MaraType, Namespace, Record}
+import io.dac.mara.core.{MaraType, NamespaceLookup, Record}
 import io.dac.mara.phases.{Typed, TypedOp}
 import io.dac.mara.lang.variables.VariableAlg
 
 /**
   * Created by dcollins on 8/28/16.
   */
-trait TypedFunction extends TypedOp with FunctionAlg[Typed] with VariableAlg[Typed] with Namespace {
+trait TypedFunction extends TypedOp with FunctionAlg[Typed] with VariableAlg[Typed] with NamespaceLookup {
   import MaraType._
 
   override def defconcrete(name: String, typeparams: Seq[Param], valparams: Seq[Param], typex: Option[String], body: Seq[Typed]) = op {

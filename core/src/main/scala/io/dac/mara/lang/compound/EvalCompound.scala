@@ -1,12 +1,12 @@
 package io.dac.mara.lang.compound
 
-import io.dac.mara.core.{MaraValue, Namespace, Record}
+import io.dac.mara.core.{MaraValue, NamespaceLookup, Record}
 import io.dac.mara.phases.{Eval, EvalOp}
 
 /**
   * Created by dcollins on 3/24/17.
   */
-trait EvalCompound extends EvalOp with Namespace with CompoundAlg[Eval] {
+trait EvalCompound extends EvalOp with NamespaceLookup with CompoundAlg[Eval] {
   import MaraValue._
 
   override def empty = op { EmptyValue() }

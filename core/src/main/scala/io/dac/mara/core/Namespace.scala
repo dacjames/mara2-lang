@@ -2,162 +2,74 @@ package io.dac.mara.core
 
 import com.typesafe.scalalogging.LazyLogging
 
-import scala.collection.{Map, mutable}
-
-object Builtins {
-  import MaraType._
-  import MaraValue._
-
-  lazy val types = Map(
-    "Any" -> AnyType(),
-    "String" -> StringType(),
-    "Int" -> IntType(),
-    "Bool" -> BoolType()
-  )
-
-  lazy val values = Map(
-    "true" -> BoolValue(true),
-    "false" -> BoolValue(false)
-  )
-
-  require {
-    types.forall {
-      case (name, typex) => typex.name.contains(name)
-    }
-  }
-}
-
-object NamespaceTypes {
-  import MaraType._
-  import MaraValue._
-
-  sealed trait Name[Kind <: MaraRoot] {
-    def kind: String
-    def value: String
-    def unassigned: Kind
-    def undeclared: Kind
-  }
-  case class TypeName(value: String) extends Name[MaraType] {
-    val kind: String = "Type"
-    override def unassigned: MaraType = ErrorType(s"Unassigned ${kind} ${value}")
-    override def undeclared: MaraType = ErrorType(s"Undeclared ${kind} ${value}")
-  }
-  case class ValueName(value: String) extends Name[MaraValue] {
-    val kind: String = "Value"
-    override def undeclared: MaraValue = ErrorValue(s"Unassigned ${kind} ${value}")
-    override def unassigned: MaraValue = ErrorValue(s"Undeclared ${kind} ${value}")
-  }
-
-  sealed trait Binding[Elem] {
-    def elem: Elem
-  }
-  case class TypeBinding(elem: MaraType) extends Binding[MaraType]
-  case class ValueBinding(elem: MaraValue) extends Binding[MaraValue]
-
-  trait ScopeLike[A, B] extends mutable.Map[A, B] with mutable.MapLike[A, B, ScopeLike[A, B]]  {
-    protected val parentOpt: Option[ScopeLike[A, B]] = None
-    private[this] var space: mutable.Map[A, B] = mutable.Map.empty
-
-    override def +=(kv: (A, B)) = {
-      space += kv
-      this
-    }
-
-    override def -=(key: A): ScopeLike.this.type = {
-      space -= key
-      this
-    }
-
-    override def get(key: A): Option[B] = {
-      val inSpace = space.get(key)
-      inSpace match {
-        case Some(_) => inSpace
-        case None => parentOpt match {
-          case Some(parent) => parent.get(key)
-          case None => None
-        }
-      }
-    }
-
-    override def iterator: Iterator[(A, B)] = parentOpt match {
-      case None => space.iterator
-      case Some(parent) =>
-        new Iterator[(A, B)] {
-          private[this] val spaceIter = space.iterator
-          private[this] val parentIter = parent.iterator
-          override def hasNext: Boolean = spaceIter.hasNext || parentIter.hasNext
-          override def next(): (A, B) =
-            if (spaceIter.hasNext) { spaceIter.next() }
-            else { parentIter.next() }
-        }
-    }
-
-    override def seq: mutable.Map[A, B] = parentOpt match {
-      case None => space.seq
-      case Some(parent) => parent.seq ++ space.seq
-    }
-
-    override def empty: ScopeLike[A, B] = this
-  }
-
-
-  class Scope[Kind <: MaraRoot](parent: Option[Scope[Kind]]) extends ScopeLike[Name[Kind], Option[Binding[Kind]]] {
-    override val parentOpt = parent
-    def push: Scope[Kind] = new Scope(Some(this))
-    def pop: Option[Scope[Kind]] = parentOpt
-  }
-  object Scope {
-    def empty[Kind <: MaraRoot] = new Scope[Kind](None)
-  }
-
-}
-
-
 /**
   * Created by dcollins on 10/1/16.
   */
-trait Namespace extends LazyLogging {
-  import NamespaceTypes._
+class Namespace extends LazyLogging {
+  import MaraType._
+  import MaraValue._
 
-  private[this] var valuespace: Scope[MaraValue] = Scope.empty
-  private[this] var typespace: Scope[MaraType] = Scope.empty
+  var valuespace: Scope[MaraValue] = Scope.empty
+  var typespace: Scope[MaraType] = Scope.empty
 
-  private[this] def space[A <: MaraRoot](ns: mutable.Map[Name[A], Option[Binding[A]]]) = {
-    if (ns eq valuespace) { "Value" }
-    else if (ns eq typespace) { "Type" }
-    else { "Impossible" }
+  abstract class UniqueSpace[A] {
+    def space: Scope[A]
+    def name: String
+    def undeclared(name: String): A
+    def unassigned(name: String): A
   }
 
+  implicit object ValueSpace extends UniqueSpace[MaraValue] {
+    override def space: Scope[MaraValue] = valuespace
+    override def name: String = "Value"
+    override def undeclared(name: String): MaraValue =
+      ErrorValue(s"Unassigned Value ${name}")
+    override def unassigned(name: String): MaraValue =
+      ErrorValue(s"Undeclared Value ${name}")
+  }
 
-  private[this] def lookupFromNamespace[A <: MaraRoot](ns: mutable.Map[Name[A], Option[Binding[A]]], name: Name[A]): A = {
+  implicit object TypeSpace extends UniqueSpace[MaraType] {
+    override def space: Scope[MaraType] = typespace
+    override def name: String = "Type"
+    override def undeclared(name: String): MaraType =
+      ErrorType(s"Unassigned Type ${name}")
+    override def unassigned(name: String): MaraType =
+      ErrorType(s"Undeclared Type ${name}")
+  }
+
+  private[this] def lookup[A](name: String)(implicit kind: UniqueSpace[A]): A = {
+    val ns = kind.space
+
     val result = ns.get(name).map { (bindingOpt) =>
-      bindingOpt.map(_.elem).getOrElse(name.undeclared)
-    }.getOrElse(name.unassigned)
-    logger.trace(s"Lookup ${space(ns)} ${name.value} -> ${result}")
+      bindingOpt.getOrElse(kind.undeclared(name))
+    }.getOrElse(kind.unassigned(name))
+    logger.trace(s"Lookup ${kind.name} ${name} -> ${result}")
     result
   }
 
 
-  private[this] def declareFromNamespace[A <: MaraRoot](ns: mutable.Map[Name[A], Option[Binding[A]]], name: Name[A]) = {
+  private[this] def declare[A](name: String)(implicit kind: UniqueSpace[A]): Scope[A] = {
+    val ns = kind.space
     ns += (name -> None)
-    logger.trace(s"Declared ${space(ns)} ${name.value}")
+    logger.trace(s"Declared ${kind.name} ${name}")
     ns
-
   }
 
-  private[this] def bindFromNamespace[A <: MaraRoot](ns: mutable.Map[Name[A], Option[Binding[A]]], name: Name[A], binding: Binding[A]): A = {
+  private[this] def bind[A](name: String, binding: A)(implicit kind: UniqueSpace[A]): A = {
+    val ns = kind.space
     ns += (name -> Some(binding))
-    logger.trace(s"Bound ${space(ns)} ${name.value} -> ${binding.elem}")
-    binding.elem
+    logger.trace(s"Bound ${kind.name} ${name} -> ${binding}")
+    binding
   }
 
-  private[this] def unbindFromNamespace[A <: MaraRoot](ns: mutable.Map[Name[A], Option[Binding[A]]], name: Name[A]) = {
+  private[this] def unbind[A](name: String)(implicit kind: UniqueSpace[A]): Scope[A] = {
+    val ns = kind.space
     ns -= name
-    logger.trace(s"Unbound ${space(ns)} ${name.value}")
+    logger.trace(s"Unbound ${kind.name} ${name}")
     ns
   }
 
-  private[this] def pushScope() = {
+  def pushScope(): Namespace = {
     valuespace = valuespace.push
     logger.trace(s"Pushed new valuespace")
 
@@ -167,7 +79,7 @@ trait Namespace extends LazyLogging {
     this
   }
 
-  private[this] def popScope() = {
+  def popScope(): Namespace = {
     valuespace = valuespace.pop.get
     logger.trace(s"Popped valuespace")
     typespace = typespace.pop.get
@@ -175,24 +87,15 @@ trait Namespace extends LazyLogging {
     this
   }
 
+  def lookupValue(name: String): MaraValue = lookup[MaraValue](name)
+  def declareValue(name: String): Scope[MaraValue] = declare[MaraValue](name)
+  def bindValue(name: String, value: MaraValue): MaraValue = bind[MaraValue](name, value)
+  def unbindValue(name: String): Scope[MaraValue] = unbind[MaraValue](name)
 
-  def lookupValue(name: String) = lookupFromNamespace(valuespace, ValueName(name))
-  def declareValue(name: String) = declareFromNamespace(valuespace, ValueName(name))
-  def bindValue(name: String, value: MaraValue) = bindFromNamespace(valuespace, ValueName(name), ValueBinding(value))
-  def unbindValue(name: String) = lookupFromNamespace(valuespace, ValueName(name))
-
-  def lookupType(name: String): MaraType = lookupFromNamespace(typespace, TypeName(name))
-  def declareType(name: String) = declareFromNamespace(typespace, TypeName(name))
-  def bindType(name: String, typex: MaraType) = bindFromNamespace(typespace, TypeName(name), TypeBinding(typex))
-  def unbindType(name: String) = lookupFromNamespace(typespace, TypeName(name))
-
-
-  def inNewScope[T](f: => T): T = {
-    pushScope()
-    val result = f
-    popScope()
-    result
-  }
+  def lookupType(name: String): MaraType = lookup[MaraType](name)
+  def declareType(name: String): Scope[MaraType] = declare[MaraType](name)
+  def bindType(name: String, typex: MaraType): MaraType = bind[MaraType](name, typex)
+  def unbindType(name: String): Scope[MaraType] = unbind[MaraType](name)
 
   require {
     Builtins.types.foreach {
@@ -206,6 +109,29 @@ trait Namespace extends LazyLogging {
       case (name, value) => bindValue(name, value)
     }
     true
+  }
+
+}
+
+trait NamespaceLookup {
+  def namespace: Namespace
+
+  def lookupValue(name: String): MaraValue = namespace.lookupValue(name)
+  def declareValue(name: String): Scope[MaraValue] = namespace.declareValue(name)
+  def bindValue(name: String, value: MaraValue): MaraValue = namespace.bindValue(name, value)
+  def unbindValue(name: String): Scope[MaraValue] = namespace.unbindValue(name)
+
+  def lookupType(name: String): MaraType = namespace.lookupType(name)
+  def declareType(name: String): Scope[MaraType] = namespace.declareType(name)
+  def bindType(name: String, typex: MaraType): MaraType = namespace.bindType(name, typex)
+  def unbindType(name: String): Scope[MaraType] = namespace.unbindType(name)
+
+
+  def inNewScope[T](f: => T): T = {
+    namespace.pushScope()
+    val result = f
+    namespace.popScope()
+    result
   }
 
 }

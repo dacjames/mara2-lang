@@ -1,12 +1,12 @@
 package io.dac.mara.lang.controlflow
 
-import io.dac.mara.core.{MaraValue, Namespace}
+import io.dac.mara.core.{MaraValue, NamespaceLookup}
 import io.dac.mara.phases.{Eval, EvalOp}
 
 /**
   * Created by dcollins on 8/6/16.
   */
-trait EvalControlFlow extends EvalOp with ControlFlowAlg[Eval] with Namespace {
+trait EvalControlFlow extends EvalOp with ControlFlowAlg[Eval] with NamespaceLookup {
   import MaraValue._
   import MaraValue.implicits.truthy._
 

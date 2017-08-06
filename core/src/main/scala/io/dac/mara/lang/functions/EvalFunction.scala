@@ -1,6 +1,6 @@
 package io.dac.mara.lang.functions
 
-import io.dac.mara.core.{MaraValue, Namespace}
+import io.dac.mara.core.{MaraValue, NamespaceLookup}
 import io.dac.mara.phases.{Eval, EvalOp}
 
 import scala.collection.mutable
@@ -8,7 +8,7 @@ import scala.collection.mutable
 /**
   * Created by dcollins on 8/28/16.
   */
-trait EvalFunction extends EvalOp with FunctionAlg[Eval] with Namespace {
+trait EvalFunction extends EvalOp with FunctionAlg[Eval] with NamespaceLookup {
   import MaraValue._
   import io.dac.mara.core.MaraType._
 

@@ -1,12 +1,12 @@
 package io.dac.mara.lang.variables
 
-import io.dac.mara.core.{MaraType, Namespace}
+import io.dac.mara.core.{MaraType, NamespaceLookup}
 import io.dac.mara.phases.{Typed, TypedOp}
 
 /**
   * Created by dcollins on 8/27/16.
   */
-trait TypedVariable extends TypedOp with VariableAlg[Typed] with Namespace {
+trait TypedVariable extends TypedOp with VariableAlg[Typed] with NamespaceLookup {
   import MaraType._
 
   override def valdeclare(name: String, typex: Option[String]): Typed = op {
