@@ -3,6 +3,7 @@ package io.dac.mara.lang.functions
 import java.io.{ByteArrayInputStream, File, InputStream}
 
 import com.typesafe.scalalogging.LazyLogging
+import io.dac.mara.core._
 import io.dac.mara.core.MaraAttr._
 import io.dac.mara.core.MaraValue.{ErrorValue, ExecutableValue, StringValue}
 import io.dac.mara.core.NamespaceLookup
@@ -23,7 +24,7 @@ trait StagedFunction extends StagedOp with FunctionAlg[Staged] with NamespaceLoo
   def textInput(text: String): InputStream =
     new ByteArrayInputStream(text.getBytes)
 
-  override def defconcrete(name: String, typeparams: Seq[(String, Option[String])], valparams: Seq[(String, Option[String])], typex: Option[String], body: Seq[Staged]): Staged = op {
+  override def defconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Staged]): Staged = op {
     lookupAttr(name, "code") match {
       case CodeAttr(code) =>
         val hack = code ++ "\n" ++

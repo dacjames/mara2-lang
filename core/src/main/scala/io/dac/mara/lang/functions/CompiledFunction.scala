@@ -1,7 +1,7 @@
 package io.dac.mara.lang.functions
 
 import io.dac.mara.core.MaraAttr.CodeAttr
-import io.dac.mara.core.NamespaceLookup
+import io.dac.mara.core._
 import io.dac.mara.phases.{Compiled, CompiledOp}
 
 /**
@@ -11,13 +11,13 @@ trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] with Namesp
   import io.dac.mara.ir.implicits._
 
   override def defconcrete(name: String,
-                           typeparams: Seq[(String, Option[String])],
-                           valparams: Seq[(String, Option[String])],
+                           typeparams: Seq[Pair.Type],
+                           valparams: Seq[Pair.Value],
                            typex: Option[String],
                            body: Seq[Compiled]): Compiled = op {
 
     val paramlist = valparams.map {
-      case (name, typeOpt) => s"i32 %$name"
+      case Pair(name, typeOpt) => s"i32 %$name"
     }.mkString(",")
 
     val bytecode =

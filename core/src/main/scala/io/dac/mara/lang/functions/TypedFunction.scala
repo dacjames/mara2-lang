@@ -1,5 +1,5 @@
 package io.dac.mara.lang.functions
-import io.dac.mara.core.{MaraType, NamespaceLookup, Record}
+import io.dac.mara.core._
 import io.dac.mara.phases.{Typed, TypedOp}
 import io.dac.mara.lang.variables.VariableAlg
 
@@ -9,22 +9,19 @@ import io.dac.mara.lang.variables.VariableAlg
 trait TypedFunction extends TypedOp with FunctionAlg[Typed] with VariableAlg[Typed] with NamespaceLookup {
   import MaraType._
 
-  override def defconcrete(name: String, typeparams: Seq[Param], valparams: Seq[Param], typex: Option[String], body: Seq[Typed]) = op {
+  override def defconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Typed]) = op {
 
     // TODO: Function Type Parameters are ignored
 
     val tags = valparams.map {
-      case (name, typex) =>
-        typex match {
-          case Some(t) => (name, lookupType(t))
-          case None => (name, InferrableType())
-        }
+      case Pair.Value1(name) => (name, InferrableType())
+      case Pair.Value2(name, qualifier) => (name, lookupType(qualifier))
     }
 
     val input = RecordType(Record(tags: _*))
 
     val withPreample = valparams.map{
-      case (name, typeOpt) => valdeclare(name, typeOpt)
+      case Pair(name, typeOpt) => valdeclare(name, typeOpt)
     } ++ body
 
     val output =

@@ -1,6 +1,6 @@
 package io.dac.mara.lang.functions
 
-import io.dac.mara.core.{MaraValue, NamespaceLookup}
+import io.dac.mara.core._
 import io.dac.mara.phases.{Eval, EvalOp}
 
 import scala.collection.mutable
@@ -13,21 +13,23 @@ trait EvalFunction extends EvalOp with FunctionAlg[Eval] with NamespaceLookup {
   import io.dac.mara.core.MaraType._
 
 
-  private[this] def buildFunction(name: String, typeparams: Seq[Param], valparams: Seq[Param], body: Seq[Eval]) = {
+  private[this] def buildFunction(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], body: Seq[Eval]) = {
 
     val typeparamValues = typeparams.map {
-      case (name, bounds) => TypeParamValue(name, bounds.map(lookupType).getOrElse(AnyType()))
+      case Pair.Type1(name) => TypeParamValue(name, AnyType())
+      case Pair.Type2(name, qualifier) => TypeParamValue(name, lookupType(qualifier))
     }
 
     val valparamValues = valparams.map {
-      case (name, typex) => ValueParamValue(name, typex.map(lookupType).getOrElse(AnyType()))
+      case Pair.Value1(name) => ValueParamValue(name, AnyType())
+      case Pair.Value2(name, qualifier) => ValueParamValue(name, lookupType(qualifier))
     }
 
 
     FunctionValue(name=name, typeparams=typeparamValues, valparams=valparamValues, body=body)
   }
 
-  override def defconcrete(name: String, typeparams: Seq[Param], valparams: Seq[Param], typex: Option[String], body: Seq[Eval]): Eval = op {
+  override def defconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Eval]): Eval = op {
     bindValue(name, buildFunction(name, typeparams, valparams, body))
   }
 

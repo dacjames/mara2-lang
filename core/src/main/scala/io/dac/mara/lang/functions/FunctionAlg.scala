@@ -8,11 +8,9 @@ import io.dac.mara.core._
   */
 trait FunctionAlg[E] extends ExprAlg[E] with LazyLogging {
 
-  type Param = (String, Option[String])
+  def defconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[E]): E = ???
 
-  def defconcrete(name: String, typeparams: Seq[Param], valparams: Seq[Param], typex: Option[String], body: Seq[E]): E = ???
-
-  def defabstract(name: String, typeparams: Seq[Param], valparams: Seq[Param], typex: Option[String]): E = {
+  def defabstract(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String]): E = {
     defconcrete(name, typeparams, valparams, typex, Seq.empty)
   }
 
