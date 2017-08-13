@@ -8,8 +8,11 @@ import org.parboiled2._
   */
 trait BlockParser[E, Alg <: ExprAlg[E]] extends Parser with ExprParser[E, Alg] with WhitespaceParser with SepParser {
   def Block: Rule1[Seq[E]] = rule {
-    "{" ~ Expr ~ zeroOrMore(ExprSep ~ Expr) ~ "}" ~> {
-      (a: E, b: Seq[E]) => a +: b
+    "{" ~ optional(Expr) ~ zeroOrMore(ExprSep ~ Expr) ~ optional(ExprSep) ~ "}" ~> {
+      (a: Option[E], b: Seq[E]) => a match {
+        case Some(a) => a +: b
+        case None => b
+      }
     }
   }
 

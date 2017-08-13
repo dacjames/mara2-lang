@@ -15,14 +15,20 @@ trait PairParser extends Parser with IdentifierParser {
   }
 
    def ValuePairs: Rule1[Seq[Pair.Value]] = rule {
-    "(" ~ ValuePair ~ zeroOrMore("," ~ ValuePair) ~ optional(',') ~ ")" ~> {
-      (x: Pair.Value, y: Seq[Pair.Value]) => (x +: y)
+    "(" ~ optional(ValuePair) ~ zeroOrMore("," ~ ValuePair) ~ optional(',') ~ ")" ~> {
+      (x: Option[Pair.Value], y: Seq[Pair.Value]) => x match {
+        case Some(x) => (x +: y)
+        case None => y
+      }
     }
   }
 
    def TypePairs: Rule1[Seq[Pair.Type]] = rule {
-    "(" ~ TypePair ~ zeroOrMore("," ~ TypePair) ~ optional(',') ~ ")" ~> {
-      (x: Pair.Type, y: Seq[Pair.Type]) => (x +: y)
+    "(" ~ optional(TypePair) ~ zeroOrMore("," ~ TypePair) ~ optional(',') ~ ")" ~> {
+      (x: Option[Pair.Type], y: Seq[Pair.Type]) => x match {
+        case Some(x) => (x +: y)
+        case None => y
+      }
     }
   }
 

@@ -9,23 +9,17 @@ import io.dac.mara.phases.{Eval, EvalOp}
 trait EvalCompound extends EvalOp with NamespaceLookup with CompoundAlg[Eval] {
   import MaraValue._
 
-  override def empty = op { EmptyValue() }
-
-  private[this] val stripEmpty =
-    new PartialFunction[Eval, MaraValue] {
-      private[this] var it: MaraValue = _
-      override def isDefinedAt(x: Eval) = { it = x.eval; ! it.isInstanceOf[EmptyValue]}
-      override def apply(v1: Eval) = it
-    }
-
   override def dox(block: Seq[Eval]) =
     op {
-      block.collect(stripEmpty).last
+      block.map(_.eval).lastOption match {
+        case Some(v) => v
+        case None => UnitValue()
+      }
     }
 
   override def list(exprs: Seq[Eval]): Eval = op {
-    val elems = exprs.collect(stripEmpty).zipWithIndex.map {
-      case (e, i) => i -> e
+    val elems = exprs.zipWithIndex.map {
+      case (e, i) => i -> e.eval
     }
 
     val record = Record[MaraValue](elems: _*)

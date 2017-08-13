@@ -1,5 +1,6 @@
 package io.dac.mara
 
+import io.dac.mara.lang.app.AppParser
 import io.dac.mara.lang.compound.CompoundParser
 import io.dac.mara.lang.controlflow.ControlFlowParser
 import io.dac.mara.lang.functions.FunctionParser
@@ -20,18 +21,19 @@ trait MaraParser[E, Alg <: lang.CombinedAlg[E]  ]
     with VariableParser[E, Alg]
     with ParensParser[E, Alg]
     with FunctionParser[E, Alg]
-    with CompoundParser[E, Alg] {
+    with CompoundParser[E, Alg]
+    with AppParser[E, Alg] {
 
   def Root: Rule1[E] = InputLine
 
   def InputLine: Rule1[E] = rule { (Expr | Terminal) ~ EOI }
 
   def Expr: Rule1[E] = rule {
-    Operator | Terminal | Empty
+    Operator | Terminal
   }
 
   def Terminal: Rule1[E] = rule {
-    Parens | Literal | Do | ControlFlow | Function | Get | Variable | Substitution | Call  | List | Record
+    Parens | Literal | App | Do | ControlFlow | Function | Get | Variable | Substitution | Call  | List | Record
   }
 
 }

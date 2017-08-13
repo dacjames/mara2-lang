@@ -48,10 +48,6 @@ trait CompoundParser[E, Alg <: CompoundAlg[E] with LiteralAlg[E]] extends BlockP
     ValueId ~> {(x: String) => alg.litstring(x) } ~ ":"
   }
 
-  def Empty: Rule1[E] = rule {
-    MATCH ~> { () => alg.empty }
-  }
-
   def Get: Rule1[E] = rule {
     ValueId ~ '[' ~ (IntLiteral | Keyword) ~ zeroOrMore(ListSep ~ (IntLiteral | Keyword)) ~ optional(ListSep) ~ ']' ~> {
       (a: String, b: E, c: Seq[E]) => alg.get(a, b +: c)

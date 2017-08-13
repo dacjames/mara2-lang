@@ -8,24 +8,19 @@ import io.dac.mara.phases.{Typed, TypedOp}
   */
 trait TypedCompound extends TypedOp with CompoundAlg[Typed] {
   import MaraType._
-  override def empty = op { EmptyType() }
-
-  private[this] val stripEmpty =
-    new PartialFunction[Typed, MaraType] {
-      private[this] var it: MaraType = _
-      override def isDefinedAt(x: Typed) = { it = x.typex; ! it.isInstanceOf[EmptyType]}
-      override def apply(v1: Typed) = it
-    }
 
   override def dox(exprs: Seq[Typed]): Typed = op {
-    exprs.collect(stripEmpty).last
+    exprs.map(_.typex).lastOption match {
+      case Some(t) => t
+      case None => UnitType()
+    }
   }
 
   override def list(exprs: Seq[Typed]): Typed = op {
     import Record._
 
-    val tags = exprs.collect(stripEmpty).zipWithIndex map {
-      case (t, i) => (IntKey(i), MaraType.promote(t))
+    val tags = exprs.zipWithIndex map {
+      case (t, i) => (IntKey(i), MaraType.promote(t.typex))
     }
 
     Record.construct(tags: _*) match {

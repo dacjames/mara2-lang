@@ -12,3 +12,11 @@ class IrFragmentVector(val v: Vector[IrFragment]) extends AnyVal {
   def /|(that: IrFragment): Vector[IrFragment] = this.v :+ that
   def +|(that: IrFragment): Vector[IrFragment] = this.v :+ that
 }
+
+object IrFragmentVector {
+  def apply(s: String): IrFragmentVector = {
+    new IrFragmentVector(
+      s.split("\n").map(new IrFragment(_)).toVector
+    )
+  }
+}

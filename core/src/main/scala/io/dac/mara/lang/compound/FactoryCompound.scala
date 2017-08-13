@@ -4,11 +4,6 @@ import io.dac.mara.core.ExprAlg
 import io.dac.mara.phases.{Factory, FactoryOp, Node}
 
 trait FactoryCompound extends FactoryOp with CompoundAlg[Factory] {
-  case object Empty extends Node {
-    override def exec[E](alg: ExprAlg[E]): E = alg match {
-      case alg: CompoundAlg[E] => alg.empty
-    }
-  }
 
   case class Do(block: Seq[Factory]) extends Node {
     override def exec[E](alg: ExprAlg[E]): E = alg match {
@@ -35,8 +30,6 @@ trait FactoryCompound extends FactoryOp with CompoundAlg[Factory] {
       case alg: CompoundAlg[E] => alg.get(name, args.map(_.build.exec(alg)))
     }
   }
-
-  override def empty: Factory = op { Empty }
 
   override def dox(block: Seq[Factory]): Factory = op { Do(block) }
 
