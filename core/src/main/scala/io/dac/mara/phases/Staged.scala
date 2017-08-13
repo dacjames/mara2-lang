@@ -15,6 +15,8 @@ object Staged {
     override def key: Int = 4
   }
 
+  def empty: Staged#Target = MaraValue.UnitValue()
+
 }
 
 trait StagedOp extends ExprOps[Staged] {

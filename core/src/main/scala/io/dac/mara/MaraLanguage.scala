@@ -7,6 +7,7 @@ import io.dac.mara.phases._
 import io.dac.mara.utils.TimeIt
 import org.parboiled2.{ErrorFormatter, ParseError, ParserInput}
 
+import scala.collection.mutable
 import scala.util.{Failure, Success}
 
 /**
@@ -65,7 +66,10 @@ trait MaraLanguage extends TimeIt {
     }
   }
 
-  def fullPipeline[E <: Expr[E]](text: String, n: Int) = {
+  def fullPipeline[E <: Expr[E]: Phase](text: String) = {
+    val n = implicitly[Phase[E]].key
+    val results = mutable.HashMap.empty[Int, String]
+
     var parser = factoryParser(text)
     timeInner("Parser")(parser.Root.run()) map { factory =>
       val tree = factory.build
@@ -75,14 +79,13 @@ trait MaraLanguage extends TimeIt {
       val stagedResult = timeInner("Staged")(tree.exec(lang.alg.staged)).value
       val evalResult = timeInner("Eval")(tree.exec(lang.alg.eval)).value
 
-      (n match {
-        case 0 => showResult
-        case 1 => typedResult
-        case 2 => compiledResult
-        case 3 => stagedResult
-        case 4 => evalResult
-      }).toString
+      results.put(implicitly[Phase[Show]].key, showResult.toString)
+      results.put(implicitly[Phase[Typed]].key, typedResult.toString)
+      results.put(implicitly[Phase[Compiled]].key, compiledResult.toString)
+      results.put(implicitly[Phase[Staged]].key, stagedResult.toString)
+      results.put(implicitly[Phase[Eval]].key, evalResult.toString)
 
+      results(n)
     } match {
       case Success(it) => it
       case Failure(error: ParseError) => parser.formatError(error, new ErrorFormatter(showTraces = true))

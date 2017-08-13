@@ -8,14 +8,16 @@
 - [ ] Clarify meaning on `Block`
 - [x] Support Trailing Commas
 - [ ] Investigate Parser initialization overhead
-- [ ] Support multiline without Empty
+- [x] Support multiline without Empty
 - [x] Type Check Functions
 - [ ] Make Logging levels easy to control
 - [x] Use Record to implement RecordType
 - [x] Decide on LLVM approach
 - [ ] Implement REPL
-- [ ] Integrate Pipeline steps
+- [x] Integrate Pipeline steps
 - [ ] `def` to `fun`
+- [ ] Cleanup temp files creating by staging
+- [ ] Cleanup nesting in RecordValue/RecordType
 
 
 # Implement Pipeline

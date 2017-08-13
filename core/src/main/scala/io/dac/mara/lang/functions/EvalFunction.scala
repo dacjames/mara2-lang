@@ -1,9 +1,11 @@
 package io.dac.mara.lang.functions
 
+import io.dac.mara.core.MaraAttr.{ErrorAttr, ExecutableAttr}
 import io.dac.mara.core._
 import io.dac.mara.phases.{Eval, EvalOp}
 
 import scala.collection.mutable
+import scala.sys.process.Process
 
 /**
   * Created by dcollins on 8/28/16.
@@ -63,10 +65,13 @@ trait EvalFunction extends EvalOp with FunctionAlg[Eval] with NamespaceLookup {
             }
           }
 
-          result
+          // Redundant, but make Intellij happy
+          result : MaraValue
         }
-
       }
+      case ExecutableValue(name, path) =>
+        val output = Process(path).!
+        IntValue(output)
       case e: ErrorValue => e
       case _ => ErrorValue(s"${name} is not callable")
     }

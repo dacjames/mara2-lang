@@ -21,6 +21,6 @@ trait TypedApp extends TypedOp with AppAlg[Typed] with NamespaceLookup {
 
     val input = RecordType(Record[MaraType](kvps: _*))
 
-    FunctionType(input, output)
+    bindType(name, FunctionType(input, output))
   }
 }

@@ -150,7 +150,6 @@ trait NamespaceLookup {
   def bindAttr[A <: MaraAttr: AttrKey](name: String, attr: A): MaraAttr = namespace.bindAttr[A](name, attr)
   def unbindAttr[A <: MaraAttr: AttrKey](name: String): Scope[MaraAttr] = namespace.unbindAttr[A](name)
 
-
   def inNewScope[T](f: => T): T = {
     namespace.pushScope()
     val result = f

@@ -15,8 +15,10 @@ trait FunctionParser[E, Alg <: FunctionAlg[E]] extends LangParser[E, Alg]
   }
 
   def Call: Rule1[E] = rule {
-    "." ~ ValueId ~ TupleSyntax ~> { (a: String, b: Seq[E]) => {
-        alg.call(a, b)
+    "." ~ ValueId ~ optional(TupleSyntax) ~> { (a: String, b: Option[Seq[E]]) =>
+      b match {
+        case Some(b) => alg.call(a, b)
+        case None => alg.call(a, Seq.empty[E])
       }
     }
   }

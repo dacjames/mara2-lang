@@ -10,7 +10,7 @@ import org.parboiled2._
 trait CompoundParser[E, Alg <: CompoundAlg[E] with LiteralAlg[E]] extends BlockParser[E, Alg] with SepParser with LiteralParser[E, Alg] with IdentifierParser with TupleParser[E, Alg] with LangParser[E, Alg] {
 
   def Do: Rule1[E] = rule {
-    "do" ~ Block ~> { (x: Seq[E]) =>
+    "do" ~ Block ~ zeroOrMore('\n') ~> { (x: Seq[E]) =>
       alg.dox(x)
     }
   }

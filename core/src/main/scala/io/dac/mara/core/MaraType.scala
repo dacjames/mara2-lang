@@ -101,5 +101,11 @@ object MaraType {
     case b: BoolLiteralType => BoolType()
     case _ => a
   }
+
+  def lower(a: MaraType): Option[String] = a match {
+    case s: IntLiteralType => Some("i32")
+    case s: IntType => Some("i32")
+    case _ => None
+  }
 }
 
