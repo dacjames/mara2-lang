@@ -31,7 +31,6 @@ trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] with Namesp
 
     bindAttr(
       name,
-      "code",
       CodeAttr(bytecode.mkString("\n"))
     )
 

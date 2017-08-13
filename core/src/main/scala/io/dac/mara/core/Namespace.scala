@@ -109,13 +109,12 @@ class Namespace extends LazyLogging {
   def bindType(name: String, typex: MaraType): MaraType = bind[MaraType](name, typex)
   def unbindType(name: String): Scope[MaraType] = unbind[MaraType](name)
 
+  private[this] def attrKey(name: String, attr: Int) = s"${name}:${attr}"
 
-  private[this] def attrKey(name: String, attr: String) = s"${name}:${attr}"
-
-  def lookupAttr(name: String, attr: String): MaraAttr = lookup[MaraAttr](attrKey(name, attr))
-  def declareAttr(name: String, attr: String): Scope[MaraAttr] = declare[MaraAttr](attrKey(name, attr))
-  def bindAttr(name: String, attr: String, typex: MaraAttr): MaraAttr = bind[MaraAttr](attrKey(name, attr), typex)
-  def unbindAttr(name: String, attr: String): Scope[MaraAttr] = unbind[MaraAttr](attrKey(name, attr))
+  def lookupAttr[A <: MaraAttr: AttrKey](name: String): MaraAttr = lookup[MaraAttr](attrKey(name, implicitly[AttrKey[A]].key))
+  def declareAttr[A <: MaraAttr: AttrKey](name: String): Scope[MaraAttr] = declare[MaraAttr](attrKey(name, implicitly[AttrKey[A]].key))
+  def bindAttr[A <: MaraAttr: AttrKey](name: String, attr: A): MaraAttr = bind[MaraAttr](attrKey(name, implicitly[AttrKey[A]].key), attr)
+  def unbindAttr[A <: MaraAttr: AttrKey](name: String): Scope[MaraAttr] = unbind[MaraAttr](attrKey(name, implicitly[AttrKey[A]].key))
 
   require {
     Builtins.types.foreach {
@@ -146,10 +145,10 @@ trait NamespaceLookup {
   def bindType(name: String, typex: MaraType): MaraType = namespace.bindType(name, typex)
   def unbindType(name: String): Scope[MaraType] = namespace.unbindType(name)
 
-  def lookupAttr(name: String, attr: String): MaraAttr = namespace.lookupAttr(name, attr)
-  def declareAttr(name: String, attr: String): Scope[MaraAttr] = namespace.declareAttr(name, attr)
-  def bindAttr(name: String, attr: String, typex: MaraAttr): MaraAttr = namespace.bindAttr(name, attr, typex)
-  def unbindAttr(name: String, attr: String): Scope[MaraAttr] = namespace.unbindAttr(name, attr)
+  def lookupAttr[A <: MaraAttr: AttrKey](name: String): MaraAttr = namespace.lookupAttr[A](name)
+  def declareAttr[A <: MaraAttr: AttrKey](name: String): Scope[MaraAttr] = namespace.declareAttr[A](name)
+  def bindAttr[A <: MaraAttr: AttrKey](name: String, attr: A): MaraAttr = namespace.bindAttr[A](name, attr)
+  def unbindAttr[A <: MaraAttr: AttrKey](name: String): Scope[MaraAttr] = namespace.unbindAttr[A](name)
 
 
   def inNewScope[T](f: => T): T = {

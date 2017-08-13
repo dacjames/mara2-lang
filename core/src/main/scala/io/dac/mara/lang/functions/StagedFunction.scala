@@ -25,7 +25,7 @@ trait StagedFunction extends StagedOp with FunctionAlg[Staged] with NamespaceLoo
     new ByteArrayInputStream(text.getBytes)
 
   override def defconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Staged]): Staged = op {
-    lookupAttr(name, "code") match {
+    lookupAttr[CodeAttr](name) match {
       case CodeAttr(code) =>
         val hack = code ++ "\n" ++
           """define i32 @main(i32, i8**) #0 {
@@ -36,7 +36,6 @@ trait StagedFunction extends StagedOp with FunctionAlg[Staged] with NamespaceLoo
             |  ret i32 1
             |}""".stripMargin
 
-
         val assembly = File.createTempFile(s"mara-${name}", ".s")
         val objfile = new File(assembly.getAbsolutePath.replace(".s", ""))
         objfile.createNewFile()
@@ -46,7 +45,7 @@ trait StagedFunction extends StagedOp with FunctionAlg[Staged] with NamespaceLoo
           case 0 =>
             objfile.setExecutable(true)
             val executable = ExecutableValue(name, objfile.getAbsolutePath)
-            bindAttr(name, "executable", ValueAttr(executable))
+            bindAttr(name, ExecutableAttr(executable))
             executable
           case n @ _ =>
             ErrorValue(s"Error staging function ${name}. llc returned exit code ${n}.")
@@ -56,8 +55,8 @@ trait StagedFunction extends StagedOp with FunctionAlg[Staged] with NamespaceLoo
   }
 
   override def call(name: String, args: Seq[Staged]): Staged = op {
-    lookupAttr(name, "executable") match {
-      case ValueAttr(ExecutableValue(_, path)) =>
+    lookupAttr[ExecutableAttr](name) match {
+      case ExecutableAttr(ExecutableValue(_, path)) =>
         val output = Process(path) !! processLogger(name)
         StringValue(output)
       case ErrorAttr(msg) =>

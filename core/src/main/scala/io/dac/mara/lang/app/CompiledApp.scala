@@ -26,7 +26,7 @@ trait CompiledApp extends CompiledOp with AppAlg[Compiled] with NamespaceLookup 
               bytecode.mkString("\n") ++
               s" ret i32 $result"
 
-      bindAttr(name, "code", CodeAttr(main))
+      bindAttr[CodeAttr](name, CodeAttr(main))
 
       (IrFragmentVector(main).v, "main")
     }
