@@ -131,6 +131,10 @@ object Record {
   implicit def strings2tags[T](tags: Seq[(String, T)]): Seq[(Key, T)] = tags.map(string2tag(_))
 
 
+  def throwImpossibleKeys(): Nothing =
+    throw new IllegalStateException("Impossible! Record Keys must always be Ints or Strings")
+
+
 }
 
 

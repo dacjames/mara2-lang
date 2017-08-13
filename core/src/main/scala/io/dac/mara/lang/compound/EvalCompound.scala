@@ -13,7 +13,7 @@ trait EvalCompound extends EvalOp with NamespaceLookup with CompoundAlg[Eval] {
     op {
       block.map(_.eval).lastOption match {
         case Some(v) => v
-        case None => UnitValue()
+        case None => UnitValue( )
       }
     }
 
@@ -35,6 +35,7 @@ trait EvalCompound extends EvalOp with NamespaceLookup with CompoundAlg[Eval] {
         k.eval match {
           case StringValue(s) => (StringKey(s), v.eval)
           case IntValue(i) => (IntKey(i), v.eval)
+          case _ => Record.throwImpossibleKeys()
         }
     }
 
@@ -48,7 +49,7 @@ trait EvalCompound extends EvalOp with NamespaceLookup with CompoundAlg[Eval] {
     val record = lookupValue(name)
 
     record match {
-      case MaraValue.RecordValue(r: Record[MaraValue]) =>
+      case MaraValue.RecordValue(r: Record[MaraValue] @unchecked) =>
         val keys = args.map(_.eval)
 
 
@@ -57,6 +58,7 @@ trait EvalCompound extends EvalOp with NamespaceLookup with CompoundAlg[Eval] {
           case 1 => keys(0) match {
             case StringValue(s) => r.get(s).getOrElse(ErrorValue(s"Key ${s} not found in Record ${r}"))
             case IntValue(i) => r.get(i).getOrElse(ErrorValue(s"Pos ${i} not found in Record ${i}"))
+            case _ => Record.throwImpossibleKeys()
           }
           case _ =>
             import Record._
@@ -64,6 +66,7 @@ trait EvalCompound extends EvalOp with NamespaceLookup with CompoundAlg[Eval] {
             val tags: Seq[(Key, MaraValue)] = keys.zipWithIndex.map {
               case (IntValue(i), p) => (IntKey(p), r.get(i).getOrElse(ErrorValue(s"Pos ${i} not found in Record ${i}")))
               case (StringValue(s), p) => (StringKey(s), r.get(s).getOrElse(ErrorValue(s"Key ${s} not found in Record ${s}")))
+              case _ => Record.throwImpossibleKeys()
             }
 
             construct(tags: _*) match {
