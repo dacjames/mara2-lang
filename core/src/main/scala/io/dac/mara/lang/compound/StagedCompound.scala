@@ -11,4 +11,6 @@ trait StagedCompound extends StagedOp with CompoundAlg[Staged] {
       case None => UnitValue()
     }
   }
+
+  override def module(exprs: Seq[Staged]): Staged = this.dox(exprs)
 }

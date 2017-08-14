@@ -9,6 +9,8 @@ import io.dac.mara.phases.{Eval, EvalOp}
 trait EvalCompound extends EvalOp with NamespaceLookup with CompoundAlg[Eval] {
   import MaraValue._
 
+  override def module(exprs: Seq[Eval]): Eval = this.dox(exprs)
+
   override def dox(block: Seq[Eval]) =
     op {
       block.map(_.eval).lastOption match {

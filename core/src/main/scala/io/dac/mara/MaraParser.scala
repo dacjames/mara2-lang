@@ -24,9 +24,13 @@ trait MaraParser[E, Alg <: lang.CombinedAlg[E]  ]
     with CompoundParser[E, Alg]
     with AppParser[E, Alg] {
 
-  def Root: Rule1[E] = InputLine
+  def Root: Rule1[E] = File
 
-  def InputLine: Rule1[E] = rule { (Expr | Terminal) ~ EOI }
+  def File: Rule1[E] = rule {
+    zeroOrMore(ExprSep) ~ Expr ~ zeroOrMore(oneOrMore(ExprSep) ~ Expr) ~ zeroOrMore(ExprSep) ~ EOI ~> { (a: E, b: Seq[E]) =>
+      alg.module(a +: b)
+    }
+  }
 
   def Expr: Rule1[E] = rule {
     Operator | Terminal

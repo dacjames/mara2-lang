@@ -8,6 +8,8 @@ import scala.collection.mutable
 
 trait CompiledCompound extends CompiledOp with CompoundAlg[Compiled] {
 
+  override def module(exprs: Seq[Compiled]): Compiled = this.dox(exprs)
+
   override def dox(block: Seq[Compiled]): Compiled = op(Compiled.recurse(block))
 
 }

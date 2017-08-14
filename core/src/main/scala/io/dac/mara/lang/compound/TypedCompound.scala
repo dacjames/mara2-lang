@@ -9,6 +9,9 @@ import io.dac.mara.phases.{Typed, TypedOp}
 trait TypedCompound extends TypedOp with CompoundAlg[Typed] {
   import MaraType._
 
+
+  override def module(exprs: Seq[Typed]): Typed = this.dox(exprs)
+
   override def dox(exprs: Seq[Typed]): Typed = op {
     exprs.map(_.typex).lastOption match {
       case Some(t) => t
