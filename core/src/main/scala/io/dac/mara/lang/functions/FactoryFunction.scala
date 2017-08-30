@@ -11,7 +11,7 @@ trait FactoryFunction extends FactoryOp with FunctionAlg[Factory] {
                          body: Seq[Factory])
     extends Node {
     override def exec[E](alg: ExprAlg[E]): E = alg match {
-      case alg: FunctionAlg[E] => alg.defconcrete(name, typeparams, valparams, typex, body.view.map(_.build.exec(alg)))
+      case alg: FunctionAlg[E] => alg.funconcrete(name, typeparams, valparams, typex, body.view.map(_.build.exec(alg)))
     }
   }
 
@@ -21,7 +21,7 @@ trait FactoryFunction extends FactoryOp with FunctionAlg[Factory] {
                          typex: Option[String])
     extends Node {
     override def exec[E](alg: ExprAlg[E]): E = alg match {
-      case alg: FunctionAlg[E] => alg.defabstract(name, typeparams, valparams, typex)
+      case alg: FunctionAlg[E] => alg.funabstract(name, typeparams, valparams, typex)
     }
   }
 
@@ -32,11 +32,11 @@ trait FactoryFunction extends FactoryOp with FunctionAlg[Factory] {
   }
 
 
-  override def defconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Factory]): Factory = op {
+  override def funconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Factory]): Factory = op {
     DefConcrete(name, typeparams, valparams, typex, body)
   }
 
-  override def defabstract(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String]): Factory = op {
+  override def funabstract(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String]): Factory = op {
     DefAbstract(name, typeparams, valparams, typex)
   }
 

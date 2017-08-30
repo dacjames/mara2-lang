@@ -31,7 +31,7 @@ trait EvalFunction extends EvalOp with FunctionAlg[Eval] with NamespaceLookup {
     FunctionValue(name=name, typeparams=typeparamValues, valparams=valparamValues, body=body)
   }
 
-  override def defconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Eval]): Eval = op {
+  override def funconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Eval]): Eval = op {
     bindValue(name, buildFunction(name, typeparams, valparams, body))
   }
 

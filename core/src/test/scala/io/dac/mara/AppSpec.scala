@@ -16,13 +16,13 @@ class AppSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "be hackily staged" in {
-    fullPipeline[Eval]("do { def add(x: Int, y: Int) { x + y }; app foo(){ .add(1, 2) }; .foo \n}") shouldEqual "IntValue(3)"
+    fullPipeline[Eval]("do { fun add(x: Int, y: Int) { x + y }; app foo(){ .add(1, 2) }; .foo \n}") shouldEqual "IntValue(3)"
 
     fullPipeline[Eval](
       """
-        | def add(x: Int, y: Int) { x + y }
+        | fun add(x: Int, y: Int) { x + y }
         |
-        | def sub(x: Int, y: Int) { x - y }
+        | fun sub(x: Int, y: Int) { x - y }
         |
         | app foo() {
         |   .add(1, .sub(3, 0))

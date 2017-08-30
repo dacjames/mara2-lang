@@ -24,21 +24,21 @@ trait FunctionParser[E, Alg <: FunctionAlg[E]] extends LangParser[E, Alg]
   }
 
   private[this] def AbstractDef: Rule1[E] = rule {
-    "def" ~ ValueId ~ Pairs ~ optional("->" ~ TypeId) ~> {
+    "fun" ~ ValueId ~ Pairs ~ optional("->" ~ TypeId) ~> {
       (a: String, b: (Seq[Pair.Type], Seq[Pair.Value]), c: Option[String]) => {
         val typeparams = b._1
         val valparams = b._2
-        alg.defabstract(name = a, typeparams = typeparams, valparams = valparams, typex = c)
+        alg.funabstract(name = a, typeparams = typeparams, valparams = valparams, typex = c)
       }
     }
   }
 
   private[this] def ConcreteDef: Rule1[E] = rule {
-    "def" ~ ValueId ~ Pairs ~ optional("->" ~ TypeId) ~ Block ~> {
+    "fun" ~ ValueId ~ Pairs ~ optional("->" ~ TypeId) ~ Block ~> {
       (a: String, b: (Seq[Pair.Type], Seq[Pair.Value]), c: Option[String], d: Seq[E] ) => {
         val typeparams = b._1
         val valparams = b._2
-        alg.defconcrete(name = a, typeparams = typeparams, valparams = valparams, typex = c, body = d)
+        alg.funconcrete(name = a, typeparams = typeparams, valparams = valparams, typex = c, body = d)
       }
     }
   }

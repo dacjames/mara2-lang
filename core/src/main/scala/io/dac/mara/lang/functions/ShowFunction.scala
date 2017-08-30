@@ -16,11 +16,11 @@ trait ShowFunction extends ShowOp with FunctionAlg[Show] {
         case Pair(n, None) => s"$n"
       }.mkString(", ")
 
-    s"def ${name}(${parampart(typeparams)})(${parampart(valparams)})$typepart { ${body.map(_.show).mkString("; ")} }"
+    s"fun ${name}(${parampart(typeparams)})(${parampart(valparams)})$typepart { ${body.map(_.show).mkString("; ")} }"
   }
 
 
-  override def defconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Show]): Show = op {
+  override def funconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Show]): Show = op {
     showFunction(name, typeparams, valparams, typex, body)
   }
 

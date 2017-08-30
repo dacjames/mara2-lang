@@ -15,7 +15,7 @@ trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] with Namesp
   import io.dac.mara.core.MaraType._
 
 
-  override def defconcrete(name: String,
+  override def funconcrete(name: String,
                            typeparams: Seq[Pair.Type],
                            valparams: Seq[Pair.Value],
                            typex: Option[String],

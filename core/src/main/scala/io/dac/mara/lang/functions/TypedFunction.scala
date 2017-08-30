@@ -9,7 +9,7 @@ import io.dac.mara.lang.variables.VariableAlg
 trait TypedFunction extends TypedOp with FunctionAlg[Typed] with VariableAlg[Typed] with NamespaceLookup {
   import MaraType._
 
-  override def defconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Typed]) = op {
+  override def funconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Typed]) = op {
 
     // TODO: Function Type Parameters are ignored
 

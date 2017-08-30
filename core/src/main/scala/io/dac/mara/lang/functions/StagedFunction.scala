@@ -5,7 +5,7 @@ import io.dac.mara.phases.{Staged, StagedOp}
 
 trait StagedFunction extends StagedOp with FunctionAlg[Staged]{
 
-  override def defconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Staged]): Staged = op {
+  override def funconcrete(name: String, typeparams: Seq[Pair.Type], valparams: Seq[Pair.Value], typex: Option[String], body: Seq[Staged]): Staged = op {
     Staged.empty
   }
 

@@ -15,7 +15,7 @@
 - [x] Decide on LLVM approach
 - [ ] Implement REPL
 - [x] Integrate Pipeline steps
-- [ ] `def` to `fun`
+- [x] `def` to `fun`
 - [ ] Cleanup temp files creating by staging
 - [ ] Cleanup nesting in RecordValue/RecordType
 - [ ] How to lookup type in CompiledOperator
