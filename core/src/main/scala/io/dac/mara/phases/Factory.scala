@@ -15,16 +15,18 @@ trait Factory extends Expr[Factory] {
 
 object Factory {
   implicit object FactoryPhase extends Phase[Factory] {
-    override def key: Int = 3
+    override def key: Int = 4
   }
 }
 
 trait FactoryOp extends ExprOps[Factory] {
   override def op(f: => Node) = {
-    new Factory {
+    val index = context.nextIndex[Factory]
+
+    context.put(index)(new Factory {
       override def build = f
-      override val phase: TreeIndex = context.nextIndex[Factory]
-    }
+      override def get[A <: Expr[A] : Phase]: A#Target = context.get(index)
+    })
   }
 }
 

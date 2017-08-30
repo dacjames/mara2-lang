@@ -12,7 +12,7 @@ trait Staged extends Expr[Staged] {
 
 object Staged {
   implicit object StagePhase extends Phase[Staged] {
-    override def key: Int = 4
+    override def key: Int = 5
   }
 
   def empty: Staged#Target = MaraValue.UnitValue()
@@ -20,9 +20,11 @@ object Staged {
 }
 
 trait StagedOp extends ExprOps[Staged] {
-  def op(f: => MaraValue): Staged =
-    new Staged {
+  def op(f: => MaraValue): Staged = {
+    val index = context.nextIndex[Staged]
+    context.put(index)(new Staged {
       override def stage: Target = f
-      override val phase = context.nextIndex[Staged]
-    }
+      override def get[A <: Expr[A] : Phase]: A#Target = context.get(index)
+    })
+  }
 }

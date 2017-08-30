@@ -41,11 +41,17 @@ object Compiled {
 }
 
 trait CompiledOp extends ExprOps[Compiled] {
-  override def op(f: => (Vector[IrFragment], IrFragment)): Compiled =
-    new Compiled {
+  override def op(f: => (Vector[IrFragment], IrFragment)): Compiled = {
+    val index = context.nextIndex[Compiled]
+
+    context.put(index)(new Compiled {
       private[this] lazy val capture = f
+
       override def bytecode = capture._1
+
       override def result = capture._2
-      override val phase = context.nextIndex[Compiled]
-    }
+
+      override def get[A <: Expr[A] : Phase]: A#Target = context.get[A](index)
+    })
+  }
 }

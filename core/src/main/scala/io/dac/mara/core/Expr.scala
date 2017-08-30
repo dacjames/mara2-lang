@@ -6,8 +6,9 @@ package io.dac.mara.core
 abstract class Expr[+E <: Expr[E]] {
   type Target
 
-  def phase: TreeIndex
   def value: Target
+  def get[A <: Expr[A]: Phase]: A#Target
+  override def toString: String = value.toString
 }
 
 abstract class ExprOps[E <: Expr[E]: Phase](implicit val context: TreeContext) {
