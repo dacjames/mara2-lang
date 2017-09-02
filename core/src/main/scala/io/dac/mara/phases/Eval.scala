@@ -22,14 +22,11 @@ object Eval {
 
 
 trait EvalOp extends ExprOps[Eval] {
-  override def op(f: => MaraValue) = {
-    val index = context.nextIndex[Eval]
-
+  override def opimpl(f: => MaraValue, index: TreeIndex): Eval =
     context.put(index)(new Eval {
       override def eval = f
       override def get[A <: Expr[A] : Phase]: A#Target = context.get(index)
     })
-  }
 }
 
 

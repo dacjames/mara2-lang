@@ -1,6 +1,6 @@
 package io.dac.mara.phases
 
-import io.dac.mara.core.{Expr, ExprOps, Phase}
+import io.dac.mara.core.{Expr, ExprOps, Phase, TreeIndex}
 import io.dac.mara.ir.IrFragment
 
 import scala.collection.mutable
@@ -41,9 +41,7 @@ object Compiled {
 }
 
 trait CompiledOp extends ExprOps[Compiled] {
-  override def op(f: => (Vector[IrFragment], IrFragment)): Compiled = {
-    val index = context.nextIndex[Compiled]
-
+  override def opimpl(f: => (Vector[IrFragment], IrFragment), index: TreeIndex): Compiled = {
     context.put(index)(new Compiled {
       private[this] lazy val capture = f
 
@@ -53,19 +51,5 @@ trait CompiledOp extends ExprOps[Compiled] {
 
       override def get[A <: Expr[A] : Phase]: A#Target = context.get[A](index)
     })
-  }
-
-  def opWith[E <: Expr[E]: Phase](f: E#Target => (Vector[IrFragment], IrFragment)): Compiled = {
-    val index = context.nextIndex[Compiled]
-    val input = context.get[E](index)
-
-    context.put(index) {
-      new Compiled {
-        private[this] lazy val capture = f(input)
-        override def bytecode = capture._1
-        override def result = capture._2
-        override def get[A <: Expr[A] : Phase]: A#Target = context.get[A](index)
-      }
-    }
   }
 }

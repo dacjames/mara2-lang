@@ -20,9 +20,7 @@ object Factory {
 }
 
 trait FactoryOp extends ExprOps[Factory] {
-  override def op(f: => Node) = {
-    val index = context.nextIndex[Factory]
-
+  override def opimpl(f: => Node, index: TreeIndex) = {
     context.put(index)(new Factory {
       override def build = f
       override def get[A <: Expr[A] : Phase]: A#Target = context.get(index)

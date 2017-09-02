@@ -20,8 +20,7 @@ object Staged {
 }
 
 trait StagedOp extends ExprOps[Staged] {
-  def op(f: => MaraValue): Staged = {
-    val index = context.nextIndex[Staged]
+  def opimpl(f: => MaraValue, index: TreeIndex): Staged = {
     context.put(index)(new Staged {
       override def stage: Target = f
       override def get[A <: Expr[A] : Phase]: A#Target = context.get(index)

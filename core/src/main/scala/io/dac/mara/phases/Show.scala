@@ -19,12 +19,9 @@ object Show {
 }
 
 trait ShowOp extends ExprOps[Show] {
-  override def op(f: => String) = {
-    val index = context.nextIndex[Show]
-
+  override def opimpl(f: => String, index: TreeIndex): Show =
     context.put(index)(new Show {
       override def show = f
       override def get[A <: Expr[A] : Phase]: A#Target = context.get(index)
     })
-  }
 }
