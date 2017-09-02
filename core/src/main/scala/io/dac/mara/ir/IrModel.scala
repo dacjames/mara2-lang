@@ -40,6 +40,8 @@ object IrModel {
     def text: String =
       instructions.map(_.value).mkString("\n")
 
+    override def toString(): String = text
+
     implicit object cbf extends CanBuildFrom[Fragment, Instruction, Fragment] {
       override def apply(from: Fragment): mutable.Builder[Instruction, Fragment] =
         new Builder(state = from.instructions.toBuffer)
@@ -90,7 +92,6 @@ object IrModel {
       instructions.collect {
         case ExprInstuction(l, r) => l
         case DefineInstruction(name, value) => l(name)
-        case _ => l(null)
       }.last
     }
 
@@ -103,8 +104,6 @@ object IrModel {
 
 
     override def seq: Seq[Instruction] = this.instructions
-
-    override def toString(): String = s"NonEmptyFragemt(${this.instructions}, ${this.result})"
   }
 
   case class EmptyFragment(l: LVal) extends Fragment {

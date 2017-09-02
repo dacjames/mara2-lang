@@ -1,5 +1,6 @@
 package io.dac.mara.phases
 
+import io.dac.mara.core.MaraValue.UnitValue
 import io.dac.mara.core._
 
 /**
@@ -17,6 +18,14 @@ trait Eval extends Expr[Eval] {
 object Eval {
   implicit object EvalPhase extends Phase[Eval] {
     override def key: Int = 2
+  }
+
+  implicit object EvalEmpty extends Empty[Eval] {
+    override def empty: Eval =
+      new Eval {
+        override def eval: MaraValue = UnitValue()
+        override def get[A <: Expr[A] : Phase]: A#Target = ???
+      }
   }
 }
 

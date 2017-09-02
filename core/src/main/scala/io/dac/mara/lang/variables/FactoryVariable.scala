@@ -1,27 +1,27 @@
 package io.dac.mara.lang.variables
 
-import io.dac.mara.core.ExprAlg
+import io.dac.mara.core._
 import io.dac.mara.phases.{Factory, FactoryOp, Node}
 
 trait FactoryVariable extends FactoryOp with VariableAlg[Factory] {
 
   case class ValDeclare(name: String, typex: Option[String]) extends Node {
-    override def exec[E](alg: ExprAlg[E]): E = alg match {
+    override def exec[E: Empty](alg: ExprAlg[E]): E = alg match {
       case alg: VariableAlg[E] => alg.valdeclare(name, typex)
     }
   }
   case class ValAssign(name: String, typex: Option[String], value: Factory) extends Node {
-    override def exec[E](alg: ExprAlg[E]): E = alg match {
+    override def exec[E: Empty](alg: ExprAlg[E]): E = alg match {
       case alg: VariableAlg[E] => alg.valassign(name, typex, value.build.exec(alg))
     }
   }
   case class ValSubstitution(name: String) extends Node {
-    override def exec[E](alg: ExprAlg[E]): E = alg match {
+    override def exec[E: Empty](alg: ExprAlg[E]): E = alg match {
       case alg: VariableAlg[E] => alg.valsubstitution(name)
     }
   }
   case class TypeSubstitution(name: String) extends Node {
-    override def exec[E](alg: ExprAlg[E]): E = alg match {
+    override def exec[E: Empty](alg: ExprAlg[E]): E = alg match {
       case alg: VariableAlg[E] => alg.typesubstitution(name)
     }
   }

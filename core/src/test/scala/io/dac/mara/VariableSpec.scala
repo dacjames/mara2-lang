@@ -1,5 +1,7 @@
 package io.dac.mara
 
+import io.dac.mara.phases.{Compiled, Eval}
+
 /**
   * Created by dcollins on 8/27/16.
   */
@@ -34,5 +36,25 @@ class VariableSpec extends MaraSpec with MaraLanguage {
 
   it should "work with operators" in {
     eval("do { val x = 10; x + 2 }") should be("IntValue(12)")
+  }
+
+  it should "be compiled" in fresh {
+    fullPipeline[Compiled]("val x = 10") should be("%t0 = alloca i32\nstore i32 10, i32* %t0\n%t1 = load i32, i32* %t0")
+  }
+
+  it should "assign and access variables in compiled code" in fresh {
+    fullPipeline[Eval](
+      """
+        | fun asdf() {
+        |   val z = 4
+        |   z
+        | }
+        |
+        | app main() {
+        |   .asdf
+        | }
+        |
+        | .main
+      """.stripMargin) shouldBe "IntValue(4)"
   }
 }

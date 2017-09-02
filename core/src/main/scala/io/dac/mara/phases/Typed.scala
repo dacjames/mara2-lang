@@ -1,5 +1,6 @@
 package io.dac.mara.phases
 
+import io.dac.mara.core.MaraType.UnitType
 import io.dac.mara.core._
 
 /**
@@ -17,6 +18,14 @@ trait Typed extends Expr[Typed] {
 object Typed {
   implicit object TypedPhase extends Phase[Typed] {
     override def key: Int = 1
+  }
+
+  implicit object TypedEmpty extends Empty[Typed] {
+    override def empty: Typed =
+      new Typed {
+        override def typex: MaraType = UnitType()
+        override def get[A <: Expr[A] : Phase]: A#Target = ???
+      }
   }
 }
 

@@ -29,7 +29,13 @@ trait MaraLanguage extends TimeIt {
       val alg = lang.alg.factory
     }
 
-  def run[E <: Expr[E], R](text: String, alg: ExprAlg[E]) = {
+  def fresh[A](block: => A) = {
+    lang.clear()
+    context.clear()
+    block
+  }
+
+  def run[E <: Expr[E]: Empty, R](text: String, alg: ExprAlg[E]) = {
     val parser = factoryParser(text)
     parser.Root.run().map { factory =>
       val tree = factory.build

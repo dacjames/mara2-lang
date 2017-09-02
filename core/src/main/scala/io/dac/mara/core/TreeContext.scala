@@ -41,4 +41,9 @@ class TreeContext {
 
     expr
   }
+
+  def clear(): Unit = {
+    phases.clear()
+    storage.clear()
+  }
 }

@@ -1,6 +1,6 @@
 package io.dac.mara.phases
 
-import io.dac.mara.core.{Expr, ExprOps, Phase, TreeIndex}
+import io.dac.mara.core._
 import io.dac.mara.ir.IrModel
 import io.dac.mara.ir.IrModel.{Fragment, Instruction}
 
@@ -19,6 +19,14 @@ trait Compiled extends Expr[Compiled] {
 object Compiled {
   implicit object CompiledPhase extends Phase[Compiled] {
     override def key: Int = 3
+  }
+
+  implicit object CompiledEmpty extends Empty[Compiled] {
+    override def empty: Compiled =
+      new Compiled {
+        override def fragment: Fragment = Fragment.empty
+        override def get[A <: Expr[A] : Phase]: A#Target = ???
+      }
   }
 
   def recurse(block: Seq[Compiled]): Fragment = {

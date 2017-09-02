@@ -7,6 +7,11 @@ import scala.collection.mutable
 class Module {
   private[core] val symbols: mutable.HashMap[String, Fragment] = mutable.HashMap.empty
   private[core] var counter: Int = 0
+
+  def clear(): Unit = {
+    symbols.clear()
+    counter = 0
+  }
 }
 
 trait ModuleLookup {

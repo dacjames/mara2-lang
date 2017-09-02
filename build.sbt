@@ -13,7 +13,7 @@ lazy val commonSettings = Seq(
     // Java Dependencies
     "ch.qos.logback" %  "logback-classic" % "1.1.7"
   ) ++ Seq(
-    "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+    "org.scalatest" %% "scalatest" % "3.0.0"  % "test"
   )
 )
 

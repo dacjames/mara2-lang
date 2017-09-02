@@ -3,7 +3,11 @@ package io.dac.mara.phases
 import io.dac.mara.core._
 
 abstract class Node {
-  def exec[E](alg: ExprAlg[E]): E
+  def exec[E: Empty](alg: ExprAlg[E]): E
+}
+
+case object EmptyNode extends Node {
+  override def exec[E: Empty](alg: ExprAlg[E]): E = alg.empty
 }
 
 trait Factory extends Expr[Factory] {
@@ -16,6 +20,10 @@ trait Factory extends Expr[Factory] {
 object Factory {
   implicit object FactoryPhase extends Phase[Factory] {
     override def key: Int = 4
+  }
+
+  implicit object FactoryEmpty extends Empty[Factory] {
+    override def empty: Factory = ???
   }
 }
 

@@ -16,6 +16,14 @@ object Show {
   implicit object ShowPhase extends Phase[Show] {
     override def key: Int = 0
   }
+
+  implicit object ShowEmpty extends Empty[Show] {
+    override def empty: Show =
+      new Show {
+        override def show: String = ""
+        override def get[A <: Expr[A] : Phase]: A#Target = ???
+      }
+  }
 }
 
 trait ShowOp extends ExprOps[Show] {
