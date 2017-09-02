@@ -1,7 +1,8 @@
 package io.dac.mara.phases
 
 import io.dac.mara.core.{Expr, ExprOps, Phase, TreeIndex}
-import io.dac.mara.ir.IrFragment
+import io.dac.mara.ir.IrModel
+import io.dac.mara.ir.IrModel.{Fragment, Instruction}
 
 import scala.collection.mutable
 
@@ -9,11 +10,10 @@ import scala.collection.mutable
   * Created by dcollins on 4/28/17.
   */
 trait Compiled extends Expr[Compiled] {
-  override type Target = (Vector[IrFragment], IrFragment)
-  override def value: (Vector[IrFragment], IrFragment) = (bytecode, result)
+  override type Target = IrModel.Fragment
+  override def value: IrModel.Fragment = fragment
 
-  def bytecode: Vector[IrFragment]
-  def result: IrFragment
+  def fragment: IrModel.Fragment
 }
 
 object Compiled {
@@ -21,33 +21,15 @@ object Compiled {
     override def key: Int = 3
   }
 
-  def empty: Compiled#Target = (Vector.empty[IrFragment], new IrFragment("0"))
-
-  def recurse(block: Seq[Compiled]) = {
-    val bytecode = mutable.ArrayBuffer.empty[IrFragment]
-    var result: Option[IrFragment] = None
-
-    block.foreach { compiled =>
-      bytecode ++= compiled.bytecode
-      result = Some(compiled.result)
-    }
-
-
-    result match {
-      case Some(result) => (bytecode.toVector, result)
-      case None => Compiled.empty
-    }
+  def recurse(block: Seq[Compiled]): Fragment = {
+    block.map(_.fragment).foldLeft(Fragment.empty)(_ ++ _)
   }
 }
 
 trait CompiledOp extends ExprOps[Compiled] {
-  override def opimpl(f: => (Vector[IrFragment], IrFragment), index: TreeIndex): Compiled = {
+  override def opimpl(f: => Fragment, index: TreeIndex): Compiled = {
     context.put(index)(new Compiled {
-      private[this] lazy val capture = f
-
-      override def bytecode = capture._1
-
-      override def result = capture._2
+      override def fragment: Fragment = f
 
       override def get[A <: Expr[A] : Phase]: A#Target = context.get[A](index)
     })

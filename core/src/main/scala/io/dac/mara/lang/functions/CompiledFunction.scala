@@ -11,7 +11,7 @@ import scala.collection.mutable
   * Created by dcollins on 4/28/17.
   */
 trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] with NamespaceLookup with ModuleLookup {
-  import io.dac.mara.ir.implicits._
+  import io.dac.mara.ir.IrModel._
   import io.dac.mara.core.MaraType._
 
 
@@ -25,53 +25,47 @@ trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] with Namesp
       case Pair(name, typeOpt) => s"i32 %$name"
     }.mkString(",")
 
-    val (bodyCode, bodyResult) = Compiled.recurse(body)
+    val bodyFragment = Compiled.recurse(body)
 
     val bytecode =
-      s"define i32 @$name($paramlist) {" /|
-      "entry:" ++ bodyCode ++
-      s"ret i32 $bodyResult" /|
-      "}"
-
-    val result = s"@$name"
+      (define(name, s"define i32 @$name($paramlist) {") :+
+      stmt("entry:")) ++
+      bodyFragment :+
+      stmt(s"ret i32 ${bodyFragment.result}") :+
+      stmt("}")
 
     bindAttr(
       name,
-      CodeAttr(bytecode.mkString("\n"))
+      CodeAttr(bytecode)
     )
 
     addSymbol(name, bytecode)
 
-    (bytecode, result)
+    bytecode
   }
 
   override def call(name: String, args: Seq[Compiled]): Compiled = op {
     lookupType(name) match {
       case FunctionType(RecordType(input), output) =>
         val (prefixCode, argFragment) =
-          if (input.keys.isEmpty) (Vector.empty[IrFragment], "")
+          if (input.keys.isEmpty) (Fragment.empty, "")
           else {
-            val prefix = mutable.ArrayBuffer.empty[IrFragment]
-            var results = mutable.ArrayBuffer.empty[IrFragment]
-
-            args.foreach { compiled =>
-              prefix ++= compiled.bytecode
-              results += compiled.result
-            }
+            val argCode = args.map(_.fragment).toVector
+            val results = argCode.map(_.result)
 
             val loweredInputTypes = input.values.flatMap(MaraType.lower)
             val fragment = ((loweredInputTypes zip results) map {
               case (llvmType, result) => s"$llvmType $result"
             }).mkString(",")
 
-            (prefix.toVector, fragment)
+            (argCode.foldLeft(Fragment.empty)(_ ++ _), fragment)
           }
         val result = nextTemp()
         val bytecode =
-          prefixCode /|
-          s"$result = call ${MaraType.lower(output).get} @$name($argFragment)"
+          prefixCode :+
+          stmt(l(result), r(s"call ${MaraType.lower(output).get} @$name($argFragment)"))
 
-        (bytecode, result)
+        bytecode
     }
   }
 }

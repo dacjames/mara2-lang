@@ -41,7 +41,7 @@ trait StagedApp extends StagedOp with AppAlg[Staged] with NamespaceLookup with M
         val objfile = new File(assembly.getAbsolutePath.replace(".s", ""))
         objfile.createNewFile()
 
-        val fullCode = getModuleCode ++ code
+        val fullCode = (getModuleCode ++ code).text
 
         val p = (Process(s"/usr/local/opt/llvm/bin/llc -o=${assembly}") #< textInput(fullCode)) #&& Process(s"/usr/local/opt/llvm/bin/clang -o ${objfile} ${assembly}")
         p ! processLogger(name, fullCode) match {
