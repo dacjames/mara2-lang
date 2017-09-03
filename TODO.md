@@ -22,4 +22,6 @@
 - [x] Proper resolution of operator output types
 - [ ] Does empty break tree indexing?
 - [ ] Benchmark single-level vs double-level phase storage
-
+- [~] Convert if to more traditional ifelse (remove old methods)
+- [ ] Compile comparison operators
+- [ ] Removed redundancy in label and define instructions
