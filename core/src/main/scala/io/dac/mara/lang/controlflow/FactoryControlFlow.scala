@@ -17,11 +17,21 @@ trait FactoryControlFlow extends FactoryOp with ControlFlowAlg[Factory] {
     }
   }
 
+  case class IfElse(pred: Factory, ifbody: Seq[Factory], elsebody: Seq[Factory]) extends Node {
+    override def exec[E: Empty](alg: ExprAlg[E]): E = alg match {
+      case alg: ControlFlowAlg[E] => alg.ifelse(pred.build.exec(alg), ifbody.view.map(_.build.exec(alg)), elsebody.view.map(_.build.exec(alg)))
+    }
+  }
+
   override def ifx(pred: Factory, body: Factory): Factory = op {
     If(pred, body)
   }
 
   override def elsex(expr: Factory, otherwise: Factory): Factory = op {
     Else(expr, otherwise)
+  }
+
+  override def ifelse(pred: Factory, ifbody: Seq[Factory], elsebody: Seq[Factory]) = op {
+    IfElse(pred, ifbody, elsebody)
   }
 }

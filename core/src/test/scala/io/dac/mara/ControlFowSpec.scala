@@ -11,7 +11,7 @@ class ControlFowSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "support pipeline" in {
-    pipeline("if 1 {1}") should be("if 1 { 1 } :: AnyType() ==> IntValue(1)")
+    pipeline("if 1 {1}") should be("if 1 { 1 } :: ErrorType(Incompatible types in branches of ifelse: 1, UnitType()) ==> IntValue(1)")
   }
 
   it should "evaluate the if statement with trueish predicate" in {
@@ -61,7 +61,7 @@ class ControlFowSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "compile" in fresh {
-    fullPipeline[Compiled]("if true { 1 }") should be("br i1 1, label %body, label %otherwise\nbody:\notherwise:")
+    fullPipeline[Compiled]("if true { 1 } else { 0 }") should be("br i1 1, label %ifLabel, label %elseLabel\nifLabel:\nbr label %endLabel\nelseLabel:\nbr label %endLabel\nendLabel:")
   }
 
 }

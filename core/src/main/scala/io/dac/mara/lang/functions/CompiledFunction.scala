@@ -3,7 +3,7 @@ package io.dac.mara.lang.functions
 import io.dac.mara.core.MaraAttr.CodeAttr
 import io.dac.mara.core._
 import io.dac.mara.lang.variables.VariableAlg
-import io.dac.mara.phases.{Compiled, CompiledOp}
+import io.dac.mara.phases.{Compiled, CompiledOp, Typed}
 
 import scala.collection.mutable
 
@@ -19,17 +19,19 @@ trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] with Namesp
                            typeparams: Seq[Pair.Type],
                            valparams: Seq[Pair.Value],
                            typex: Option[String],
-                           body: Seq[Compiled]): Compiled = op {
+                           body: Seq[Compiled]): Compiled = opWith[Typed] { typex =>
 
     val paramlist = valparams.map {
-      case Pair(name, typeOpt) => s"i32 %$name"
+      case Pair(name, typeOpt) => s"${typeOpt.flatMap(t => MaraType.lower(lookupType(t))).get} %$name"
     }.mkString(",")
 
 
     val bodyFragment = Compiled.recurse(body)
 
+    val resultType = MaraType.lower(typex).get
+
     val bytecode =
-      (define(name, s"define i32 @$name($paramlist) {") :+
+      (define(name, s"define ${resultType} @$name($paramlist) {") :+
       stmt("entry:")) ++
       bodyFragment :+
       stmt(s"ret i32 ${bodyFragment.result}") :+

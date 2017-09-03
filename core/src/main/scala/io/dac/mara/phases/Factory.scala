@@ -23,7 +23,10 @@ object Factory {
   }
 
   implicit object FactoryEmpty extends Empty[Factory] {
-    override def empty: Factory = ???
+    override def empty: Factory = new Factory {
+      override def build = EmptyNode
+      override def get[A <: Expr[A] : Phase] = ???
+    }
   }
 }
 

@@ -40,6 +40,7 @@ object IrModel {
     def result: LVal
     def block: Label
     def blocks: Map[String, Label]
+    def isEmpty: Boolean
 
     def ++(other: Fragment): Fragment
     def :+(instruction: Instruction): Fragment
@@ -108,6 +109,8 @@ object IrModel {
       }.head
     }
 
+    override def isEmpty: Boolean = false
+
     override def ++(other: Fragment): Fragment = NonEmptyFragemt(instructions ++ other.instructions)
     override def :+(instruction: Instruction): Fragment = NonEmptyFragemt(this.instructions :+ instruction)
 
@@ -137,6 +140,8 @@ object IrModel {
 
     override def block: Label = throw new NoSuchElementException()
     override def blocks: Map[String, Label] = Map.empty
+
+    override def isEmpty: Boolean = true
 
     override def ++(other: Fragment): Fragment = other
     override def :+(instruction: Instruction): Fragment = NonEmptyFragemt(Vector(instruction))

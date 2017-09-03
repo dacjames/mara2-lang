@@ -30,5 +30,24 @@ class AppSpec extends MaraSpec with MaraLanguage {
         |
         | .foo
         |""".stripMargin) shouldEqual "IntValue(4)"
+
+  }
+
+  it should "stage a function with control flow" in fresh {
+    fullPipeline[Eval](
+      """
+        | fun bar(cond: Bool, x: Int, y: Int) {
+        |   if cond {
+        |     x + y
+        |   } else {
+        |     x - y
+        |   }
+        | }
+        | app foo() {
+        |   .bar(true, 2, 1) + .bar(false, 2, 1)
+        | }
+        |
+        | .foo
+        |""".stripMargin) shouldEqual "IntValue(4)"
   }
 }

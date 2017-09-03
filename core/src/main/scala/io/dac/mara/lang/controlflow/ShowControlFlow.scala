@@ -11,7 +11,9 @@ trait ShowControlFlow extends ShowOp with ControlFlowAlg[Show] {
   }
 
   override def elsex(expr: Show, otherwise: Show) = op {
-    s"${expr.show} else { ${otherwise.show} }"
+    val body = otherwise.show
+    if (body.replace(" ", "").length == 0) expr.show
+    else s"${expr.show} else { ${otherwise.show} }"
   }
 
 }

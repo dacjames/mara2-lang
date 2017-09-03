@@ -15,7 +15,11 @@ trait StagedApp extends StagedOp with AppAlg[Staged] with NamespaceLookup with M
   def processLogger(info: String, input: String): ProcessLogger =
     new ProcessLogger {
       private[this] def dumpInput = {
-        logger.warn(s"LLVM Input:\n$input")
+        val withLineNumbers = input.split("\n").zipWithIndex.map {
+          case (line, i) => s"${i+1}: |${line}"
+        }.mkString("\n")
+
+        logger.warn(s"LLVM Input:\n$withLineNumbers")
       }
       private[this] lazy val inputOnce = dumpInput
 
