@@ -1,11 +1,17 @@
 package io.dac.mara
 
+import io.dac.mara.phases.Compiled
+
 /**
   * Created by dcollins on 8/21/16.
   */
 class OperatorSpec extends MaraSpec with MaraLanguage {
   "Plus operator" should "have the type Int" in {
     typed("1 + 2") should be("IntType()")
+  }
+
+  it should "be compiled" in fresh {
+    fullPipeline[Compiled]("1 + 2") should be("%t0 = add i32 1, 2")
   }
 
   it should "support pipeline" in {
@@ -16,7 +22,15 @@ class OperatorSpec extends MaraSpec with MaraLanguage {
     typed("1 + true") should include("ErrorType")
   }
 
-  "And operator" should "have type Bool" in {
+  "Minus operator" should "be compiled" in fresh {
+    fullPipeline[Compiled]("1 - 2") should be("%t0 = sub i32 1, 2")
+  }
+
+  "Times operator" should "be compiled" in fresh {
+    fullPipeline[Compiled]("1 * 2") should be("%t0 = mul i32 1, 2")
+  }
+
+  "And operator" should "have type Bool" in fresh {
     typed("true && false") should be("BoolType()")
   }
 

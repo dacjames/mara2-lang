@@ -125,6 +125,9 @@ object IrModel {
     override def :+(instruction: Instruction): Fragment = NonEmptyFragemt(Vector(instruction))
   }
 
+  implicit def instructionToFragment(instruction: Instruction): Fragment =
+    NonEmptyFragemt(Vector(instruction))
+
 
 }
 

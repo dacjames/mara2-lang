@@ -2,6 +2,7 @@ package io.dac.mara.lang.functions
 
 import io.dac.mara.core.MaraAttr.CodeAttr
 import io.dac.mara.core._
+import io.dac.mara.lang.variables.VariableAlg
 import io.dac.mara.phases.{Compiled, CompiledOp}
 
 import scala.collection.mutable
@@ -23,6 +24,7 @@ trait CompiledFunction extends CompiledOp with FunctionAlg[Compiled] with Namesp
     val paramlist = valparams.map {
       case Pair(name, typeOpt) => s"i32 %$name"
     }.mkString(",")
+
 
     val bodyFragment = Compiled.recurse(body)
 

@@ -1,6 +1,6 @@
 package io.dac.mara.core
 
-import io.dac.mara.ir.IrModel.Fragment
+import io.dac.mara.ir.IrModel
 
 sealed trait MaraAttr extends MaraRoot
 
@@ -10,8 +10,9 @@ sealed abstract class AttrKey[A <: MaraAttr] {
 
 object MaraAttr {
   case class ErrorAttr(msg: String) extends MaraAttr
-  case class CodeAttr(code: Fragment) extends MaraAttr
+  case class CodeAttr(code: IrModel.Fragment) extends MaraAttr
   case class ExecutableAttr(value: MaraValue) extends MaraAttr
+  case class RefAttr(value: IrModel.LVal) extends MaraAttr
 
   implicit object ErrorKey extends AttrKey[ErrorAttr] {
     override def key: Int = 0
@@ -21,6 +22,9 @@ object MaraAttr {
   }
   implicit object ValueKey extends AttrKey[ExecutableAttr] {
     override def key: Int = 2
+  }
+  implicit object RefKey extends AttrKey[RefAttr] {
+    override def key: Int = 3
   }
 }
 

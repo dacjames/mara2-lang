@@ -28,4 +28,8 @@ trait CompiledOperator extends CompiledOp with OperatorAlg[Compiled] with Module
 
   override def minus(x: Compiled, y: Compiled): Compiled =
     binop("sub")(x, y)
+
+  override def times(x: Compiled, y: Compiled): Compiled =
+    binop("mul")(x, y)
+
 }

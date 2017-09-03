@@ -15,10 +15,13 @@ class Namespace extends LazyLogging {
   var typespace: Scope[MaraType] = Scope.empty
   var attrspace: Scope[MaraAttr] = Scope.empty
 
+  Namespace.loadBuiltins(this)
+
   def clear(): Unit = {
     valuespace = Scope.empty
     typespace = Scope.empty
     attrspace = Scope.empty
+    Namespace.loadBuiltins(this)
   }
 
   abstract class UniqueSpace[A] {
@@ -122,22 +125,18 @@ class Namespace extends LazyLogging {
   def bindAttr[A <: MaraAttr: AttrKey](name: String, attr: A): MaraAttr = bind[MaraAttr](attrKey(name, implicitly[AttrKey[A]].key), attr)
   def unbindAttr[A <: MaraAttr: AttrKey](name: String): Scope[MaraAttr] = unbind[MaraAttr](attrKey(name, implicitly[AttrKey[A]].key))
 
+}
 
-
-  require {
+object Namespace {
+  private[Namespace] def loadBuiltins(ns: Namespace): Unit = {
     Builtins.types.foreach {
-      case (name, typex) => bindType(name, typex)
+      case (name, typex) => ns.bindType(name, typex)
     }
-    true
-  }
 
-  require {
     Builtins.values.foreach {
-      case (name, value) => bindValue(name, value)
+      case (name, value) => ns.bindValue(name, value)
     }
-    true
   }
-
 }
 
 trait NamespaceLookup {

@@ -19,6 +19,7 @@
 - [ ] Cleanup temp files creating by staging
 - [ ] Cleanup nesting in RecordValue/RecordType
 - [x] How to lookup type in CompiledOperator
-- [ ] Proper resolution of operator output types
+- [x] Proper resolution of operator output types
+- [ ] Does empty break tree indexing?
 - [ ] Benchmark single-level vs double-level phase storage
 
