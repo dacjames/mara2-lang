@@ -10,7 +10,7 @@
         else { self(x - 2) + self(x - 1) }
       }
 
-      def main(args: List(String)) {
+      app main(args: List(String)) {
         fib(10).show
       }
       </code>
