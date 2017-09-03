@@ -58,7 +58,7 @@ package object lang {
       override val emptyEvidence: Empty[Typed] = Typed.TypedEmpty
       override val namespace: Namespace = langNamespace
     }
-    def compiled(implicit context: TreeContext) = new CompiledLiteral with CompiledOperator with CompiledVariable with CompiledCompound with CompiledFunction with CompiledApp with MissingImpl[Compiled] {
+    def compiled(implicit context: TreeContext) = new CompiledLiteral with CompiledOperator with CompiledControlFlow with CompiledVariable with CompiledCompound with CompiledFunction with CompiledApp with MissingImpl[Compiled] {
       override val emptyEvidence: Empty[Compiled] = Compiled.CompiledEmpty
       override val namespace: Namespace = langNamespace
       override val module: Module = langModule

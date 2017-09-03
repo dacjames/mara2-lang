@@ -11,6 +11,9 @@ object IrModel {
   case class RVal(value: String) extends AnyVal {
     override def toString: String = value
   }
+  case class Label(value: String) extends AnyVal {
+    override def toString: String = s"%$value"
+  }
 
   def l(value: String) = LVal(value)
   def r(value: String) = RVal(value)
@@ -24,15 +27,19 @@ object IrModel {
     override def value: String = s"${l.value} = ${r.value}"
   }
   case class DefineInstruction(name: String, value: String) extends Instruction
+  case class LabelInstruction(name: Label, value: String) extends Instruction
 
   def stmt(value: String): Instruction = StmtInstruction(value)
   def stmt(l: LVal, r: RVal): Instruction = ExprInstuction(l, r)
   def define(name: String, value: String) = DefineInstruction(name, value)
+  def label(name: String, value: String) = LabelInstruction(Label(name), value)
 
 
   sealed trait Fragment extends SeqLike[Instruction, Fragment] {
     def instructions: Seq[Instruction]
     def result: LVal
+    def block: Label
+    def blocks: Map[String, Label]
 
     def ++(other: Fragment): Fragment
     def :+(instruction: Instruction): Fragment
@@ -79,20 +86,26 @@ object IrModel {
     require {
       instructions.nonEmpty
     }
-    require {
-      instructions.exists {
-        case _: StmtInstruction => false
-        case _: DefineInstruction => true
-        case _: ExprInstuction => true
-      }
-
-    }
 
     def result: LVal = {
       instructions.collect {
         case ExprInstuction(l, r) => l
         case DefineInstruction(name, value) => l(name)
       }.last
+    }
+
+    override def blocks: Map[String, Label] = {
+      instructions.collect {
+        case LabelInstruction(label, _) =>
+          label.value -> label
+      }.toMap
+    }
+
+
+    override def block: Label = {
+      instructions.collect {
+        case LabelInstruction(label, _) => label
+      }.head
     }
 
     override def ++(other: Fragment): Fragment = NonEmptyFragemt(instructions ++ other.instructions)
@@ -121,12 +134,19 @@ object IrModel {
       if (this.l == null) throw new NoSuchElementException()
       else this.l
     }
+
+    override def block: Label = throw new NoSuchElementException()
+    override def blocks: Map[String, Label] = Map.empty
+
     override def ++(other: Fragment): Fragment = other
     override def :+(instruction: Instruction): Fragment = NonEmptyFragemt(Vector(instruction))
   }
 
   implicit def instructionToFragment(instruction: Instruction): Fragment =
     NonEmptyFragemt(Vector(instruction))
+
+  implicit def lvalToFragment(lval: LVal): Fragment =
+    EmptyFragment(lval)
 
 
 }

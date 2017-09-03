@@ -1,5 +1,7 @@
 package io.dac.mara
 
+import io.dac.mara.phases.Compiled
+
 /**
   * Created by dcollins on 8/20/16.
   */
@@ -56,6 +58,10 @@ class ControlFowSpec extends MaraSpec with MaraLanguage {
   it should "honor block scope in else blocks" in {
     eval("do { val x = 1; val y = if false { 0 } else { val x = 10 }; x }") should be("IntValue(1)")
     eval("do { val x = 1; val y = if false { 0 } else { val x = 10 }; y }") should be("IntValue(10)")
+  }
+
+  it should "compile" in fresh {
+    fullPipeline[Compiled]("if true { 1 }") should be("br i1 1, label %body, label %otherwise\nbody:\notherwise:")
   }
 
 }
