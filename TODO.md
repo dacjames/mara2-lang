@@ -5,7 +5,7 @@
 - [x] Record Types
 - [ ] ~~Observables~~
 - [x] Refactor `Do` rule out of LangParser
-- [ ] Clarify meaning on `Block`
+- [ ] ~~Clarify meaning on `Block`~~
 - [x] Support Trailing Commas
 - [x] Investigate Parser initialization overhead
 - [x] Support multiline without Empty
@@ -25,3 +25,10 @@
 - [~] Convert if to more traditional ifelse (remove old methods)
 - [ ] Compile comparison operators
 - [ ] Removed redundancy in label and define instructions
+- [ ] Extract binding out of Eval into separate phase (e.g. self function) 
+- [x] Store the input types when typing operators (maybe OperatorType?)
+- [ ] Add some automation for creating new phase
+- [ ] Index binop compilation to support floats
+- [ ] Fill out operator compilation unit tests
+- [ ] Make Block a first class expression
+

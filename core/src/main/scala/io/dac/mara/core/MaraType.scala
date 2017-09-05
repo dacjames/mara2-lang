@@ -55,11 +55,26 @@ object MaraType {
 
   }
 
-  case class FunctionType(input: MaraType, output: MaraType) extends MaraType {
+  sealed trait WrapperType extends MaraType {
+    def output: MaraType
+  }
+  object WrapperType {
+    def unapply(arg: WrapperType): Option[MaraType] =
+      Some(arg.output)
+  }
+
+  case class FunctionType(input: MaraType, output: MaraType) extends WrapperType {
     val name = None
   }
 
+  case class BinopType(a: MaraType, b: MaraType, output: MaraType) extends WrapperType {
+    val name = None
+    override def toString: String = output.toString
+  }
+
   def isSubtype(a: MaraType, b: MaraType): Boolean = (a, b) match {
+    case (WrapperType(wrapped), b) => isSubtype(wrapped, b)
+    case (a, WrapperType(wrapped)) => isSubtype(a, wrapped)
     case (_, AnyType()) => true
     case (_, ErrorType(_)) => false
     case (a: LiteralType[_], b: LiteralType[_]) => a.value == b.value
@@ -103,6 +118,7 @@ object MaraType {
   }
 
   def lower(a: MaraType): Option[String] = a match {
+    case WrapperType(wrapped) => lower(wrapped)
     case s: IntLiteralType => Some("i32")
     case s: IntType => Some("i32")
     case i: BoolType => Some("i1")

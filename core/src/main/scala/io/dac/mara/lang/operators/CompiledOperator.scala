@@ -32,4 +32,21 @@ trait CompiledOperator extends CompiledOp with OperatorAlg[Compiled] with Module
   override def times(x: Compiled, y: Compiled): Compiled =
     binop("mul")(x, y)
 
+  override def lt(x: Compiled, y: Compiled): Compiled =
+    binop("icmp slt")(x, y)
+
+  override def gt(x: Compiled, y: Compiled): Compiled =
+    binop("icmp sgt")(x, y)
+
+  override def lte(x: Compiled, y: Compiled): Compiled =
+    binop("icmp sle")(x, y)
+
+  override def gte(x: Compiled, y: Compiled): Compiled =
+    binop("icmp sge")(x, y)
+
+  override def ne(x: Compiled, y: Compiled): Compiled =
+    binop("icmp ne")(x, y)
+
+  override def eq(x: Compiled, y: Compiled): Compiled =
+    binop("icmp eq")(x, y)
 }

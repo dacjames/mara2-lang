@@ -34,20 +34,39 @@ class AppSpec extends MaraSpec with MaraLanguage {
   }
 
   it should "stage a function with control flow" in fresh {
-    fullPipeline[Eval](
-      """
-        | fun bar(cond: Bool, x: Int, y: Int) {
-        |   if cond {
-        |     x + y
-        |   } else {
-        |     x - y
-        |   }
-        | }
-        | app foo() {
-        |   .bar(true, 2, 1) + .bar(false, 2, 1)
-        | }
-        |
-        | .foo
-        |""".stripMargin) shouldEqual "IntValue(4)"
+      fullPipeline[Eval](
+        """
+          | fun bar(cond: Bool, x: Int, y: Int) {
+          |   if cond {
+          |     x + y
+          |   } else {
+          |     x - y
+          |   }
+          | }
+          | app foo() {
+          |   .bar(true, 2, 1) + .bar(false, 2, 1)
+          | }
+          |
+          | .foo
+          |""".stripMargin) shouldEqual "IntValue(4)"
   }
+
+//  Failing due to not binding self
+//  it should "stage the recursive fibinacci function" in fresh {
+//    fullPipeline[Eval](
+//      """
+//        | fun fib(x: Int) -> Int {
+//        |   if x < 2 {
+//        |     1
+//        |   } else {
+//        |     .self(x - 1) + .self(x - 2)
+//        |   }
+//        | }
+//        | app foo() {
+//        |   .fib(5)
+//        | }
+//        |
+//        | .foo
+//        |""".stripMargin) shouldEqual "IntValue(8)"
+//  }
 }

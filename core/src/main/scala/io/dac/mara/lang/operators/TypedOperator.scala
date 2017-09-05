@@ -9,19 +9,31 @@ import io.dac.mara.phases.{Typed, TypedOp}
 trait TypedOperator  extends TypedOp with OperatorAlg[Typed] {
   import MaraType._
 
-  private[this] def binop(name: String)(x: Typed, y: Typed)(f: MaraType => Boolean): Typed = op {
-    val typex = MaraType.promote(x.typex)
-    val typey = MaraType.promote(y.typex)
+  private[this] def binop(name: String)(x: Typed, y: Typed)(result: MaraType): Typed = op {
+    import MaraType._
 
-    if (MaraType.isSubtype(typex, typey) && f(typex)) {
-      typex
-    } else {
-      ErrorType(s"Binary operator ${name} on invalid types ${typex} and ${typey}")
+    val a = x.typex
+    val b = y.typex
+
+    val result =
+      if (a == b) BinopType(a, b, a)
+      else if (isSubtype(a, b)) BinopType(b, b, b)
+      else if (isSubtype(b, a)) BinopType(a, a, a)
+      else if (isSubtype(a, promote(b))) BinopType(promote(a), promote(b), promote(b))
+      else if (isSubtype(b, promote(a))) BinopType(promote(a), promote(b), promote(a))
+      else ErrorType(s"$a and $b are not compatible for binary operations")
+
+    result match {
+      case e: ErrorType => e
+      case bin: BinopType =>
+        if (isSubtype(bin.output, result)) bin
+        else ErrorType(s"Binary operator ${name} must have result type ${result}")
     }
+
   }
 
-  private[this] def numop(name: String)(x: Typed, y: Typed) = binop(name)(x, y)(t => MaraType.isSubtype(t, IntType()))
-  private[this] def boolop(name: String)(x: Typed, y: Typed) = binop(name)(x, y)(t => MaraType.isSubtype(t, BoolType()))
+  private[this] def numop(name: String)(x: Typed, y: Typed) = binop(name)(x, y)(IntType())
+  private[this] def boolop(name: String)(x: Typed, y: Typed) = binop(name)(x, y)(BoolType())
 
 
   override def plus(x: Typed, y: Typed): Typed = numop("plus")(x, y)
@@ -34,7 +46,7 @@ trait TypedOperator  extends TypedOp with OperatorAlg[Typed] {
 
   override def power(x: Typed, y: Typed): Typed = numop("power")(x, y)
 
-  override def lt(x: Typed, y: Typed): Typed = ???
+  override def lt(x: Typed, y: Typed): Typed = op { MaraType.BoolType() }
 
   override def gt(x: Typed, y: Typed): Typed = ???
 
